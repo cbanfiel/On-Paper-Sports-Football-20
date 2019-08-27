@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "On Paper Sports Hockey '20",
-    "slug": "OPS-Hockey-20",
+    "name": "On Paper Sports Football '20",
+    "slug": "OPS-Football-20",
     "privacy": "public",
-    "sdkVersion": "32.0.0",
+    "sdkVersion": "34.0.0",
     "platforms": [
       "ios",
       "android"
@@ -23,12 +23,12 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.chadbanfield.onpapersportshockey20",
+      "bundleIdentifier": "com.chadbanfield.onpapersportsfootball20",
       "supportsTablet": true,
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "com.chadbanfield.onpapersportshockey20",
+      "package": "com.chadbanfield.onpapersportsfootball20",
       "versionCode": 1
     },
     "description": ""

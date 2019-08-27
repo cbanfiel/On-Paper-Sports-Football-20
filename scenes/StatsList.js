@@ -3,7 +3,7 @@ import { ScrollView, Dimensions, Modal, TouchableOpacity, View } from 'react-nat
 import {Icon} from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
-import { sortedRoster, allPlayers } from '../data/script';
+import { sortedRoster, allPlayers, returnStatsListView, returnSeasonStatsListView } from '../data/script';
 import ListItem from '../components/ListItem';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import PlayerCardModal from '../components/PlayerCardModal';
@@ -69,7 +69,7 @@ export default class StatsList extends React.Component {
             <ListItem 
               title={data.item.positionString + ' #' + data.item.number + ' ' + data.item.name}
               leftAvatar={data.item.faceSrc}
-              subtitle={this.statsView(data.item)}
+              subtitle={this.props.season? returnSeasonStatsListView(data.item): returnStatsListView(data.item)}
               rightAvatar={data.item.teamLogoSrc}
               onPress={() => Actions.playerprofile({selectedPlayer: data.item})}
               onLongPress={() => this.setModalVisible(true, data.item)}
