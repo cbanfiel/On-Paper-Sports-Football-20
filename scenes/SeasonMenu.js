@@ -198,7 +198,7 @@ export default class SeasonMenu extends React.Component {
                           alignSelf: 'center'
                         }} >
                           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses - this.state.team.otLosses) + "-" + this.state.team.otLosses}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses )}</Text>
                             <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} source={{ uri: this.state.team.logoSrc }} />
                           </View>
                           <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
@@ -213,10 +213,10 @@ export default class SeasonMenu extends React.Component {
                           alignSelf: 'center'
                         }} >
                           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses - this.state.team.otLosses) + "-" + this.state.team.otLosses}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses )}</Text>
                             <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} source={{ uri: this.state.team.logoSrc }} />
                             <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginLeft: 20 }} source={{ uri: this.state.team.schedule[franchise.season.day].logoSrc }} />
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.schedule[franchise.season.day].wins + '-' + (this.state.team.schedule[franchise.season.day].losses - this.state.team.schedule[franchise.season.day].otLosses) + "-" + this.state.team.schedule[franchise.season.day].otLosses}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.schedule[franchise.season.day].wins + '-' + (this.state.team.schedule[franchise.season.day].losses)}</Text>
                           </View>
                           <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
                           <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Play Next Game'}</Text>
@@ -264,7 +264,7 @@ export default class SeasonMenu extends React.Component {
                       alignSelf: 'center'
                     }} >
                       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses - this.state.team.otLosses) + "-" + this.state.team.otLosses}</Text>
+                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses )}</Text>
                         <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} source={{ uri: this.state.team.logoSrc }} />
                       </View>
                       <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>

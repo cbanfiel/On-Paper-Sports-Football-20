@@ -54,9 +54,9 @@ export let goalieAdjustmentSlider = 3;
 
 //Seconds Off Clock Random Factor
 let secondsOffClockRandomFactor = 6;
-export let gamesPerSeason = 82;
+export let gamesPerSeason = 16;
 export let playoffSeeds = 8;
-export let seriesWinCount = 4;
+export let seriesWinCount = 1;
 export let conferencesOn = true;
 export let collegeMode = false;
 export let difficulty = -1;
@@ -1480,22 +1480,115 @@ export class Game {
     this.possResult = [];
     this.quarter = 1;
     this.overtime = false;
+
+    this.down = 1;
+    this.yardsToFirst = 10;
+    this.yardMarker = 20;
+
+    this.inPossesion = home;
   }
 
 
-  footballPlay(off, def){
+  footballPlay(){
 
+
+
+
+
+    let result = ""
+
+    let spotlightPlayer;
+
+
+
+    let yardModifier = 0;
+    if(Math.random()*100 < 10){
+      yardModifier += Math.random()*60;
+    }
+
+
+    let off = this.inPossesion;
+    let def;
+    if(off === home){
+      def = away;
+    }else{
+      def = home;
+    }
+
+
+    if(this.down>=4){
+
+      let kickerDistance = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
+      if(kickerDistance >= (100-this.yardMarker)){
+        //att fg
+        let kickerPercentage = scaleBetween(off.ks[0].kick, 50,99, 40, 99);
+        let distanceAdjustment = scaleBetween((100-this.yardMarker), 0, 60, 0, 30);
+
+        let percent = kickerPercentage - distanceAdjustment;
+
+        if(percent > Math.random()*100){
+          if(off === home){
+            this.homescore += 3;
+          }else{
+            this.awayscore += 3;
+          }
+          spotlightPlayer = off.ks[0];
+          result ="makes a " + (100-this.yardMarker) + "yard fieldgoal!";
+        }else{
+          spotlightPlayer = off.ks[0];
+          result ="misses a " + (100-this.yardMarker) + "yard fieldgoal!";
+        }
+
+      this.inPossesion = def;
+      this.yardMarker = 20;
+      this.down = 1;
+      this.yardsToFirst = 10;
+
+      }else{
+        spotlightPlayer = off.ps[0];
+        
+
+        let power = scaleBetween(off.ps[0].kick, 20,55, 40, 99);
+        let rand = Math.random()*10;
+
+        let kickDistance = Math.round(power+rand);
+
+        let smtn = kickDistance + this.yardMarker;
+
+        if(smtn<=0){
+          this.yardMarker = 20;
+        }else{
+          this.yardMarker = 100-smtn
+        }
+
+        result ="punts it away for " + kickDistance+ " yards!";
+
+        this.inPossesion = def;
+        this.yardMarker = 20;
+        this.down = 1;
+        this.yardsToFirst = 10;
+        
+
+      //punt
+      }
+
+    }else{
+
+   
+
+
+    let yardsGained = 0;
     //slider setup move out of function when complete
     oLineSlider = 10;
     dLineSlider = 15;
 
       let oLineModifier = 0;
-      for(let i=0; i< off.ol.length; i++){
+      for(let i=0; i< 5; i++){
         oLineModifier+= off.ol[i].rating;
       }
 
       let dLineModifier = 0;
-      for(let i=0; i< def.dl.length; i++){
+      for(let i=0; i< 4; i++){
         dLineModifier+= def.dl[i].rating;
       }
 
@@ -1506,13 +1599,13 @@ export class Game {
 
 
     let playSelection = Math.random()*100;
-    if(playSelection > off.runVsPass){
+    if(playSelection > 50){
       //pass
-      let qb = home.qbs[0];
+      let qb = off.qbs[0];
       let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
       let scaledQbPass = scaleBetween(qb.pass, 0, 15, 40, 99);
 
-      let target = home.wrs[0];
+      let target = off.wrs[0];
       let defender = away.dbs[0];
 
       let speedVsSpeed = (target.speed - defender.speed) /2;
@@ -1525,22 +1618,20 @@ export class Game {
 
       if(Math.random()*100 < completionPercentage){
         //completion
-        let initalYardage = Math.random()*8+5;
+        let wrSkill = scaleBetween(target.rating, 0, 7, 40, 99);
+        let wrYardage = wrSkill + (Math.random()*10) -5
         let yardsAfterCatch = speedVsSpeed;
         if(yardsAfterCatch < 0){
           yardsAfterCatch = 0;
         }
-        let yardsGained = initialYardage + yardsAfterCatch;
-       return yardsGained;
-
-
-
-
-
+        yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier);
+        spotlightPlayer = qb;
+        result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
       }else{
         //incomplete check for int
-        return 0;
-
+        spotlightPlayer = qb;
+        result = " throws an incomplete pass intended for " + target.name;
+        yardsGained = 0;
       }
 
     }else{
@@ -1549,14 +1640,55 @@ export class Game {
 
       let initialYardage = scaleBetween(runner.rating, 0, 5, 40, 99);
       
+      let randYards = (Math.random()*7)-3;
 
-      let yardsGained = initialYardage + lineInteraction;
-      return yardsGained;
-
-
+      yardsGained = Math.round(initialYardage + lineInteraction + randYards + yardModifier);
+      spotlightPlayer = runner;
+        result = " runs for " + yardsGained + " yards";
     }
 
+    // console.log('time: ' + this.time);
+    // console.log('down: ' + this.down);
+    // console.log('yardsToFirst: ' + this.yardsToFirst);
+    // console.log('yardMarker: ' + this.yardMarker);
+    // console.log(this.inPossesion.name);
+    // console.log(off.name);
+    // console.log('uhhhhhhhhhh');
 
+
+    this.time -= 20;
+    this.down++;
+    this.yardsToFirst -= yardsGained;
+    this.yardMarker += yardsGained;
+
+    if(this.yardsToFirst<=0){
+      this.down = 1;
+      this.yardsToFirst = 10;
+    }
+
+    if(this.yardMarker>= 100){
+      //touchdown
+      result = 'TOUCHDOWN! ' + result;
+      if(off === home){
+        this.homescore += 7;
+      }else{
+        this.awayscore += 7;
+      }
+      this.inPossesion = def;
+      this.yardMarker = 20;
+      this.down = 1;
+      this.yardsToFirst = 10;
+
+    }
+  }
+
+
+     this.possResult.unshift({
+        shooter: spotlightPlayer,
+        result: result,
+        homeScore: this.homescore,
+        awayScore: this.awayscore
+    })
 
 
   }
@@ -1932,8 +2064,12 @@ export class Game {
     //jumpball
     if (this.jumpBall()) {
       while (this.time > 0) {
-        this.hockeyPossesion(home, away);
-        this.hockeyPossesion(away, home);
+        while(this.inPossesion === home){
+          this.footballPlay(home, away);
+        }
+        while(this.inPossesion === away){
+          this.footballPlay(away, home);
+        }
         if (this.time <= 0) {
           if (this.homescore === this.awayscore) {
             this.overtime = true;
@@ -1943,8 +2079,12 @@ export class Game {
       }
     } else {
       while (this.time > 0) {
-        this.hockeyPossesion(away, home);
-        this.hockeyPossesion(home, away);
+        while(this.inPossesion === away){
+          this.footballPlay(away, home);
+        }
+        while(this.inPossesion === home){
+          this.footballPlay(home, away);
+        }
         if (this.time <= 0) {
           if (this.homescore === this.awayscore) {
             this.overtime = true;

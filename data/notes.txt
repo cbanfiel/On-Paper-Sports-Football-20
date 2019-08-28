@@ -1,0 +1,34 @@
+Offensive Schemes
+Balanced
+Option
+Spread
+Run N Gun
+West Coast
+
+Defensive Schemes
+3-4
+4-3
+3-3-5
+5-2
+
+
+Play Tree
+
+
+Pick Play
+    a. pass
+        1. Line Interactions
+        2. QB rating 
+        3. WR DB Interaction
+        4. Check for INT
+        5. Yardage modifier
+        6. Smart select tackler
+    b. Run
+        1. Line Interactions
+        2. RB rating
+        3. Check for fumble
+        4. Yardage modifier
+
+
+
+

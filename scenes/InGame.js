@@ -25,7 +25,7 @@ export default class InGame extends React.Component {
     awayscore: 0,
     timer:null,
     quarter:1,
-    time:20,
+    time:15,
     playByPlay: null,
     speed: 100,
     completed: false,
@@ -35,29 +35,38 @@ export default class InGame extends React.Component {
     forwardsVsDefensemen: selectedTeam.forwardsVsDefensemen,
     rotationSize: selectedTeam.rotationSize,
     frontCourtVsBackCourt: selectedTeam.frontCourtVsBackCourt,
-    freezeThePuckVsPlayThePuck: selectedTeam.freezeThePuckVsPlayThePuck
+    freezeThePuckVsPlayThePuck: selectedTeam.freezeThePuckVsPlayThePuck,
+    down: 1,
+    yardsToGo: 10,
+    yardMarker: 20
   }
 
   time = () => {
     let qtr =1;
-    let minutes= 20;
+    let minutes= 15;
     let seconds = 0;
     let time;
 
-    time = (this.props.game.time) -(60*60)  + (20*60);
+    time = (this.props.game.time) -(60*60)  + (15*60);
       minutes = Math.floor(time / 60);
       seconds = Math.round(time - minutes * 60);
 
-    if((this.props.game.time/60)<40){
+    if((this.props.game.time/60)<45){
       qtr =2;
-      time = (this.props.game.time)  -(40*60)  + (20*60);
+      time = (this.props.game.time)  -(45*60)  + (15*60);
       minutes = Math.floor(time / 60);
       seconds = Math.round(time - minutes * 60);
 
     }
-    if((this.props.game.time/60)<20){
+    if((this.props.game.time/60)<30){
       qtr = 3;
-      time = (this.props.game.time)  -(20*60)  + (20*60);
+      time = (this.props.game.time)  -(30*60)  + (15*60);
+      minutes = Math.floor(time / 60);
+      seconds = Math.round(time - minutes * 60);
+    }
+    if((this.props.game.time/60)<15){
+      qtr = 4;
+      time = (this.props.game.time)  -(15*60)  + (15*60);
       minutes = Math.floor(time / 60);
       seconds = Math.round(time - minutes * 60);
     }
@@ -80,9 +89,9 @@ export default class InGame extends React.Component {
     if(this.props.game.time === (60*60)){
     this.props.game.clearStats();
     if(this.props.game.jumpBall()){
-      poss = home;
+      this.props.game.inPossession = home;
     }else{
-      poss = away;
+      this.props.game.inPossession = away;
     }
         
     }
@@ -159,20 +168,7 @@ export default class InGame extends React.Component {
     }
     return;
       }
-      let defTeam;
-      if(poss === home){
-        defTeam = away;
-        poss = home;
-      }else{
-        defTeam = home;
-        poss = away;
-      }
-      this.props.game.hockeyPossesion(poss, defTeam);
-      if(poss === home){
-        poss = away;
-      }else{
-        poss = home;
-      }
+      this.props.game.footballPlay();
       this.time();
       try{
       for(let i=0; i<3; i++){
@@ -185,7 +181,7 @@ export default class InGame extends React.Component {
 
     }
 
-      this.setState({homescore:this.props.game.homescore, awayscore:this.props.game.awayscore, playByPlay:this.props.game.possResult[0]});
+      this.setState({homescore:this.props.game.homescore, awayscore:this.props.game.awayscore, playByPlay:this.props.game.possResult[0], down: this.props.game.down, yardsToGo: this.props.game.yardsToFirst, yardMarker: this.props.game.yardMarker});
   }.bind(this),this.state.speed);
     this.setState({timer: timer})
       
@@ -236,10 +232,18 @@ leavePage(){
                     }}
                     >
                     <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ flex: 1, textAlign: 'center', fontSize: 35, color: 'black', fontFamily: 'advent-pro' }}>{'PERIOD: ' + this.state.quarter}</Text>
+                  <Text style={{ flex: 1, textAlign: 'center', fontSize: 35, color: 'black', fontFamily: 'advent-pro' }}>{'QTR: ' + this.state.quarter}</Text>
                   <Text style={{ flex: 1, textAlign: 'center', fontSize: 35, color: 'black', fontFamily: 'advent-pro' }}>{'TIME: ' + this.state.time}</Text>
-
                     </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, textAlign: 'center', fontSize: 25, color: 'black', fontFamily: 'advent-pro' }}>{'DOWN: ' + this.state.down + '-' + this.state.yardsToGo}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'BALL AT THE: ' + this.state.yardMarker}</Text>
+                  </View>
+
+
+
                     <Divider style={{backgroundColor:'black' ,  height:1, margin:5}} ></Divider>
                     <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Sim Game'}</Text>
                   </Card>
