@@ -84,7 +84,7 @@ export default class Standings extends React.Component {
              title={i+1 + '. ' + team.name} 
              key={team.name} 
              leftAvatar={team.logoSrc }
-             subtitle={'Record: ' + team.wins + '-' + (team.losses-team.otLosses) + '-' + team.otLosses}
+             subtitle={'Record: ' + team.wins + '-' + (team.losses)}
             onLongPress={() => this.setModalVisible(true, team)}
             ></ListItem>
           ))}

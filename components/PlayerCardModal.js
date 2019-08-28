@@ -29,12 +29,16 @@ export default class PlayerCardModal extends Component {
 
                     <Divider style={{ height: 1, margin: 10, backgroundColor: 'black', width: '90%', alignSelf: 'center' }}></Divider>
                     <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"OVR: " + this.props.modalPlayer.rating}</Text>
-                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"OFF: " + this.props.modalPlayer.off}</Text>
-                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"DEF: " + this.props.modalPlayer.def}</Text>
                     <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"PASS: " + this.props.modalPlayer.pass}</Text>
-                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"FACEOFF: " + this.props.modalPlayer.faceOff}</Text>
-                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"POSITIONING: " + this.props.modalPlayer.positioning}</Text>
-                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"REFLEXES: " + this.props.modalPlayer.reflexes}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"AWARENESS: " + this.props.modalPlayer.awareness}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"RUSH: " + this.props.modalPlayer.rush}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"SPEED: " + this.props.modalPlayer.speed}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"CATCH: " + this.props.modalPlayer.catch}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"BLOCK: " + this.props.modalPlayer.block}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"BREAKBLOCK: " + this.props.modalPlayer.breakBlock}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"TACKLE: " + this.props.modalPlayer.tackle}</Text>
+                    <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"KICK: " + this.props.modalPlayer.kick}</Text>
+
                     <Divider style={{ height: 1, margin: 10, backgroundColor: 'black', width: '90%', alignSelf: 'center' }}></Divider>
                     <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{returnStatsView(this.props.modalPlayer)}</Text>
                 </View>

@@ -17,21 +17,45 @@ export let franchise;
 export let selectedTeam;
 export let home;
 export let away;
-const POS_C = 0;
-const POS_LW = 1;
-const POS_RW = 2;
-const POS_D = 3;
-const POS_G = 4;
+const POS_QB = 0;
+const POS_HB = 1;
+const POS_FB = 2;
+const POS_WR = 3;
+const POS_TE = 4;
+const POS_LT = 5;
+const POS_LG = 6;
+const POS_C = 7;
+const POS_RG = 8;
+const POS_RT = 9;
+const POS_LE = 10;
+const POS_RE = 11;
+const POS_DT = 12;
+const POS_LOLB = 13;
+const POS_MLB = 14;
+const POS_ROLB = 15;
+const POS_CB = 16;
+const POS_FS = 17;
+const POS_SS = 18;
+const POS_K = 19;
+const POS_P = 20;
 
-const rosterSize = 28;
-export const CAPROOM = 85000000;
+
+const rosterSize = 70;
+export const CAPROOM = 190000000;
 const VETERANSMINIMUM = 900000;
 
-const POS_C_REQUIREMENTS = 4;
-const POS_LW_REQUIREMENTS = 4;
-const POS_RW_REQUIREMENTS = 4;
-const POS_D_REQUIREMENTS = 6;
-const POS_G_REQUIREMENTS = 2;
+const POS_QB_REQUIREMENTS = 2;
+const POS_HB_REQUIREMENTS = 3;
+const POS_FB_REQUIREMENTS = 0;
+const POS_WR_REQUIREMENTS = 5;
+const POS_TE_REQUIREMENTS = 2;
+const POS_OL_REQUIREMENTS = 5;
+const POS_DL_REQUIREMENTS = 4;
+const POS_LB_REQUIREMENTS = 3;
+const POS_DB_REQUIREMENTS = 5;
+const POS_K_REQUIREMENTS = 1;
+const POS_P_REQUIREMENTS = 1;
+
 
 //sliders
 export let twoPointPercentageLow = 20;
@@ -54,11 +78,11 @@ export let goalieAdjustmentSlider = 3;
 
 //Seconds Off Clock Random Factor
 let secondsOffClockRandomFactor = 6;
-export let gamesPerSeason = 16;
-export let playoffSeeds = 8;
+export let gamesPerSeason = 12;
+export let playoffSeeds = 4;
 export let seriesWinCount = 1;
-export let conferencesOn = true;
-export let collegeMode = false;
+export let conferencesOn = false;
+export let collegeMode = true;
 export let difficulty = -1;
 //************************************ */
 
@@ -236,6 +260,50 @@ class Player {
     this.breakBlock = player.breakBlock;
     this.tackle = player.tackle;
     this.kick = player.kick;
+
+    //training
+    this.passOld = player.pass;
+    this.awarenessOld = player.awareness;
+    this.rushOld = player.rush;
+    this.speedOld = player.speed;
+    this.catchOld = player.catch;
+    this.blockOld = player.block;
+    this.breakBlockOld = player.breakBlock;
+    this.tackleOld = player.tackle;
+    this.kickOld = player.kick;
+
+    //football stats
+    this.completions = 0;
+    this.attempts = 0;
+    this.touchdowns = 0;
+    this.yards = 0;
+    this.rushYards = 0;
+    this.rushAttempts = 0;
+    this.rushTouchdowns = 0;
+    this.kicksAttempted = 0;
+    this.kicksMade = 0;
+    this.receptions = 0;
+    this.tackles = 0;
+    this.interceptions = 0;
+    this.fumbles = 0;
+    this.fumblesRecovered = 0;
+    this.sacks = 0;
+
+    this.seasonCompletions = 0;
+    this.seasonAttempts = 0;
+    this.seasonTouchdowns = 0;
+    this.seasonYards = 0;
+    this.seasonRushYards = 0;
+    this.seasonRushAttempts = 0;
+    this.seasonRushTouchdowns = 0;
+    this.seasonKicksAttempted = 0;
+    this.seasonKicksMade = 0;
+    this.seasonReceptions = 0;
+    this.seasonTackles = 0;
+    this.seasonInterceptions = 0;
+    this.seasonFumbles = 0;
+    this.seasonFumblesRecovered = 0;
+    this.seasonSacks = 0;
 
     //hockey stats
     this.saves = 0;
@@ -585,14 +653,6 @@ class Team {
     this.seasonSaves = 0;
     this.seasonGoalsAllowed = 0;
 
-    this.seasonRebounds = 0;
-    this.seasonOffRebounds = 0;
-    this.seasonFieldGoalsAttempted = 0;
-    this.seasonFieldGoalsMade = 0;
-    this.seasonThreesAttempted = 0;
-    this.seasonThreesMade = 0;
-    this.seasonFreeThrowsMade = 0;
-    this.seasonFreeThrowsAttempted = 0;
 
     this.expiring = {
       name: "Expiring Contracts",
@@ -610,13 +670,6 @@ class Team {
     //salary cap
     this.salary = 0;
 
-    //position count
-    this.pg = 0;
-    this.sg = 0;
-    this.sf = 0;
-    this.pf = 0;
-    this.c = 0;
-
     //Coach Sliders
     this.offVsDefFocus = Math.round(Math.random() * 6) - 3;
     this.qualityVsQuantity = Math.round(Math.random() * 6) - 3;
@@ -626,154 +679,18 @@ class Team {
     //hockey coach sliders
     this.freezeThePuckVsPlayThePuck = Math.round(Math.random() * 6) - 3;
 
-    //hockey
-    this.offLine1 = [];
-    this.defLine1 = [];
-    this.offLine2 = [];
-    this.defLine2 = [];
-    this.offLine3 = [];
-    this.defLine3 = [];
-    this.offLine4 = [];
-    this.goalies = [];
-    this.onIce = [];
-
-        //football
-        this.qbs = [];
-        this.rbs = [];
-        this.fbs = [];
-        this.tes = [];
-        this.wrs = [];
-        this.ol = [];
-        this.dl = [];
-        this.lbs = [];
-        this.dbs = [];
-        this.ks = [];
-        this.ps = [];
-
-    this.inNet;
-
-    this.defShiftOnIce = 1;
-    this.offShiftOnIce = 1;
-  }
-
-  manageGoalieUsage() {
-    for (let i = 0; i < this.goalies.length; i++) {
-      this.goalies[i].goalieUsage = 0;
-    }
-
-    let total = 0;
-    let goalies = this.goalies.length;
-    if (this.goalies.length >= 3) {
-      goalies = 3;
-    }
-    for (let i = 0; i < goalies; i++) {
-      total += this.goalies[i].rating + (goalies - i) * 90;
-    }
-    for (let i = 0; i < goalies; i++) {
-      this.goalies[i].goalieUsage =
-        ((this.goalies[i].rating + (goalies - i) * 90) / total) * 100;
-    }
-  }
-
-  manageHockeyLineups() {
-    this.roster.sort(function (a, b) {
-      if (a.rating > b.rating) return -1;
-      if (a.rating < b.rating) return 1;
-      return 0;
-    });
-
-    this.offLine1 = [];
-    this.offLine2 = [];
-    this.offLine3 = [];
-    this.offLine4 = [];
-    this.defLine1 = [];
-    this.defLine2 = [];
-    this.defLine3 = [];
-    this.goalies = [];
-
-
-
-
-    for (let i = 0; i < this.roster.length; i++) {
-      let ply = this.roster[i];
-      if (ply.position <= 2) {
-        //off
-        if (this.offLine1.length < 3) {
-          this.offLine1.push(ply);
-        } else if (this.offLine2.length < 3) {
-          this.offLine2.push(ply);
-        } else if (this.offLine3.length < 3) {
-          this.offLine3.push(ply);
-        } else if (this.offLine4.length < 3) {
-          this.offLine4.push(ply);
-        }
-      }
-      if (ply.position === 3) {
-        if (this.defLine1.length < 2) {
-          this.defLine1.push(ply);
-        } else if (this.defLine2.length < 2) {
-          this.defLine2.push(ply);
-        } else if (this.defLine3.length < 2) {
-          this.defLine3.push(ply);
-        }
-      }
-      if (ply.position === 4) {
-        this.goalies.push(ply);
-      }
-    }
-
-    if (this.offLine1.length < 3) {
-      console.log(this.name + " Off Line 1 Error");
-    }
-    if (this.offLine2.length < 3) {
-      console.log(this.name + " Off Line 2 Error");
-    }
-    if (this.offLine3.length < 3) {
-      console.log(this.name + " Off Line 3 Error");
-    }
-    if (this.offLine4.length < 3) {
-      console.log(this.name + " Off Line 4 Error");
-    }
-    if (this.defLine1.length < 2) {
-      console.log(this.name + " Def Line 1 Error");
-    }
-    if (this.defLine2.length < 2) {
-      console.log(this.name + " Def Line 1 Error");
-    }
-    if (this.defLine3.length < 2) {
-      console.log(this.name + " Def Line 1 Error");
-    }
-    if (this.goalies.length < 2) {
-      console.log(this.name + " Goalies Error");
-    }
-
-    this.onIce = this.offLine1.concat(this.defLine1);
-    //quick fixs
-    this.firstTeam = this.onIce;
-
-    this.offLine1.sort(function (a, b) {
-      if (a.position < b.position) return -1;
-      if (a.position > b.position) return 1;
-      return 0;
-    });
-    this.offLine2.sort(function (a, b) {
-      if (a.position < b.position) return -1;
-      if (a.position > b.position) return 1;
-      return 0;
-    });
-    this.offLine3.sort(function (a, b) {
-      if (a.position < b.position) return -1;
-      if (a.position > b.position) return 1;
-      return 0;
-    });
-    this.offLine4.sort(function (a, b) {
-      if (a.position < b.position) return -1;
-      if (a.position > b.position) return 1;
-      return 0;
-    });
-
-    this.inNet = this.goalies[0];
-    this.manageGoalieUsage();
+    //football
+    this.qbs = [];
+    this.rbs = [];
+    this.fbs = [];
+    this.tes = [];
+    this.wrs = [];
+    this.ol = [];
+    this.dl = [];
+    this.lbs = [];
+    this.dbs = [];
+    this.ks = [];
+    this.ps = [];
   }
 
   releaseExpiring() {
@@ -814,33 +731,48 @@ class Team {
 
 */
 
-  manageFootballLineup(){
-    for(let i=0; i< this.roster.length; i++){
-      let player = this.roster[i];  
-      if(player.position===0){
+  manageFootballLineup() {
+    this.roster.sort(function (a, b) {
+      if (a.rating > b.rating) {
+        return -1;
+      }
+      if (a.rating < b.rating) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+
+    for (let i = 0; i < this.roster.length; i++) {
+      let player = this.roster[i];
+      if (player.position === 0) {
         this.qbs.push(player);
-      }else if(player.position === 1){
+      } else if (player.position === 1) {
         this.rbs.push(player);
-      }else if(player.position === 2){
+      } else if (player.position === 2) {
         this.fbs.push(player);
-      }else if(player.position === 3){
+      } else if (player.position === 3) {
         this.wrs.push(player);
-      }else if(player.position === 4){
+      } else if (player.position === 4) {
         this.tes.push(player);
       }
-      else if(player.position > 4 && player.position < 10){
+      else if (player.position > 4 && player.position < 10) {
         this.ol.push(player);
       }
-      else if(player.position > 9 && player.position < 13){
+      else if (player.position > 9 && player.position < 13) {
         this.dl.push(player);
       }
-      else if(player.position > 15 && player.position < 19){
+      else if (player.position >= 13 && player.position <= 15) {
+        this.lbs.push(player);
+      }
+      else if (player.position > 15 && player.position < 19) {
         this.dbs.push(player);
       }
-      else if(player.position===19){
+      else if (player.position === 19) {
         this.ks.push(player);
       }
-      else if(player.position === 20){
+      else if (player.position === 20) {
         this.ps.push(player);
       }
     }
@@ -1120,7 +1052,6 @@ export function loadRosters() {
     }
     teams[i].reorderLineup();
     teams[i].calculateRating();
-    teams[i].manageHockeyLineups();
     sortedRoster(teams[i], "rating");
   }
   setTeamSalaries();
@@ -1139,6 +1070,9 @@ export function loadRosters() {
   availableFreeAgents.reorderLineup();
   setSalaryExpectations(availableFreeAgents);
 
+
+  //temporary
+  generateFreeAgents(300, 16);
   generateDraftClass();
 }
 
@@ -1158,58 +1092,115 @@ export let draftClass = {
 
 export function generateCustomRoster(team, rating) {
   team.roster = [];
-  let fws = 0;
-  let defensemen = 0;
-  let goalies = 0;
+  let qbs = 0;
+  let hbs = 0;
+  let wrs = 0;
+  let tes = 0;
+  let ol = 0;
+  let dl = 0;
+  let dbs = 0;
+  let ks=0;
+  let ps= 0;
   for (let i = 0; i < rosterSize; i++) {
     let name =
       draftData[Math.floor(Math.random() * draftData.length)].firstname +
       " " +
       draftData[Math.floor(Math.random() * draftData.length)].lastname;
     let faceSrc = draftData[0].faceSrc;
-    let number = draftData[Math.floor(Math.random() * draftData.length)].number;
     let age = draftData[Math.floor(Math.random() * draftData.length)].age;
     let playerComparison = Math.floor(Math.random() * draftData.length);
+    let number = draftData[playerComparison].number;
 
-    if (goalies < 2) {
-      while (draftData[playerComparison].position != 4) {
+    if (qbs < POS_QB_REQUIREMENTS) {
+      while (draftData[playerComparison].position != POS_QB) {
         playerComparison = Math.floor(Math.random() * draftData.length);
       }
-      goalies++;
-    } else if (fws < 12) {
-      while (draftData[playerComparison].position > 2) {
+      qbs++;
+    } else if (hbs < POS_HB_REQUIREMENTS) {
+      while (draftData[playerComparison].position != POS_HB) {
         playerComparison = Math.floor(Math.random() * draftData.length);
       }
-      fws++;
-    } else if (defensemen < 6) {
-      while (draftData[playerComparison].position != 3) {
+      hbs++;
+    } else if (wrs < POS_WR_REQUIREMENTS) {
+      while (draftData[playerComparison].position != POS_WR) {
         playerComparison = Math.floor(Math.random() * draftData.length);
       }
-      defensemen++;
+      wrs++;
     }
+    else if (tes < POS_TE_REQUIREMENTS) {
+      while (draftData[playerComparison].position != POS_TE) {
+        playerComparison = Math.floor(Math.random() * draftData.length);
+      }
+      tes++;
+    }
+    else if (ol < POS_OL_REQUIREMENTS) {
+      while (draftData[playerComparison].position < POS_LT && draftData[playerComparison].position > POS_RT) {
+        playerComparison = Math.floor(Math.random() * draftData.length);
+      }
+      ol++;
+    }
+    else if (dl < POS_DL_REQUIREMENTS) {
+      while (draftData[playerComparison].position < POS_LE && draftData[playerComparison].position > POS_RE) {
+        playerComparison = Math.floor(Math.random() * draftData.length);
+      }
+      dl++;
+    }
+    else if (dbs < POS_DB_REQUIREMENTS) {
+      while (draftData[playerComparison].position < POS_CB && draftData[playerComparison].position > POS_SS) {
+        playerComparison = Math.floor(Math.random() * draftData.length);
+      }
+      dbs++;
+    }
+    else if (ks < POS_K_REQUIREMENTS) {
+      while (draftData[playerComparison].position != POS_K) {
+        playerComparison = Math.floor(Math.random() * draftData.length);
+      }
+      ks++;
+    }
+    else if (ps < POS_P_REQUIREMENTS) {
+      while (draftData[playerComparison].position != POS_P) {
+        playerComparison = Math.floor(Math.random() * draftData.length);
+      }
+      ps++;
+    }
+  
 
     let position = draftData[playerComparison].position;
     let height = draftData[playerComparison].height;
-    let off =
-      draftData[playerComparison].off - 8 + Math.floor(Math.random() * 5);
-    let def =
-      draftData[playerComparison].def - 8 + Math.floor(Math.random() * 5);
-    let positioning =
-      draftData[playerComparison].positioning -
-      8 +
-      Math.floor(Math.random() * 5);
-    let reflexes =
-      draftData[playerComparison].reflexes - 8 + Math.floor(Math.random() * 5);
-    let faceOff =
-      draftData[playerComparison].faceOff - 3 + Math.floor(Math.random() * 5);
     let pass =
-      draftData[playerComparison].pass - 8 + Math.floor(Math.random() * 5);
+    draftData[playerComparison].pass  -
+    Math.floor(Math.random() * 12);
+  let awareness =
+    draftData[playerComparison].awareness  -
+    Math.floor(Math.random() * 12);
+  let rush =
+    draftData[playerComparison].rush  -
+    Math.floor(Math.random() * 12);
+  let speed =
+    draftData[playerComparison].speed  -
+    Math.floor(Math.random() * 12);
+  let catching =
+    draftData[playerComparison].catch  -
+    Math.floor(Math.random() * 12);
+  let block =
+    draftData[playerComparison].block  -
+    Math.floor(Math.random() * 12);
+    let breakBlock =
+    draftData[playerComparison].breakBlock  -
+    Math.floor(Math.random() * 12);
+    let tackle =
+    draftData[playerComparison].tackle  -
+    Math.floor(Math.random() * 12);
+    let kick =
+    draftData[playerComparison].kick  -
+    Math.floor(Math.random() * 12); 
     //2 years the plus one is because the contract years go down AFTER the draft not before but contract years should be 2 for rookies
     let years = Math.floor(Math.random() * 3) + 1;
     let salary = 2400000;
 
     //RATING FORMULA
 
+    
     let ply = new Player({
       name: name,
       faceSrc: faceSrc,
@@ -1217,15 +1208,17 @@ export function generateCustomRoster(team, rating) {
       age: age,
       position: position,
       height: height,
-      off: off,
-      def: def,
-      positioning: positioning,
-      reflexes: reflexes,
       pass: pass,
-      faceOff: faceOff,
+      awareness: awareness,
+      rush: rush,
+      speed: speed,
+      catch: catching,
+      block: block,
+      breakBlock: breakBlock,
+      tackle: tackle,
+      kick: kick,
       years: years,
-      salary: salary,
-      rating: rating
+      salary: salary
     });
     ply.calculateRating();
     team.roster.push(ply);
@@ -1280,39 +1273,51 @@ export function generateFreeAgents(amount, ratingSubtraction) {
       " " +
       draftData[Math.floor(Math.random() * draftData.length)].lastname;
     let faceSrc = draftData[0].faceSrc;
-    let number = draftData[Math.floor(Math.random() * draftData.length)].number;
     let age = Math.floor(Math.random() * 15) + 20;
     if (collegeMode) {
       age = 18;
     }
-
+    
     let playerComparison = Math.floor(Math.random() * draftData.length);
+    let number = draftData[playerComparison].number;
     let position = draftData[playerComparison].position;
     let height = draftData[playerComparison].height;
-    let off =
-      draftData[playerComparison].off -
-      ratingSubtraction +
-      Math.floor(Math.random() * 5);
-    let def =
-      draftData[playerComparison].def -
-      ratingSubtraction +
-      Math.floor(Math.random() * 5);
     let pass =
       draftData[playerComparison].pass -
       ratingSubtraction +
       Math.floor(Math.random() * 5);
-    let positioning =
-      draftData[playerComparison].positioning -
+    let awareness =
+      draftData[playerComparison].awareness -
       ratingSubtraction +
       Math.floor(Math.random() * 5);
-    let reflexes =
-      draftData[playerComparison].reflexes -
+    let rush =
+      draftData[playerComparison].rush -
       ratingSubtraction +
       Math.floor(Math.random() * 5);
-    let faceOff =
-      draftData[playerComparison].faceOff -
+    let speed =
+      draftData[playerComparison].speed -
       ratingSubtraction +
       Math.floor(Math.random() * 5);
+    let catching =
+      draftData[playerComparison].catch -
+      ratingSubtraction +
+      Math.floor(Math.random() * 5);
+    let block =
+      draftData[playerComparison].block -
+      ratingSubtraction +
+      Math.floor(Math.random() * 5);
+      let breakBlock =
+      draftData[playerComparison].breakBlock -
+      ratingSubtraction +
+      Math.floor(Math.random() * 5);
+      let tackle =
+      draftData[playerComparison].tackle -
+      ratingSubtraction +
+      Math.floor(Math.random() * 5);
+      let kick =
+      draftData[playerComparison].kick -
+      ratingSubtraction +
+      Math.floor(Math.random() * 5);  
     //2 years the plus one is because the contract years go down AFTER the draft not before but contract years should be 2 for rookies
     let years = 2 + 1;
     let salary = 1200000;
@@ -1330,12 +1335,15 @@ export function generateFreeAgents(amount, ratingSubtraction) {
       age: age,
       position: position,
       height: height,
-      off: off,
-      def: def,
       pass: pass,
-      positioning: positioning,
-      reflexes: reflexes,
-      faceOff: faceOff,
+      awareness: awareness,
+      rush: rush,
+      speed: speed,
+      catch: catching,
+      block: block,
+      breakBlock: breakBlock,
+      tackle: tackle,
+      kick: kick,
       years: years,
       salary: salary
     });
@@ -1353,32 +1361,36 @@ function generateDraftClass() {
       " " +
       draftData[Math.floor(Math.random() * draftData.length)].lastname;
     let faceSrc = draftData[0].faceSrc;
-    let number = draftData[Math.floor(Math.random() * draftData.length)].number;
     let age = draftData[Math.floor(Math.random() * draftData.length)].age;
-
+    
     let playerComparison = Math.floor(Math.random() * draftData.length);
+    let number = draftData[playerComparison].number;
     let position = draftData[playerComparison].position;
     let height = draftData[playerComparison].height;
-    let off =
-      draftData[playerComparison].off - 15 + Math.floor(Math.random() * 5);
-    let def =
-      draftData[playerComparison].def - 15 + Math.floor(Math.random() * 5);
-    let positioning =
-      draftData[playerComparison].positioning -
-      15 +
-      Math.floor(Math.random() * 5);
-    let reflexes =
-      draftData[playerComparison].reflexes - 15 + Math.floor(Math.random() * 5);
+
     let pass =
       draftData[playerComparison].pass - 15 + Math.floor(Math.random() * 5);
-    let faceOff =
-      draftData[playerComparison].faceOff - 15 + Math.floor(Math.random() * 5);
+    let awareness =
+      draftData[playerComparison].awareness - 15 + Math.floor(Math.random() * 5);
+    let rush =
+      draftData[playerComparison].rush -
+      15 +
+      Math.floor(Math.random() * 5);
+    let speed = draftData[playerComparison].speed - 15 + Math.floor(Math.random() * 5);
+    let block = draftData[playerComparison].block - 15 + Math.floor(Math.random() * 5);
+    let catching = draftData[playerComparison].catch - 15 + Math.floor(Math.random() * 5);
+
+      let breakBlock = draftData[playerComparison].breakBlock - 15 + Math.floor(Math.random() * 5);
+      let tackle =
+      draftData[playerComparison].tackle - 15 + Math.floor(Math.random() * 5);
+      let kick =
+      draftData[playerComparison].kick - 15 + Math.floor(Math.random() * 5);
     //2 years the plus one is because the contract years go down AFTER the draft not before but contract years should be 2 for rookies
     let years = 2 + 1;
     let salary = 1200000;
 
-    //RATING FORMULA
 
+    //RATING FORMULA
     let ply = new Player({
       name: name,
       faceSrc: faceSrc,
@@ -1386,12 +1398,15 @@ function generateDraftClass() {
       age: age,
       position: position,
       height: height,
-      off: off,
-      def: def,
-      reflexes: reflexes,
-      positioning: positioning,
       pass: pass,
-      faceOff: faceOff,
+      awareness: awareness,
+      rush: rush,
+      speed: speed,
+      catch: catching,
+      block: block,
+      breakBlock: breakBlock,
+      tackle: tackle,
+      kick: kick,
       years: years,
       salary: salary
     });
@@ -1488,508 +1503,404 @@ export class Game {
     this.inPossesion = home;
   }
 
+  checkForTouchDown(yds) {
+    if (this.yardMarker + yds >= 100) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-  footballPlay(){
+  selectReciever(off) {
+    let recievers = [];
+    recievers.push(off.wrs[0]);
+    recievers.push(off.wrs[1]);
+    recievers.push(off.wrs[2]);
+    if(off.tes.length>1){
+      recievers.push(off.tes[0]);
+    }else{
+    recievers.push(off.wrs[3]);
+    }
+    recievers.push(off.rbs[0]);
+    let reciever;
 
+    
 
-
-
-
-    let result = ""
-
-    let spotlightPlayer;
-
-
-
-    let yardModifier = 0;
-    if(Math.random()*100 < 10){
-      yardModifier += Math.random()*60;
+    let tot = 0;
+    try{
+    for (let i = 0; i < recievers.length; i++) {
+      tot += recievers[i].catch + recievers[i].speed;
+    }
+  }catch(e){
+    console.log(off.name);
+  }
+    let rand = Math.random() * 100;
+    let selection = 0;
+    for (let i = 0; i < recievers.length; i++) {
+      selection += ((recievers[i].catch + recievers[i].speed) / tot) * 100;
+      if (rand <= selection) {
+        return recievers[i];
+      }
     }
 
 
+  }
+
+  selectDBTackler(def){
+    let tacklers = [];
+    tacklers.push(def.dbs[0]);
+    tacklers.push(def.dbs[1]);
+    tacklers.push(def.dbs[2]);
+    tacklers.push(def.dbs[3]);
+
+    let tot = 0;
+    for (let i = 0; i < tacklers.length; i++) {
+      tot += tacklers[i].tackle + tacklers[i].awareness;
+    }
+    let rand = Math.random() * 100;
+    let selection = 0;
+    for (let i = 0; i < tacklers.length; i++) {
+      selection += ((tacklers[i].tackle + tacklers[i].awareness) / tot) * 100;
+      if (rand <= selection) {
+        return tacklers[i];
+      }
+    }
+  }
+
+  selectLBTackler(def){
+    let tacklers = [];
+
+   
+
+    for(let i=0; i<def.lbs.length; i++){
+      tacklers.push(def.lbs[i]);
+      if(i>=3){
+        break;
+      }
+    }
+
+    let tot = 0;
+    for (let i = 0; i < tacklers.length; i++) {
+      tot += tacklers[i].tackle + tacklers[i].awareness;
+    }
+    let rand = Math.random() * 100;
+    let selection = 0;
+    for (let i = 0; i < tacklers.length; i++) {
+      selection += ((tacklers[i].tackle + tacklers[i].awareness) / tot) * 100;
+      if (rand <= selection) {
+        return tacklers[i];
+      }
+    }
+  }
+
+  selectDLTackler(def){
+    let tacklers = [];
+    tacklers.push(def.dl[0]);
+    tacklers.push(def.dl[1]);
+    tacklers.push(def.dl[2]);
+    tacklers.push(def.dl[3]);
+
+    let tot = 0;
+    for (let i = 0; i < tacklers.length; i++) {
+      tot += tacklers[i].tackle + tacklers[i].awareness;
+    }
+    let rand = Math.random() * 100;
+    let selection = 0;
+    for (let i = 0; i < tacklers.length; i++) {
+      selection += ((tacklers[i].tackle + tacklers[i].awareness) / tot) * 100;
+      if (rand <= selection) {
+        return tacklers[i];
+      }
+    }
+  }
+
+
+
+
+  footballPlay() {
+    let result = ""
+    let spotlightPlayer;
+
+    let yardModifier = 0;
+    if (Math.random() * 100 < 4) {
+      yardModifier += Math.random() * 60;
+    }
+
     let off = this.inPossesion;
     let def;
-    if(off === home){
+    if (off === home) {
       def = away;
-    }else{
+    } else {
       def = home;
     }
 
 
-    if(this.down>=4){
+    if (this.down >= 4) {
 
       let kickerDistance = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
-      if(kickerDistance >= (100-this.yardMarker)){
+      if (kickerDistance >= (100 - this.yardMarker)) {
         //att fg
-        let kickerPercentage = scaleBetween(off.ks[0].kick, 50,99, 40, 99);
-        let distanceAdjustment = scaleBetween((100-this.yardMarker), 0, 60, 0, 30);
+        off.ks[0].kicksAttempted++;
+
+        let kickerPercentage = scaleBetween(off.ks[0].kick, 50, 99, 40, 99);
+        let distanceAdjustment = scaleBetween((100 - this.yardMarker), 0, 30, 0, 60);
 
         let percent = kickerPercentage - distanceAdjustment;
+        // console.log('kickerpower' + kickerDistance);
+        // console.log('distance' + (100- this.yardMarker));
 
-        if(percent > Math.random()*100){
-          if(off === home){
+        // console.log(kickerPercentage);
+        // console.log(distanceAdjustment);
+        // console.log(percent);
+        if (percent > Math.random() * 100) {
+          off.ks[0].kicksMade++;
+          if (off === home) {
             this.homescore += 3;
-          }else{
+          } else {
             this.awayscore += 3;
           }
           spotlightPlayer = off.ks[0];
-          result ="makes a " + (100-this.yardMarker) + "yard fieldgoal!";
-        }else{
+          result = "makes a " + (100 - this.yardMarker) + "yard fieldgoal!";
+        } else {
           spotlightPlayer = off.ks[0];
-          result ="misses a " + (100-this.yardMarker) + "yard fieldgoal!";
+          result = "misses a " + (100 - this.yardMarker) + "yard fieldgoal!";
         }
-
-      this.inPossesion = def;
-      this.yardMarker = 20;
-      this.down = 1;
-      this.yardsToFirst = 10;
-
-      }else{
-        spotlightPlayer = off.ps[0];
-        
-
-        let power = scaleBetween(off.ps[0].kick, 20,55, 40, 99);
-        let rand = Math.random()*10;
-
-        let kickDistance = Math.round(power+rand);
-
-        let smtn = kickDistance + this.yardMarker;
-
-        if(smtn<=0){
-          this.yardMarker = 20;
-        }else{
-          this.yardMarker = 100-smtn
-        }
-
-        result ="punts it away for " + kickDistance+ " yards!";
 
         this.inPossesion = def;
         this.yardMarker = 20;
         this.down = 1;
         this.yardsToFirst = 10;
-        
 
-      //punt
+      } else {
+
+        let punter = off.ps[0];
+        if(off.ps.length < 1){
+          punter = off.ks[0];
+        }
+        spotlightPlayer = punter;
+
+
+        let power = scaleBetween(punter.kick, 20, 55, 40, 99);
+        let rand = Math.random() * 10;
+
+        let kickDistance = Math.round(power + rand);
+
+        let smtn = kickDistance + this.yardMarker;
+
+        if (smtn <= 0) {
+          this.yardMarker = 20;
+        } else {
+          this.yardMarker = 100 - smtn
+        }
+
+        result = "punts it away for " + kickDistance + " yards!";
+
+        this.inPossesion = def;
+        this.yardMarker = 20;
+        this.down = 1;
+        this.yardsToFirst = 10;
+
+
+        //punt
       }
 
-    }else{
+    } else {
 
-   
-
-
-    let yardsGained = 0;
-    //slider setup move out of function when complete
-    oLineSlider = 10;
-    dLineSlider = 15;
+      let yardsGained = 0;
+      //slider setup move out of function when complete
+      oLineSlider = 12;
+      dLineSlider = 12;
 
       let oLineModifier = 0;
-      for(let i=0; i< 5; i++){
-        oLineModifier+= off.ol[i].rating;
+      for (let i = 0; i < 5; i++) {
+        oLineModifier += off.ol[i].rating;
       }
 
       let dLineModifier = 0;
-      for(let i=0; i< 4; i++){
-        dLineModifier+= def.dl[i].rating;
+      for (let i = 0; i < 4; i++) {
+        dLineModifier += def.dl[i].rating;
       }
 
-      let scaledOline = scaleBetween(oLineModifier, 0, oLineSlider, (40*5), (99*5));
-      let scaledDline = scaleBetween(dLineModifier, 0, dLineSlider, (40*3), (99*5));
-
-      let lineInteraction = scaledOline - scaledDline;
+      let scaledOline = scaleBetween(oLineModifier, 0, oLineSlider, (40 * 5), (99 * 5));
+      let scaledDline = scaleBetween(dLineModifier, 0, dLineSlider, (40 * 3), (99 * 5));
 
 
-    let playSelection = Math.random()*100;
-    if(playSelection > 50){
-      //pass
-      let qb = off.qbs[0];
-      let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
-      let scaledQbPass = scaleBetween(qb.pass, 0, 15, 40, 99);
+      // console.log(`scaledOline:  ${scaledOline}`);
+      // console.log(`scaledDline:  ${scaledDline}`);
 
-      let target = off.wrs[0];
-      let defender = away.dbs[0];
+      let lineInteraction = Math.random()*scaledOline - Math.random()*scaledDline;
 
-      let speedVsSpeed = (target.speed - defender.speed) /2;
-      let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99)
 
-      let scaledDefenderAwareness = scaleBetween(defender.awareness, 0, 10, 40, 99);
-
+      let playSelection = Math.random() * 100;
       
-      let completionPercentage = 40 + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction;
+      if(this.down >= 3 && this.yardsToFirst >= 5){
+        playSelection += 20;
+      }
 
-      if(Math.random()*100 < completionPercentage){
-        //completion
-        let wrSkill = scaleBetween(target.rating, 0, 7, 40, 99);
-        let wrYardage = wrSkill + (Math.random()*10) -5
-        let yardsAfterCatch = speedVsSpeed;
-        if(yardsAfterCatch < 0){
-          yardsAfterCatch = 0;
+      if (playSelection > 35) {
+        //pass
+        let qb = off.qbs[0];
+        let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
+        let scaledQbPass = scaleBetween(qb.pass, 0, 15, 40, 99);
+
+
+        let target = this.selectReciever(off);
+        
+        let defender = def.dbs[0];
+
+        let speedVsSpeed = (target.speed - defender.speed) / 2;
+        let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99)
+
+        let scaledDefenderAwareness = scaleBetween(defender.awareness, 0, 10, 40, 99);
+
+        let completionPercentage = 37 + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction;
+        qb.attempts++;
+        if (Math.random() * 100 < completionPercentage) {
+          //completion
+          qb.completions++;
+          target.receptions++;
+          let wrSkill = scaleBetween(target.rating, 0, 7, 40, 99);
+          let wrYardage = wrSkill + (Math.random() * 10) - 5
+          let yardsAfterCatch = scaleBetween(target.speed, 0, 5, 60, 99);
+          if (yardsAfterCatch < 0) {
+            yardsAfterCatch = 0;
+          }
+          let tackler;
+          yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier);
+          if(yardsGained > 12){
+            tackler = this.selectDBTackler(def);
+          }else{
+            if(Math.random()*100 > 50){
+              tackler = this.selectLBTackler(def);
+            }else{
+              tackler = this.selectDBTackler(def);
+            }
+          }
+          qb.yards += yardsGained;
+          target.yards += yardsGained;
+          tackler.tackles++;
+          if (this.checkForTouchDown(yardsGained)) {
+            qb.touchdowns++;
+            target.touchdowns++;
+          }
+          spotlightPlayer = qb;
+          result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
+        } else {
+          //incomplete check for int
+          spotlightPlayer = qb;
+          result = " throws an incomplete pass intended for " + target.name;
+
+          let defenderInt = scaleBetween(defender.catch, 0, 5, 40, 99);
+
+          let qbDecisionMaking = scaleBetween(qb.awareness, 0, 5, 40, 99);
+          let random  = Math.random()*10;
+          let intPercentage = random - qbDecisionMaking + defenderInt;
+          // console.log(intPercentage);
+          if(intPercentage > Math.random()*100){
+            //int
+            defender.interceptions++;
+            qb.interceptions++;
+            let yardsReturned = Math.random()*10;
+            this.inPossesion = def;
+            this.yardMarker = (100 - this.yardMarker) + yardsReturned;
+            this.down = 1;
+            this.yardsToFirst = 10;
+            spotlightPlayer = defender;
+            result = " intercepts  " + qb.name;
+          }
+
+
+
+
+          yardsGained = 0;
         }
-        yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier);
-        spotlightPlayer = qb;
-        result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
-      }else{
-        //incomplete check for int
-        spotlightPlayer = qb;
-        result = " throws an incomplete pass intended for " + target.name;
-        yardsGained = 0;
-      }
 
-    }else{
-      //run
-      let runner = off.rbs[0];
+      } else {
+        //run
+        let runner = off.rbs[0];
 
-      let initialYardage = scaleBetween(runner.rating, 0, 5, 40, 99);
-      
-      let randYards = (Math.random()*7)-3;
+        let initialYardage = scaleBetween(runner.speed, 0, 4, 40, 99);
 
-      yardsGained = Math.round(initialYardage + lineInteraction + randYards + yardModifier);
-      spotlightPlayer = runner;
+        let yardsAfterContact = scaleBetween(runner.rush, 0, 4, 40, 99);
+
+        let randYards = Math.random()*4;
+
+        
+
+        yardsGained = Math.round(initialYardage - randYards + yardModifier + lineInteraction + yardsAfterContact);
+
+        // console.log(`lineInteraction:  ${lineInteraction}`);
+        // console.log(`initialYdg:  ${initialYardage}`);
+        // console.log(`randYards:  ${randYards}`);
+        // console.log(`ydsGained:  ${yardsGained}`);
+        // console.log(' ');
+
+
+
+        if(yardsGained > 12){
+          tackler = this.selectDBTackler(def);
+        }else{
+          if(Math.random()*100 > 50){
+            tackler = this.selectLBTackler(def);
+          }else{
+            tackler = this.selectDLTackler(def);
+          }
+        }
+
+        tackler.tackles++;
+        runner.rushAttempts++;
+        runner.rushYards += yardsGained;
+        if (this.checkForTouchDown(yardsGained)) {
+          runner.rushTouchdowns++;
+        }
+        spotlightPlayer = runner;
         result = " runs for " + yardsGained + " yards";
-    }
-
-    // console.log('time: ' + this.time);
-    // console.log('down: ' + this.down);
-    // console.log('yardsToFirst: ' + this.yardsToFirst);
-    // console.log('yardMarker: ' + this.yardMarker);
-    // console.log(this.inPossesion.name);
-    // console.log(off.name);
-    // console.log('uhhhhhhhhhh');
-
-
-    this.time -= 20;
-    this.down++;
-    this.yardsToFirst -= yardsGained;
-    this.yardMarker += yardsGained;
-
-    if(this.yardsToFirst<=0){
-      this.down = 1;
-      this.yardsToFirst = 10;
-    }
-
-    if(this.yardMarker>= 100){
-      //touchdown
-      result = 'TOUCHDOWN! ' + result;
-      if(off === home){
-        this.homescore += 7;
-      }else{
-        this.awayscore += 7;
       }
-      this.inPossesion = def;
-      this.yardMarker = 20;
-      this.down = 1;
-      this.yardsToFirst = 10;
 
+      // console.log('time: ' + this.time);
+      // console.log('down: ' + this.down);
+      // console.log('yardsToFirst: ' + this.yardsToFirst);
+      // console.log('yardMarker: ' + this.yardMarker);
+      // console.log(this.inPossesion.name);
+      // console.log(off.name);
+      // console.log('uhhhhhhhhhh');
+
+
+      this.time -= Math.round(25 + Math.random() * 20);
+      this.down++;
+      this.yardsToFirst -= yardsGained;
+      this.yardMarker += yardsGained;
+
+      if (this.yardsToFirst <= 0) {
+        this.down = 1;
+        this.yardsToFirst = 10;
+      }
+
+      if (this.yardMarker >= 100) {
+        //touchdown
+        result = 'TOUCHDOWN! ' + result;
+        if (off === home) {
+          this.homescore += 7;
+        } else {
+          this.awayscore += 7;
+        }
+        this.inPossesion = def;
+        this.yardMarker = 20;
+        this.down = 1;
+        this.yardsToFirst = 10;
+
+      }
     }
-  }
 
 
-     this.possResult.unshift({
-        shooter: spotlightPlayer,
-        result: result,
-        homeScore: this.homescore,
-        awayScore: this.awayscore
+    this.possResult.unshift({
+      shooter: spotlightPlayer,
+      result: result,
+      homeScore: this.homescore,
+      awayScore: this.awayscore
     })
 
 
-  }
-
-  manageOnIceUsage(off) {
-    //offense
-    let total = 0;
-    for (let i = 0; i < off.onIce.length; i++) {
-      let ply = off.onIce[i];
-      total += ply.off;
-      if (i > 2) {
-        //defensemen
-        total -= off.forwardsVsDefensemen * 3;
-      } else {
-        total += off.forwardsVsDefensemen * 3;
-      }
-    }
-    for (let i = 0; i < off.onIce.length; i++) {
-      let ply = off.onIce[i];
-      let posFactor = 0;
-      if (i > 2) {
-        //defensemen
-        posFactor -= off.forwardsVsDefensemen * 3;
-      } else {
-        posFactor += off.forwardsVsDefensemen * 3;
-      }
-
-      ply.usage = ((ply.off + posFactor) / total) * 100;
-    }
-
-    //TODO assist usage
-    let totalAssist = 0;
-    for (let i = 0; i < off.onIce.length; i++) {
-      let ply = off.onIce[i];
-      totalAssist += ply.pass;
-    }
-    for (let i = 0; i < off.onIce.length; i++) {
-      let ply = off.onIce[i];
-      ply.assistUsage = (ply.pass / totalAssist) * 100;
-    }
-  }
-
-  manageShift(team) {
-    let newOffShift;
-    let newDefShift;
-
-    //
-    if (team.offShiftOnIce === 1) {
-      newOffShift = team.offLine1;
-    } else if (team.offShiftOnIce === 2) {
-      newOffShift = team.offLine2;
-    } else if (team.offShiftOnIce === 3) {
-      newOffShift = team.offLine3;
-    } else if (team.offShiftOnIce === 4) {
-      newOffShift = team.offLine4;
-    }
-    if (team.defShiftOnIce === 1) {
-      newDefShift = team.defLine1;
-    } else if (team.defShiftOnIce === 2) {
-      newDefShift = team.defLine2;
-    } else if (team.defShiftOnIce === 3) {
-      newDefShift = team.defLine3;
-    }
-
-    if (team.offShiftOnIce === 1 && this.iceTime >= 70) {
-      newOffShift = team.offLine2;
-      team.offShiftOnIce = 2;
-      this.iceTime = 0;
-    } else if (team.offShiftOnIce === 2 && this.iceTime >= 50) {
-      newOffShift = team.offLine3;
-      team.offShiftOnIce = 3;
-      this.iceTime = 0;
-    } else if (team.offShiftOnIce === 3 && this.iceTime >= 35) {
-      newOffShift = team.offLine4;
-      team.offShiftOnIce = 4;
-      this.iceTime = 0;
-    } else if (team.offShiftOnIce === 4 && this.iceTime >= 25) {
-      newOffShift = team.offLine1;
-      team.offShiftOnIce = 1;
-      this.iceTime = 0;
-    }
-    if (team.defShiftOnIce === 1) {
-      newDefShift = team.defLine2;
-      team.defShiftOnIce = 2;
-      this.iceTime = 0;
-    } else if (team.defShiftOnIce === 2) {
-      newDefShift = team.defLine3;
-      team.defShiftOnIce = 3;
-      this.iceTime = 0;
-    } else if (team.defShiftOnIce === 3) {
-      newDefShift = team.defLine1;
-      team.defShiftOnIce = 1;
-      this.iceTime = 0;
-    }
-
-    team.onIce = newOffShift.concat(newDefShift);
-  }
-
-  hockeyPossesion(off, def) {
-
-    try {
-      if (this.time <= 0) {
-        return;
-      }
-      //set up first lineups for now
-
-      this.manageShift(off);
-      this.manageShift(def);
-
-      this.manageOnIceUsage(off);
-      this.manageOnIceUsage(def);
-
-      let shooter;
-      let total = 0;
-      let selection = Math.random() * 100;
-      for (let i = 0; i < off.onIce.length; i++) {
-        total += off.onIce[i].usage;
-        if (total >= selection) {
-          shooter = off.onIce[i];
-          break;
-        }
-      }
-
-      // console.log(off.onIce.length);
-
-      // let shooter = off.onIce[Math.floor(Math.random()*off.onIce.length)];
-      let assister;
-      total = 0;
-      selection = Math.random() * 100;
-      for (let i = 0; i < off.onIce.length; i++) {
-        total += off.onIce[i].assistUsage;
-        if (total >= selection) {
-          assister = off.onIce[i];
-          break;
-        }
-      }
-
-      let goalie = def.inNet;
-
-      // console.log(shooter.name);
-
-      //shot
-      let defenseOverall = 0;
-      let offenseOverall = 0;
-
-      for (let i = 0; i < def.onIce.length; i++) {
-        let ply = def.onIce[i];
-        defenseOverall += ply.def;
-      }
-
-      for (let i = 0; i < off.onIce.length; i++) {
-        let ply = off.onIce[i];
-        offenseOverall += ply.off;
-      }
-
-      // // TURNOVER
-      // if(Math.random()*100 < (5  + (2*def.defenseAggresiveVsConservative))){
-      //     return;
-      // }
-
-      let scaledDef = scaleBetween(defenseOverall, 0, defenseSlider, 200, 495);
-      let scaledOff = scaleBetween(offenseOverall, 0, offenseSlider, 200, 495);
-      let assistFactor = scaleBetween(
-        assister.pass,
-        0,
-        passSkillFactorSlider,
-        40,
-        99
-      );
-
-      let offVsDef = scaledDef - scaledOff;
-
-      // console.log('def' + scaledDef);
-      // console.log('off' + scaledOff);
-
-      let offVsDefSliders = (off.offVsDefFocus - def.offVsDefFocus) / 4;
-      let aggressiveVsConservativeSliders =
-        (off.defenseAggresiveVsConservative -
-          def.defenseAggresiveVsConservative) /
-        4;
-      let freezeThePuckVsPlayThePuckSliders =
-        (off.freezeThePuckVsPlayThePuck - def.freezeThePuckVsPlayThePuck) / 4;
-
-      let shooterRatingFactor = scaleBetween(
-        shooter.off,
-        0,
-        shotSkillFactorSlider,
-        40,
-        99
-      );
-
-      //goalie.rating includes reflexes and positioning
-      let goalieSavePercentage = 0;
-      if (Math.random() * 100 < 30) {
-        //reflex save
-        goalieSavePercentage = scaleBetween(goalie.reflexes, 66, 96, 40, 99);
-      } else {
-        //positioning save
-        goalieSavePercentage = scaleBetween(goalie.positioning, 82, 99, 40, 99);
-      }
-
-      goalieSavePercentage += goalieAdjustmentSlider;
-
-      //time off clock
-      let timeOff =
-        Math.floor(Math.random() * 60) + 30 - off.qualityVsQuantity * 8;
-      this.time -= timeOff;
-      this.iceTime = timeOff;
-
-      let difficultySliderFactor = 0;
-
-      if (off === selectedTeam) {
-        difficultySliderFactor = difficulty / 2;
-      }
-      if (def === selectedTeam) {
-        difficultySliderFactor = -difficulty / 2;
-      }
-
-      let saveFactor =
-        goalieSavePercentage -
-        shooterRatingFactor +
-        offVsDef -
-        assistFactor +
-        off.qualityVsQuantity -
-        offVsDefSliders -
-        aggressiveVsConservativeSliders -
-        freezeThePuckVsPlayThePuckSliders +
-        difficultySliderFactor;
-      // if(def.name === 'Detroit Red Wings'){
-      //     console.log('END: ' + saveFactor);
-      //     console.log('GOALIE %' + goalieSavePercentage);
-      //     console.log('SHOOTERRATINGFAC -' + shooterRatingFactor);
-      //     console.log('OFFVSDEF +'+offVsDef);
-      //     console.log('ASSIST -' + assistFactor);
-      //     console.log('OFFQUALVSQUAN +' + off.qualityVsQuantity);
-      //     console.log('offvsdefslider -' + offVsDefSliders);
-      //     console.log('defaggvscons -' + def.defenseAggresiveVsConservative);
-      //     console.log('defFreeze -' + def.freezeThePuckVsPlayThePuck);
-      //     console.log('offFreeze +' + off.freezeThePuckVsPlayThePuck);
-
-      // }
-      if (saveFactor > 96) {
-        saveFactor = 96;
-      }
-      // console.log(saveFactor);
-      let chance = Math.random() * 100;
-      // console.log(chance);
-      //shot
-      shooter.shots++;
-      off.seasonShots++;
-
-      if (saveFactor >= chance) {
-        //save
-        goalie.saves++;
-        def.seasonSaves++;
-        let reboundPercentage = Math.random() * 10 + off.qualityVsQuantity * 2;
-        if (reboundPercentage > Math.random() * 100) {
-          //rebound
-          this.hockeyPossesion(off, def);
-        }
-
-        return;
-      } else {
-        //goal
-
-        goalie.goalsAllowed++;
-        def.seasonGoalsAllowed++;
-        shooter.goals++;
-        if (shooter != assister) {
-          assister.assists++;
-        }
-        if (off === home) {
-          this.homescore++;
-        } else {
-          this.awayscore++;
-        }
-        let result = "Scores!";
-        if (shooter != assister) {
-          result +=
-            " assisted by " +
-            assister.positionString +
-            " #" +
-            assister.number +
-            " " +
-            assister.name;
-        }
-
-        this.possResult.unshift({
-          shooter: shooter,
-          result: result,
-          homeScore: this.homescore,
-          awayScore: this.awayscore
-        });
-
-        if (this.overtime) {
-          this.time = 0;
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
   }
 
   clearStats() {
@@ -2004,20 +1915,40 @@ export class Game {
 
     for (let i = 0; i < home.roster.length; i++) {
       //clear in game stats
-      home.roster[i].goals = 0;
-      home.roster[i].shots = 0;
-      home.roster[i].assists = 0;
-      home.roster[i].goalsAllowed = 0;
-      home.roster[i].saves = 0;
+      home.roster[i].completions = 0;
+      home.roster[i].attempts = 0;
+      home.roster[i].touchdowns = 0;
+      home.roster[i].yards = 0;
+      home.roster[i].rushYards = 0;
+      home.roster[i].rushAttempts = 0;
+      home.roster[i].rushTouchdowns = 0;
+      home.roster[i].kicksAttempted = 0;
+      home.roster[i].kicksMade = 0;
+      home.roster[i].receptions = 0;
+      home.roster[i].tackles = 0;
+      home.roster[i].interceptions = 0;
+      home.roster[i].fumbles = 0;
+      home.roster[i].fumblesRecovered = 0;
+      home.roster[i].sacks = 0;
     }
 
     for (let i = 0; i < away.roster.length; i++) {
       //clear in game stats
-      away.roster[i].goals = 0;
-      away.roster[i].shots = 0;
-      away.roster[i].assists = 0;
-      away.roster[i].goalsAllowed = 0;
-      away.roster[i].saves = 0;
+      away.roster[i].completions = 0;
+      away.roster[i].attempts = 0;
+      away.roster[i].touchdowns = 0;
+      away.roster[i].yards = 0;
+      away.roster[i].rushYards = 0;
+      away.roster[i].rushAttempts = 0;
+      away.roster[i].rushTouchdowns = 0;
+      away.roster[i].kicksAttempted = 0;
+      away.roster[i].kicksMade = 0;
+      away.roster[i].receptions = 0;
+      away.roster[i].tackles = 0;
+      away.roster[i].interceptions = 0;
+      away.roster[i].fumbles = 0;
+      away.roster[i].fumblesRecovered = 0;
+      away.roster[i].sacks = 0;
     }
   }
 
@@ -2054,20 +1985,20 @@ export class Game {
   }
 
   playGame() {
-   
+
 
 
     this.clearStats();
 
-    this.chooseStartingGoalies();
+    // this.chooseStartingGoalies();
 
     //jumpball
     if (this.jumpBall()) {
       while (this.time > 0) {
-        while(this.inPossesion === home){
+        while (this.inPossesion === home) {
           this.footballPlay(home, away);
         }
-        while(this.inPossesion === away){
+        while (this.inPossesion === away) {
           this.footballPlay(away, home);
         }
         if (this.time <= 0) {
@@ -2079,10 +2010,10 @@ export class Game {
       }
     } else {
       while (this.time > 0) {
-        while(this.inPossesion === away){
+        while (this.inPossesion === away) {
           this.footballPlay(away, home);
         }
-        while(this.inPossesion === home){
+        while (this.inPossesion === home) {
           this.footballPlay(home, away);
         }
         if (this.time <= 0) {
@@ -2093,12 +2024,11 @@ export class Game {
         }
       }
     }
-
     this.saveStats();
 
     //FIX annoying ass gltich
-    home.bench = [...home.constantBench];
-    away.bench = [...away.constantBench];
+    // home.bench = [...home.constantBench];
+    // away.bench = [...away.constantBench];
 
     // this.homescore = homescore;
     // this.awayscore = awayscore;
@@ -2114,40 +2044,82 @@ export class Game {
     home.seasonPointsAllowed += this.awayscore;
 
     //reset starters
-    home.onIce = home.offLine1.concat(home.defLine1);
-    away.onIce = away.offLine1.concat(away.defLine1);
+    // home.onIce = home.offLine1.concat(home.defLine1);
+    // away.onIce = away.offLine1.concat(away.defLine1);
 
     away.seasonPoints += this.awayscore;
     away.seasonPointsAllowed += this.homescore;
 
     for (let i = 0; i < home.roster.length; i++) {
       home.roster[i].statsHistory.push({
-        goals: home.roster[i].goals,
-        saves: home.roster[i].saves,
-        goalsAllowed: home.roster[i].goalsAllowed,
-        shots: home.roster[i].shots,
-        assists: home.roster[i].assists
+        completions: home.roster[i].completions ,
+        attempts: home.roster[i].attempts ,
+        touchdowns: home.roster[i].touchdowns ,
+        yards: home.roster[i].yards ,
+        rushYards: home.roster[i].rushYards ,
+        rushAttempts: home.roster[i].rushAttempts ,
+        rushTouchdowns: home.roster[i].rushTouchdowns ,
+        kicksAttempted: home.roster[i].kicksAttempted ,
+        kicksMade: home.roster[i].kicksMade ,
+        receptions: home.roster[i].receptions ,
+        tackles: home.roster[i].tackles ,
+        interceptions: home.roster[i].interceptions ,
+        fumbles: home.roster[i].fumbles ,
+        fumblesRecovered: home.roster[i].fumblesRecovered ,
+        sacks: home.roster[i].sacks 
       });
-      home.roster[i].seasonGoals += home.roster[i].goals;
-      home.roster[i].seasonAssists += home.roster[i].assists;
-      home.roster[i].seasonSaves += home.roster[i].saves;
-      home.roster[i].seasonShots += home.roster[i].shots;
-      home.roster[i].seasonGoalsAllowed += home.roster[i].goalsAllowed;
+      home.roster[i].seasonCompletions += home.roster[i].completions,
+        home.roster[i].seasonAttempts += home.roster[i].attempts,
+        home.roster[i].seasonTouchdowns += home.roster[i].touchdowns,
+        home.roster[i].seasonYards += home.roster[i].yards,
+        home.roster[i].seasonRushYards += home.roster[i].rushYards,
+        home.roster[i].seasonRushAttempts += home.roster[i].rushAttempts,
+        home.roster[i].seasonRushTouchdowns += home.roster[i].rushTouchdowns,
+        home.roster[i].seasonKicksAttempted += home.roster[i].kicksAttempted,
+        home.roster[i].seasonKicksMade += home.roster[i].kicksMade,
+        home.roster[i].seasonReceptions += home.roster[i].receptions,
+        home.roster[i].seasonTackles += home.roster[i].tackles,
+        home.roster[i].seasonInterceptions += home.roster[i].interceptions,
+        home.roster[i].seasonFumbles += home.roster[i].fumbles,
+        home.roster[i].seasonFumblesRecovered += home.roster[i].fumblesRecovered,
+        home.roster[i].seasonSacks += home.roster[i].sacks
     }
+
     for (let i = 0; i < away.roster.length; i++) {
       away.roster[i].statsHistory.push({
-        goals: away.roster[i].goals,
-        saves: away.roster[i].saves,
-        goalsAllowed: away.roster[i].goalsAllowed,
-        shots: away.roster[i].shots,
-        assists: away.roster[i].assists
+        completions: away.roster[i].completions,
+        attempts: away.roster[i].attempts,
+        touchdowns: away.roster[i].touchdowns,
+        yards: away.roster[i].yards,
+        rushYards: away.roster[i].rushYards,
+        rushAttempts: away.roster[i].rushAttempts,
+        rushTouchdowns: away.roster[i].rushTouchdowns,
+        kicksAttempted: away.roster[i].kicksAttempted,
+        kicksMade: away.roster[i].kicksMade,
+        receptions: away.roster[i].receptions,
+        tackles: away.roster[i].tackles,
+        interceptions: away.roster[i].interceptions,
+        fumbles: away.roster[i].fumbles,
+        fumblesRecovered: away.roster[i].fumblesRecovered,
+        sacks: away.roster[i].sacks
       });
-      away.roster[i].seasonGoals += away.roster[i].goals;
-      away.roster[i].seasonAssists += away.roster[i].assists;
-      away.roster[i].seasonSaves += away.roster[i].saves;
-      away.roster[i].seasonShots += away.roster[i].shots;
-      away.roster[i].seasonGoalsAllowed += away.roster[i].goalsAllowed;
+      away.roster[i].seasonCompletions += away.roster[i].completions,
+        away.roster[i].seasonAttempts += away.roster[i].attempts,
+        away.roster[i].seasonTouchdowns += away.roster[i].touchdowns,
+        away.roster[i].seasonYards += away.roster[i].yards,
+        away.roster[i].seasonRushYards += away.roster[i].rushYards,
+        away.roster[i].seasonRushAttempts += away.roster[i].rushAttempts,
+        away.roster[i].seasonRushTouchdowns += away.roster[i].rushTouchdowns,
+        away.roster[i].seasonKicksAttempted += away.roster[i].kicksAttempted,
+        away.roster[i].seasonKicksMade += away.roster[i].kicksMade,
+        away.roster[i].seasonReceptions += away.roster[i].receptions,
+        away.roster[i].seasonTackles += away.roster[i].tackles,
+        away.roster[i].seasonInterceptions += away.roster[i].interceptions,
+        away.roster[i].seasonFumbles += away.roster[i].fumbles,
+        away.roster[i].seasonFumblesRecovered += away.roster[i].fumblesRecovered,
+        away.roster[i].seasonSacks += away.roster[i].sacks
     }
+  
   }
 }
 
@@ -2161,7 +2133,6 @@ export class Season {
     for (let i = 0; i < teams.length; i++) {
       teams[i].wins = 0;
       teams[i].losses = 0;
-      teams[i].otLosses = 0;
       teams[i].schedule = [];
       teams[i].played = [];
       teams[i].seasonPoints = 0;
@@ -2172,37 +2143,73 @@ export class Season {
       teams[i].seasonAssists = 0;
 
       for (let j = 0; j < teams[i].roster.length; j++) {
-        teams[i].roster[j].statsHistory = [];
-        teams[i].roster[j].goals = 0;
-        teams[i].roster[j].goalsAllowed = 0;
-        teams[i].roster[j].shots = 0;
-        teams[i].roster[j].assists = 0;
-        teams[i].roster[j].saves = 0;
-
-        teams[i].roster[j].seasonGoals = 0;
-        teams[i].roster[j].seasonSaves = 0;
-        teams[i].roster[j].seasonGoalsAllowed = 0;
-        teams[i].roster[j].seasonShots = 0;
-        teams[i].roster[j].seasonAssists = 0;
-        teams[i].roster[j].gamesStarted = 0;
+        teams[i].roster[j].completions = 0;
+        teams[i].roster[j].attempts = 0;
+        teams[i].roster[j].touchdowns = 0;
+        teams[i].roster[j].yards = 0;
+        teams[i].roster[j].rushYards = 0;
+        teams[i].roster[j].rushAttempts = 0;
+        teams[i].roster[j].rushTouchdowns = 0;
+        teams[i].roster[j].kicksAttempted = 0;
+        teams[i].roster[j].kicksMade = 0;
+        teams[i].roster[j].receptions = 0;
+        teams[i].roster[j].tackles = 0;
+        teams[i].roster[j].interceptions = 0;
+        teams[i].roster[j].fumbles = 0;
+        teams[i].roster[j].fumblesRecovered = 0;
+        teams[i].roster[j].sacks = 0;
+    
+        teams[i].roster[j].seasonCompletions = 0;
+        teams[i].roster[j].seasonAttempts = 0;
+        teams[i].roster[j].seasonTouchdowns = 0;
+        teams[i].roster[j].seasonYards = 0;
+        teams[i].roster[j].seasonRushYards = 0;
+        teams[i].roster[j].seasonRushAttempts = 0;
+        teams[i].roster[j].seasonRushTouchdowns = 0;
+        teams[i].roster[j].seasonKicksAttempted = 0;
+        teams[i].roster[j].seasonKicksMade = 0;
+        teams[i].roster[j].seasonReceptions = 0;
+        teams[i].roster[j].seasonTackles = 0;
+        teams[i].roster[j].seasonInterceptions = 0;
+        teams[i].roster[j].seasonFumbles = 0;
+        teams[i].roster[j].seasonFumblesRecovered = 0;
+        teams[i].roster[j].seasonSacks = 0;
       }
     }
     //for free agents
 
     for (let i = 0; i < availableFreeAgents.roster.length; i++) {
-      availableFreeAgents.roster[i].statsHistory = [];
-      availableFreeAgents.roster[i].goals = 0;
-      availableFreeAgents.roster[i].goalsAllowed = 0;
-      availableFreeAgents.roster[i].shots = 0;
-      availableFreeAgents.roster[i].assists = 0;
-      availableFreeAgents.roster[i].saves = 0;
-
-      availableFreeAgents.roster[i].seasonGoals = 0;
-      availableFreeAgents.roster[i].seasonSaves = 0;
-      availableFreeAgents.roster[i].seasonGoalsAllowed = 0;
-      availableFreeAgents.roster[i].seasonShots = 0;
-      availableFreeAgents.roster[i].seasonAssists = 0;
-      availableFreeAgents.roster[i].gamesStarted = 0;
+      availableFreeAgents.roster[i].completions = 0;
+      availableFreeAgents.roster[i].attempts = 0;
+      availableFreeAgents.roster[i].touchdowns = 0;
+      availableFreeAgents.roster[i].yards = 0;
+      availableFreeAgents.roster[i].rushYards = 0;
+      availableFreeAgents.roster[i].rushAttempts = 0;
+      availableFreeAgents.roster[i].rushTouchdowns = 0;
+      availableFreeAgents.roster[i].kicksAttempted = 0;
+      availableFreeAgents.roster[i].kicksMade = 0;
+      availableFreeAgents.roster[i].receptions = 0;
+      availableFreeAgents.roster[i].tackles = 0;
+      availableFreeAgents.roster[i].interceptions = 0;
+      availableFreeAgents.roster[i].fumbles = 0;
+      availableFreeAgents.roster[i].fumblesRecovered = 0;
+      availableFreeAgents.roster[i].sacks = 0;
+  
+      availableFreeAgents.roster[i].seasonCompletions = 0;
+      availableFreeAgents.roster[i].seasonAttempts = 0;
+      availableFreeAgents.roster[i].seasonTouchdowns = 0;
+      availableFreeAgents.roster[i].seasonYards = 0;
+      availableFreeAgents.roster[i].seasonRushYards = 0;
+      availableFreeAgents.roster[i].seasonRushAttempts = 0;
+      availableFreeAgents.roster[i].seasonRushTouchdowns = 0;
+      availableFreeAgents.roster[i].seasonKicksAttempted = 0;
+      availableFreeAgents.roster[i].seasonKicksMade = 0;
+      availableFreeAgents.roster[i].seasonReceptions = 0;
+      availableFreeAgents.roster[i].seasonTackles = 0;
+      availableFreeAgents.roster[i].seasonInterceptions = 0;
+      availableFreeAgents.roster[i].seasonFumbles = 0;
+      availableFreeAgents.roster[i].seasonFumblesRecovered = 0;
+      availableFreeAgents.roster[i].seasonSacks = 0;
     }
 
     for (let i = 0; i < this.games; i++) {
@@ -2444,7 +2451,9 @@ export class Franchise {
       setSalaryExpectations(availableFreeAgents);
       this.signing();
       //roster size limit
-      this.releasePlayers();
+      //temporary
+
+      // this.releasePlayers();
 
       //new season
       this.advanceToNextYear();
@@ -2550,42 +2559,185 @@ export class Franchise {
         });
 
         //to show growth
-        ply.offOld = ply.off;
-        ply.defOld = ply.def;
         ply.passOld = ply.pass;
-        ply.faceOffOld = ply.faceOff;
-        ply.reflexesOld = ply.reflexes;
-        ply.positioningOld = ply.positioning;
+    ply.awarenessOld = ply.awareness;
+    ply.rushOld = ply.rush;
+    ply.speedOld = ply.speed;
+    ply.catchOld = ply.catch;
+    ply.blockOld = ply.block;
+    ply.breakBlockOld = ply.breakBlock;
+    ply.tackleOld = ply.tackle;
+    ply.kickOld = ply.kick;
+    
 
-        if (ply.position != 4) {
           //slight boost for really young players
           if (ply.age <= 23) {
-            ply.off += Math.round(Math.random() * 1);
-            ply.def += Math.round(Math.random() * 1);
-            ply.pass += Math.round(Math.random() * 1);
-            ply.faceOff += Math.round(Math.random() * 1);
+            ply.awareness += Math.round(Math.random() * 1);
+            if(ply.position === POS_QB){
+              ply.pass += Math.round(Math.random() * 1);
+
+            }
+
+            if(ply.position >= POS_HB && ply.position <= POS_TE){
+              ply.rush += Math.round(Math.random() * 1);
+              ply.speed += Math.round(Math.random() * 1);
+              ply.catch += Math.round(Math.random() * 1);
+              ply.block += Math.round(Math.random() * 1);
+            }
+
+            if(ply.position >= POS_LT && ply.position <= POS_RT){
+              ply.block += Math.round(Math.random() * 1);
+            }
+
+            if(ply.position >= POS_LE && ply.position <= POS_RE){
+              ply.breakBlock += Math.round(Math.random() * 1);
+              ply.tackle += Math.round(Math.random() * 1);
+            }
+
+            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+              ply.breakBlock += Math.round(Math.random() * 1);
+              ply.tackle += Math.round(Math.random() * 1);
+              ply.catch += Math.round(Math.random() * 1);
+              ply.speed += Math.round(Math.random() * 1);
+            }
+
+            if(ply.position >= POS_K && ply.position <= POS_P){
+              ply.kick += Math.round(Math.random() * 1);
+            }
           }
 
           if (ply.age <= 26) {
-            ply.off += Math.round(Math.random() * 4) - 1;
-            ply.def += Math.round(Math.random() * 4) - 1;
-            ply.pass += Math.round(Math.random() * 3) - 1;
-            ply.faceOff += Math.round(Math.random() * 3) - 1;
+            ply.awareness += Math.round(Math.random() * 4) -1;
+            if(ply.position === POS_QB){
+              ply.pass += Math.round(Math.random() * 4) -1;
+
+            }
+
+            if(ply.position >= POS_HB && ply.position <= POS_TE){
+              ply.rush += Math.round(Math.random() * 4) -1;
+              ply.speed += Math.round(Math.random() * 4) -1;
+              ply.catch += Math.round(Math.random() * 4) -1;
+              ply.block += Math.round(Math.random() * 4) -1;
+            }
+
+            if(ply.position >= POS_LT && ply.position <= POS_RT){
+              ply.block += Math.round(Math.random() * 4) -1;
+            }
+
+            if(ply.position >= POS_LE && ply.position <= POS_RE){
+              ply.breakBlock += Math.round(Math.random() * 4) -1;
+              ply.tackle += Math.round(Math.random() * 4) -1;
+            }
+
+            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+              ply.breakBlock += Math.round(Math.random() * 4) -1;
+              ply.tackle += Math.round(Math.random() * 4) -1;
+              ply.catch += Math.round(Math.random() * 4) -1;
+              ply.speed += Math.round(Math.random() * 4) -1;
+            }
+
+            if(ply.position >= POS_K && ply.position <= POS_P){
+              ply.kick += Math.round(Math.random() * 4) -1;
+            }
           } else if (ply.age < 30) {
-            ply.off += Math.floor(Math.random() * 2);
-            ply.def += Math.floor(Math.random() * 2);
-            ply.pass += Math.floor(Math.random() * 2);
-            ply.faceOff += Math.floor(Math.random() * 2);
+            ply.awareness += Math.round(Math.random()  *2);
+            if(ply.position === POS_QB){
+              ply.pass += Math.round(Math.random()  *2);
+
+            }
+
+            if(ply.position >= POS_HB && ply.position <= POS_TE){
+              ply.rush += Math.round(Math.random() * 2);
+              ply.speed += Math.round(Math.random() * 2);
+              ply.catch += Math.round(Math.random() * 2);
+              ply.block += Math.round(Math.random() * 2);
+            }
+
+            if(ply.position >= POS_LT && ply.position <= POS_RT){
+              ply.block += Math.round(Math.random() * 2);
+            }
+
+            if(ply.position >= POS_LE && ply.position <= POS_RE){
+              ply.breakBlock += Math.round(Math.random() * 2);
+              ply.tackle += Math.round(Math.random() * 2);
+            }
+
+            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+              ply.breakBlock += Math.round(Math.random() * 2);
+              ply.tackle += Math.round(Math.random() * 2);
+              ply.catch += Math.round(Math.random() * 2);
+              ply.speed += Math.round(Math.random() * 2);
+            }
+
+            if(ply.position >= POS_K && ply.position <= POS_P){
+              ply.kick += Math.round(Math.random() * 2);
+            }
           } else if (ply.age < 35) {
-            ply.off += Math.round(Math.random() * 3) - 3;
-            ply.def += Math.round(Math.random() * 3) - 3;
-            ply.pass += Math.round(Math.random() * 1);
-            ply.faceOff += Math.round(Math.random() * 3) - 3;
+            ply.awareness += Math.round(Math.random()  *3);
+            if(ply.position === POS_QB){
+              ply.pass += Math.round(Math.random() * 3) -3;
+
+            }
+
+            if(ply.position >= POS_HB && ply.position <= POS_TE){
+              ply.rush += Math.round(Math.random() * 3) -3;
+              ply.speed += Math.round(Math.random() * 3) -3;
+              ply.catch += Math.round(Math.random() * 3) -3;
+              ply.block += Math.round(Math.random() * 3) -3;
+            }
+
+            if(ply.position >= POS_LT && ply.position <= POS_RT){
+              ply.block += Math.round(Math.random() * 3) -3;
+            }
+
+            if(ply.position >= POS_LE && ply.position <= POS_RE){
+              ply.breakBlock += Math.round(Math.random() * 3) -3;
+              ply.tackle += Math.round(Math.random() * 3) -3;
+            }
+
+            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+              ply.breakBlock += Math.round(Math.random() * 3) -3;
+              ply.tackle += Math.round(Math.random() * 3) -3;
+              ply.catch += Math.round(Math.random() * 3) -3;
+              ply.speed += Math.round(Math.random() * 3) -3;
+            }
+
+            if(ply.position >= POS_K && ply.position <= POS_P){
+              ply.kick += Math.round(Math.random() * 3) -3;
+            }
           } else {
-            ply.off -= Math.round(Math.random() * 5);
-            ply.def -= Math.round(Math.random() * 5);
-            ply.pass += Math.round(Math.random() * 1);
-            ply.faceOff -= Math.round(Math.random() * 5);
+            ply.awareness += Math.round(Math.random()  *1);
+            if(ply.position === POS_QB){
+              ply.pass -= Math.round(Math.random() *5);
+
+            }
+
+            if(ply.position >= POS_HB && ply.position <= POS_TE){
+              ply.rush -= Math.round(Math.random() *5);
+              ply.speed -= Math.round(Math.random() *5);
+              ply.catch -= Math.round(Math.random() *5);
+              ply.block -= Math.round(Math.random() *5);
+            }
+
+            if(ply.position >= POS_LT && ply.position <= POS_RT){
+              ply.block -= Math.round(Math.random() *5);
+            }
+
+            if(ply.position >= POS_LE && ply.position <= POS_RE){
+              ply.breakBlock -= Math.round(Math.random() *5);
+              ply.tackle -= Math.round(Math.random() *5);
+            }
+
+            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+              ply.breakBlock -= Math.round(Math.random() *5);
+              ply.tackle -= Math.round(Math.random() *5);
+              ply.catch -= Math.round(Math.random() *5);
+              ply.speed -= Math.round(Math.random() *5);
+            }
+
+            if(ply.position >= POS_K && ply.position <= POS_P){
+              ply.kick -= Math.round(Math.random() *5);
+            }
           }
 
           if (Math.random() * 500 >= 499) {
@@ -2593,44 +2745,43 @@ export class Franchise {
             // console.log(ply.name);
             // console.log(ply.rating);
             // console.log(ply.teamName);
-            ply.off += Math.round(Math.random() * 10);
-            ply.def += Math.round(Math.random() * 10);
-            ply.pass += Math.round(Math.random() * 10);
-            ply.faceOff += Math.round(Math.random() * 10);
-          }
-        } else {
-          if (ply.age <= 23) {
-            ply.positioning += Math.round(Math.random() * 1);
-            ply.reflexes += Math.round(Math.random() * 1);
-          }
+            ply.awareness += Math.round(Math.random() * 10);
+            if(ply.position === POS_QB){
+              ply.pass += Math.round(Math.random() * 10);
 
-          if (ply.age <= 26) {
-            ply.positioning += Math.round(Math.random() * 4) - 1;
-            ply.reflexes += Math.round(Math.random() * 4) - 1;
-          } else if (ply.age < 30) {
-            ply.positioning += Math.floor(Math.random() * 2);
-            ply.reflexes += Math.floor(Math.random() * 2);
-          } else if (ply.age < 35) {
-            ply.positioning += Math.round(Math.random() * 3) - 3;
-            ply.reflexes += Math.round(Math.random() * 3) - 3;
-          } else {
-            ply.positioning -= Math.round(Math.random() * 5);
-            ply.reflexes -= Math.round(Math.random() * 5);
-          }
+            }
 
-          if (Math.random() * 500 >= 499) {
-            //BREAKOUT PLYER
-            // console.log(ply.name);
-            // console.log(ply.rating);
-            // console.log(ply.teamName);
-            ply.positioning += Math.round(Math.random() * 10);
-            ply.reflexes += Math.round(Math.random() * 10);
+            if(ply.position >= POS_HB && ply.position <= POS_TE){
+              ply.rush += Math.round(Math.random() * 10);
+              ply.speed += Math.round(Math.random() * 10);
+              ply.catch += Math.round(Math.random() * 10);
+              ply.block += Math.round(Math.random() * 10);
+            }
+
+            if(ply.position >= POS_LT && ply.position <= POS_RT){
+              ply.block += Math.round(Math.random() * 10);
+            }
+
+            if(ply.position >= POS_LE && ply.position <= POS_RE){
+              ply.breakBlock += Math.round(Math.random() * 10);
+              ply.tackle += Math.round(Math.random() * 10);
+            }
+
+            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+              ply.breakBlock += Math.round(Math.random() * 10);
+              ply.tackle += Math.round(Math.random() * 10);
+              ply.catch += Math.round(Math.random() * 10);
+              ply.speed += Math.round(Math.random() * 10);
+            }
+
+            if(ply.position >= POS_K && ply.position <= POS_P){
+              ply.kick += Math.round(Math.random() * 10);
+            }
           }
         }
 
         ply.calculateRating();
       }
-    }
 
     for (let i = 0; i < availableFreeAgents.roster.length; i++) {
       let ply = availableFreeAgents.roster[i];
@@ -2648,12 +2799,38 @@ export class Franchise {
         data: history
       });
 
-      ply.off += Math.floor(Math.random() * 6) - 6;
-      ply.def += Math.floor(Math.random() * 6) - 6;
-      ply.pass += Math.floor(Math.random() * 6) - 6;
-      ply.positioning += Math.floor(Math.random() * 6) - 6;
-      ply.reflexes += Math.floor(Math.random() * 6) - 6;
-      ply.faceOff += Math.floor(Math.random() * 6) - 6;
+      ply.awareness -= Math.round(Math.random()  *6);
+            if(ply.position === POS_QB){
+              ply.pass -= Math.round(Math.random() *6);
+
+            }
+
+            if(ply.position >= POS_HB && ply.position <= POS_TE){
+              ply.rush -= Math.round(Math.random() *6);
+              ply.speed -= Math.round(Math.random() *6);
+              ply.catch -= Math.round(Math.random() *6);
+              ply.block -= Math.round(Math.random() *6);
+            }
+
+            if(ply.position >= POS_LT && ply.position <= POS_RT){
+              ply.block -= Math.round(Math.random() *6);
+            }
+
+            if(ply.position >= POS_LE && ply.position <= POS_RE){
+              ply.breakBlock -= Math.round(Math.random() *6);
+              ply.tackle -= Math.round(Math.random() *6);
+            }
+
+            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+              ply.breakBlock -= Math.round(Math.random() *6);
+              ply.tackle -= Math.round(Math.random() *6);
+              ply.catch -= Math.round(Math.random() *6);
+              ply.speed -= Math.round(Math.random() *6);
+            }
+
+            if(ply.position >= POS_K && ply.position <= POS_P){
+              ply.kick -= Math.round(Math.random() *6);
+            }
 
       ply.calculateRating();
     }
@@ -2708,34 +2885,9 @@ export class Franchise {
 
   signing() {
     for (let i = 0; i < teams.length; i++) {
-      teams[i].c = 0;
-      teams[i].lw = 0;
-      teams[i].rw = 0;
-      teams[i].d = 0;
-      teams[i].g = 0;
+      teams[i].reorderLineup();
 
       teams[i].salary = 0;
-
-      for (let j = 0; j < teams[i].roster.length; j++) {
-        let player = teams[i].roster[j];
-        teams[i].salary += player.salary;
-
-        if (teams[i].roster[j].position === POS_C) {
-          teams[i].c++;
-        }
-        if (teams[i].roster[j].position === POS_LW) {
-          teams[i].lw++;
-        }
-        if (teams[i].roster[j].position === POS_RW) {
-          teams[i].rw++;
-        }
-        if (teams[i].roster[j].position === POS_D) {
-          teams[i].d++;
-        }
-        if (teams[i].roster[j].position === POS_G) {
-          teams[i].g++;
-        }
-      }
     }
 
     teams.sort(function (a, b) {
@@ -2764,8 +2916,8 @@ export class Franchise {
       } else {
         for (let j = 0; j < availableFreeAgents.roster.length; j++) {
           if (
-            teams[i].c < POS_C_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_C
+            teams[i].qbs.length < POS_QB_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position === POS_QB
           ) {
             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
               availableFreeAgents.roster[j].teamName = teams[i].name;
@@ -2781,8 +2933,8 @@ export class Franchise {
           }
 
           if (
-            teams[i].lw < POS_LW_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_LW
+            teams[i].rbs.length < POS_HB_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position === POS_HB
           ) {
             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
               availableFreeAgents.roster[j].teamName = teams[i].name;
@@ -2798,8 +2950,8 @@ export class Franchise {
           }
 
           if (
-            teams[i].rw < POS_RW_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_RW
+            teams[i].fbs.length < POS_FB_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position === POS_FB
           ) {
             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
               availableFreeAgents.roster[j].teamName = teams[i].name;
@@ -2815,7 +2967,7 @@ export class Franchise {
           }
 
           if (
-            teams[i].d < POS_D_REQUIREMENTS &&
+            teams[i].wrs.length < POS_WR_REQUIREMENTS &&
             availableFreeAgents.roster[j].position === POS_D
           ) {
             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
@@ -2832,8 +2984,93 @@ export class Franchise {
           }
 
           if (
-            teams[i].g < POS_G_REQUIREMENTS &&
+            teams[i].tes.length < POS_TE_REQUIREMENTS &&
             availableFreeAgents.roster[j].position === POS_G
+          ) {
+            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+              availableFreeAgents.roster[j].teamName = teams[i].name;
+              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+              availableFreeAgents.roster[j].years =
+                Math.floor(Math.random() * 4) + 1;
+              teams[i].roster.push(availableFreeAgents.roster[j]);
+              teams[i].salary += availableFreeAgents.roster[j].salary;
+
+              teams[i].g++;
+              availableFreeAgents.roster.splice(j, 1);
+            }
+          }
+
+          if (
+            teams[i].ol.length < POS_OL_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position >= POS_LT && availableFreeAgents.roster[j].position <= POS_RT
+          ) {
+            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+              availableFreeAgents.roster[j].teamName = teams[i].name;
+              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+              availableFreeAgents.roster[j].years =
+                Math.floor(Math.random() * 4) + 1;
+              teams[i].roster.push(availableFreeAgents.roster[j]);
+              teams[i].salary += availableFreeAgents.roster[j].salary;
+
+              teams[i].g++;
+              availableFreeAgents.roster.splice(j, 1);
+            }
+          }
+
+          if (
+            teams[i].dl.length < POS_DL_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position >= POS_LE && availableFreeAgents.roster[j].position <= POS_RE
+          ) {
+            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+              availableFreeAgents.roster[j].teamName = teams[i].name;
+              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+              availableFreeAgents.roster[j].years =
+                Math.floor(Math.random() * 4) + 1;
+              teams[i].roster.push(availableFreeAgents.roster[j]);
+              teams[i].salary += availableFreeAgents.roster[j].salary;
+
+              teams[i].g++;
+              availableFreeAgents.roster.splice(j, 1);
+            }
+          }
+
+          if (
+            teams[i].dbs.length < POS_DB_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position >= POS_CB && availableFreeAgents.roster[j].position <= POS_SS
+          ) {
+            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+              availableFreeAgents.roster[j].teamName = teams[i].name;
+              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+              availableFreeAgents.roster[j].years =
+                Math.floor(Math.random() * 4) + 1;
+              teams[i].roster.push(availableFreeAgents.roster[j]);
+              teams[i].salary += availableFreeAgents.roster[j].salary;
+
+              teams[i].g++;
+              availableFreeAgents.roster.splice(j, 1);
+            }
+          }
+
+          if (
+            teams[i].ks.length < POS_K_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position === POS_K
+          ) {
+            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+              availableFreeAgents.roster[j].teamName = teams[i].name;
+              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+              availableFreeAgents.roster[j].years =
+                Math.floor(Math.random() * 4) + 1;
+              teams[i].roster.push(availableFreeAgents.roster[j]);
+              teams[i].salary += availableFreeAgents.roster[j].salary;
+
+              teams[i].g++;
+              availableFreeAgents.roster.splice(j, 1);
+            }
+          }
+
+          if (
+            teams[i].ps.length < POS_P_REQUIREMENTS &&
+            availableFreeAgents.roster[j].position === POS_P
           ) {
             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
               availableFreeAgents.roster[j].teamName = teams[i].name;
@@ -2849,7 +3086,7 @@ export class Franchise {
           }
         }
 
-        while (teams[i].roster.length < 24) {
+        while (teams[i].roster.length < 53) {
           if (teams[i] != selectedTeam) {
             let index = Math.floor(Math.random() * 20);
             if (index >= availableFreeAgents.roster.length) {
@@ -3078,7 +3315,6 @@ export class Franchise {
       teams[i].history.push({
         wins: teams[i].wins,
         losses: teams[i].losses,
-        otLosses: teams[i].otLosses,
         champions: false
       });
       if (teams[i] === this.playoffs.champs) {
@@ -3171,10 +3407,10 @@ export class Franchise {
     }
 
     //randomize rotation size for teams
-    for (let i = 0; i < teams.length; i++) {
-      teams[i].rotationSize = Math.round(Math.random() * 2) + 9;
-      teams[i].reorderLineup();
-    }
+    // for (let i = 0; i < teams.length; i++) {
+    //   teams[i].rotationSize = Math.round(Math.random() * 2) + 9;
+    //   teams[i].reorderLineup();
+    // }
 
     this.offSeason = false;
     this.advance = false;
@@ -3523,10 +3759,10 @@ export function sortedRoster(team, sortAttribute) {
     }
     //goals
     if (sortAttribute === "ppg") {
-      if (a.seasonGoals + a.seasonAssists > b.seasonGoals + b.seasonAssists) {
+      if (a.seasonTouchdowns > b.seasonTouchdowns) {
         return -1;
       }
-      if (a.seasonGoals + a.seasonAssists < b.seasonGoals + b.seasonAssists) {
+      if (a.seasonTouchdowns < b.seasonTouchdowns) {
         return 1;
       }
       return 0;
@@ -3543,9 +3779,9 @@ export function leaugeLeaders() {
 
   for (let i = 0; i < teams.length; i++) {
     teams[i].roster.sort(function (a, b) {
-      if (a.seasonGoals + a.seasonAssists > b.seasonGoals + b.seasonAssists)
+      if (a.seasonTouchdowns > b.seasonTouchdowns)
         return -1;
-      if (a.seasonGoals + a.seasonAssists < b.seasonGoals + b.seasonAssists)
+      if (a.seasonTouchdowns < b.seasonTouchdowns)
         return 1;
       return 0;
     });
@@ -3555,9 +3791,9 @@ export function leaugeLeaders() {
   }
 
   leaugeLeaders.roster.sort(function (a, b) {
-    if (a.seasonGoals + a.seasonAssists > b.seasonGoals + b.seasonAssists)
+    if (a.seasonTouchdowns > b.seasonTouchdowns)
       return -1;
-    if (a.seasonGoals + a.seasonAssists < b.seasonGoals + b.seasonAssists)
+    if (a.seasonTouchdowns < b.seasonTouchdowns)
       return 1;
     return 0;
   });
@@ -3685,7 +3921,7 @@ function setSalaryExpectations(rosterpool) {
           scaleBetween(
             rosterpool.roster[i].rating,
             VETERANSMINIMUM,
-            15000000,
+            25000000,
             65,
             99
           )
@@ -3710,7 +3946,7 @@ function setSalaryExpectations(rosterpool) {
           scaleBetween(
             rosterpool.roster[i].rating,
             VETERANSMINIMUM,
-            15000000,
+            25000000,
             74,
             99
           )
@@ -4854,47 +5090,48 @@ export function returnStatsView(player) {
   return str;
 }
 export function returnSeasonStatsListView(player) {
-  let str;
-  if (player.position < 4) {
-    str =
-      "GOALS: " +
-      player.seasonGoals +
-      " SHOTS: " +
-      player.seasonShots +
-      " ASSISTS: " +
-      player.seasonAssists;
-  } else {
-    str =
-      "STARTS: " +
-      player.gamesStarted +
-      " SAVE%: " +
-      Math.round(
-        (player.seasonSaves /
-          (player.seasonSaves + player.seasonGoalsAllowed)) *
-        1000
-      ) /
-      10 +
-      " GAA: " +
-      Math.round((player.seasonGoalsAllowed / player.gamesStarted) * 100) / 100;
+  let str ="";
+  if (player.position === 0) {
+    str = `ATT: ${player.seasonAttempts} CMP: ${player.seasonCompletions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns} INTS: ${player.seasonInterceptions} CMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 100)}`;
+  }
+  if (player.position === 1) {
+    str = `ATT: ${player.seasonRushAttempts} YDS: ${player.seasonRushYards} TDS: ${player.seasonRushTouchdowns} AVG: ${Math.round((player.seasonRushYards / player.seasonRushAttempts))}`;
+  }
+  if (player.position === 2) {
+    str = `ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.touchdowns}`;
+  }
+  if (player.position === 3) {
+    str = `REC: ${player.seasonReceptions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns}`;
+  }
+  if (player.position === 4) {
+    str = `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
+  }
+  if (player.position === 4) {
+    str = `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
+  }if (player.position >= 10 && player.position <= 18) {
+    str = `TCKL: ${player.seasonTackles} INTS: ${player.seasonInterceptions} SACKS: ${player.seasonSacks} FUMBLESREC: ${player.seasonFumblesRecovered}`;
+  }if (player.position === 19) {
+    str = `KICKATT: ${player.seasonKicksAttempted} KICKMADE: ${player.seasonKicksMade}`;
   }
   return str;
 }
 
 export function returnStatsListView(player) {
-  let str;
-  if (player.position < 4) {
-    str =
-      "GOALS: " +
-      player.goals +
-      " SHOTS: " +
-      player.shots +
-      " ASSISTS: " +
-      player.assists;
-  } else {
-    str =
-      "SAVE%: " +
-      Math.round((player.saves / (player.saves + player.goalsAllowed)) * 1000) /
-      10;
+  let str = "";
+  if (player.position === 0) {
+    str = `ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} CMP%: ${Math.round((player.completions / player.attempts) * 100)}`;
+  }
+  if (player.position === 1) {
+    str = `ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.rushAttempts))}`;
+  }
+  if (player.position === 2) {
+    str = `ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.touchdowns}`;
+  }
+  if (player.position === 3) {
+    str = `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
+  }
+  if (player.position === 4) {
+    str = `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
   }
 
   return str;

@@ -243,7 +243,7 @@ export default class SeasonMenu extends React.Component {
                   <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
                 </View>
                 <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
-                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.name + ' ' + 'Record: ' + selectedTeam.wins + "-" + (selectedTeam.losses - selectedTeam.otLosses) + "-" + selectedTeam.otLosses}</Text>
+                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.name + ' ' + 'Record: ' + selectedTeam.wins + "-" + (selectedTeam.losses)}</Text>
               </Card>
             </TouchableOpacity>
 
@@ -310,7 +310,7 @@ export default class SeasonMenu extends React.Component {
                   <Text style={{ flex: 1, textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? 'Seed #' + selectedTeam.seed : 'Rank #' + selectedTeam.seed}</Text>
                   <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
                   <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: sortedRoster(selectedTeam, 'ppg')[0].faceSrc }} />
-                  <Text style={{ flex: 1, textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{sortedRoster(selectedTeam, 'ppg')[0].seasonGoals + ' GOALS'}</Text>
+                  <Text style={{ flex: 1, textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{sortedRoster(selectedTeam, 'ppg')[0].seasonTouchdowns + ' TDS'}</Text>
                 </View>
                 <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'#' + sortedRoster(selectedTeam, 'ppg')[0].number + ' ' + sortedRoster(selectedTeam, 'ppg')[0].name}</Text>
                 <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>

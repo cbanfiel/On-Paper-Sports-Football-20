@@ -21,18 +21,25 @@ export default class TrainingScreen extends React.Component {
     state = {
         player: this.props.player,
         points: this.props.points,
-        offGrowth: (this.props.player.off - this.props.player.offOld),
-        defGrowth: (this.props.player.def - this.props.player.defOld),
         passGrowth: (this.props.player.pass - this.props.player.passOld),
-        faceOffGrowth: (this.props.player.faceOff - this.props.player.faceOffOld),
-        positioningGrowth: (this.props.player.positioning - this.props.player.positioningOld),
-        reflexesGrowth: (this.props.player.reflexes - this.props.player.reflexesOld),
-        off: this.props.player.off,
-        def: this.props.player.def,
+        awarenessGrowth: (this.props.player.awareness - this.props.player.awarenessOld),
+        rushGrowth: (this.props.player.rush - this.props.player.rushOld),
+        speedGrowth: (this.props.player.speed - this.props.player.speedOld),
+        catchGrowth: (this.props.player.catch - this.props.player.catchOld),
+        blockGrowth: (this.props.player.block - this.props.player.blockOld),
+        breakBlockGrowth: (this.props.player.breakBlock - this.props.player.breakBlockOld),
+        tackleGrowth: (this.props.player.tackle - this.props.player.tackleOld),
+        kickGrowth: (this.props.player.kick - this.props.player.kickOld),
+
         pass: this.props.player.pass,
-        faceOff: this.props.player.faceOff,
-        reflexes: this.props.player.reflexes,
-        positioning: this.props.player.positioning,
+        awareness: this.props.player.awareness,
+        rush: this.props.player.rush,
+        speed: this.props.player.speed,
+        catch: this.props.player.catch,
+        block: this.props.player.block,
+        breakBlock: this.props.player.breakBlock,
+        tackle: this.props.player.tackle,
+        kick: this.props.player.kick,
         disabled: this.props.points<=0,
     }
 
@@ -55,20 +62,6 @@ export default class TrainingScreen extends React.Component {
         let pts = growth;
         const timer = setInterval(
             function () {
-                if (attr === 'off') {
-                    if(this.state.off>=99){
-                        //nothing
-                    }else{
-                        this.setState({off: this.state.off+1, offGrowth: this.state.offGrowth+1});
-                    }
-                }
-                if (attr === 'def') {
-                    if(this.state.def>=99){
-                        //nothing
-                    }else{
-                        this.setState({def: this.state.def+1, defGrowth: this.state.defGrowth+1});
-                    }
-                }
                 if (attr === 'pass') {
                     if(this.state.pass>=99){
                         //nothing
@@ -76,38 +69,73 @@ export default class TrainingScreen extends React.Component {
                         this.setState({pass: this.state.pass+1, passGrowth: this.state.passGrowth+1});
                     }
                 }
-                if (attr === 'faceOff') {
-                    if(this.state.faceOff>=99){
-
-                    }else{
-                        this.setState({faceOff: this.state.faceOff+1, faceOffGrowth: this.state.faceOffGrowth+1});
-                    }
-                }
-                if (attr === 'positioning') {
-                    if(this.state.positioning>=99){
+                if (attr === 'awareness') {
+                    if(this.state.awareness>=99){
                         //nothing
                     }else{
-                    this.setState({positioning: this.state.positioning+1, positioningGrowth: this.state.positioningGrowth+1});
+                        this.setState({awareness: this.state.awareness+1, awarenessGrowth: this.state.awarenessGrowth+1});
+                    }
+                }
+                if (attr === 'rush') {
+                    if(this.state.rush>=99){
+                        //nothing
+                    }else{
+                        this.setState({rush: this.state.rush+1, rushGrowth: this.state.rushGrowth+1});
+                    }
+                }
+                if (attr === 'speed') {
+                    if(this.state.speed>=99){
+
+                    }else{
+                        this.setState({speed: this.state.speed+1, speedGrowth: this.state.speedGrowth+1});
+                    }
+                }
+                if (attr === 'catch') {
+                    if(this.state.catch>=99){
+                        //nothing
+                    }else{
+                    this.setState({catch: this.state.catch+1, catchGrowth: this.state.catchGrowth+1});
                 }
             }
-            if (attr === 'reflexes') {
-                if(this.state.reflexes>=99){
+            if (attr === 'block') {
+                if(this.state.block>=99){
                     //nothing
                 }else{
-                this.setState({reflexes: this.state.reflexes+1, reflexesGrowth: this.state.reflexesGrowth+1});
+                this.setState({block: this.state.block+1, blockGrowth: this.state.blockGrowth+1});
             }
         }
+            if (attr === 'breakBlock') {
+                if(this.state.breakBlock>=99){
+                    //nothing
+                }else{
+                this.setState({breakBlock: this.state.breakBlock+1, breakBlockGrowth: this.state.breakBlockGrowth+1});
+            }
+        }
+            if (attr === 'tackle') {
+                if(this.state.tackle>=99){
+                    //nothing
+                }else{
+                this.setState({tackle: this.state.tackle+1, tackleGrowth: this.state.tackleGrowth+1});
+            }
+        }
+            if (attr === 'kick') {
+                if(this.state.kick>=99){
+                    //nothing
+                }else{
+                this.setState({kick: this.state.kick+1, kickGrowth: this.state.kickGrowth+1});
+            }
+        }
+        pts--;
 
-                pts--;
 
                 if (pts <= 0) {
                     clearInterval(timer);
-                    this.props.player.off = this.state.off;
-                    this.props.player.def = this.state.def;
                     this.props.player.pass = this.state.pass;
-                    this.props.player.faceOff = this.state.faceOff;
-                    this.props.player.positioning = this.state.positioning;
-                    this.props.player.reflexes = this.state.reflexes;
+                    this.props.player.awareness = this.state.awareness;
+                    this.props.player.rush = this.state.rush;
+                    this.props.player.speed = this.state.speed;
+                    this.props.player.catch = this.state.catch;
+                    this.props.player.block = this.state.block;
                     this.props.player.calculateRating();
                     selectedTeam.trainingPoints= this.state.points;
                     this.props.player.trained = true;
@@ -115,10 +143,8 @@ export default class TrainingScreen extends React.Component {
                         Actions.pop();
                     }.bind(this), 400);
                 }
-            }
-                .bind(this),
-            200
-        );
+            }.bind(this),200
+);
     }
 
     render() {
@@ -135,51 +161,75 @@ export default class TrainingScreen extends React.Component {
 
                 <ScrollView contentContainerStyle={{paddingBottom: 20}}>
                     <ListItem
-                        title={'Offense: ' + this.state.off}
-                        rightTitle={this.state.offGrowth >= 0 ? 'Growth: +' + this.state.offGrowth : 'Growth: ' + this.state.offGrowth}
-                        rightTitleStyle={this.state.offGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
-                        subtitle={'OFFENSE TRAINING'}
-                        onPress={() => { this.train('off') }}
-
-                    ></ListItem>
-                    <ListItem
-                        title={'Defense: ' + this.state.def}
-                        rightTitle={this.state.defGrowth >= 0 ? 'Growth: +' + this.state.defGrowth : 'Growth: ' + this.state.defGrowth}
-                        rightTitleStyle={this.state.defGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
-                        onPress={() => {  this.train('def') }}
-                        subtitle={'DEFENSE TRAINING'}
-
-                    ></ListItem>
-                    <ListItem
                         title={'Pass: ' + this.state.pass}
                         rightTitle={this.state.passGrowth >= 0 ? 'Growth: +' + this.state.passGrowth : 'Growth: ' + this.state.passGrowth}
                         rightTitleStyle={this.state.passGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        subtitle={'PASS TRAINING'}
                         onPress={() => { this.train('pass') }}
-                        subtitle={'PASSING TRAINING'}
 
                     ></ListItem>
                     <ListItem
-                        title={'Faceoff: ' + this.state.faceOff}
-                        rightTitle={this.state.faceOffGrowth >= 0 ? 'Growth: +' + this.state.faceOffGrowth : 'Growth: ' + this.state.faceOffGrowth}
-                        rightTitleStyle={this.state.faceOffGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
-                        onPress={() => { this.train('faceOff') }}
-                        subtitle={'FACEOFF TRAINING'}
+                        title={'Awareness: ' + this.state.awareness}
+                        rightTitle={this.state.awarenessGrowth >= 0 ? 'Growth: +' + this.state.awarenessGrowth : 'Growth: ' + this.state.awarenessGrowth}
+                        rightTitleStyle={this.state.awarenessGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => {  this.train('awareness') }}
+                        subtitle={'AWARENESS TRAINING'}
 
                     ></ListItem>
                     <ListItem
-                        title={'Positioning: ' + this.state.positioning}
-                        rightTitle={this.state.positioningGrowth >= 0 ? 'Growth: +' + this.state.positioningGrowth : 'Growth: ' + this.state.positioningGrowth}
-                        rightTitleStyle={this.state.positioningGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
-                        onPress={() => { this.train('positioning') }}
-                        subtitle={'POSITIONING TRAINING'}
+                        title={'Rush: ' + this.state.rush}
+                        rightTitle={this.state.rushGrowth >= 0 ? 'Growth: +' + this.state.rushGrowth : 'Growth: ' + this.state.rushGrowth}
+                        rightTitleStyle={this.state.rushGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => { this.train('rush') }}
+                        subtitle={'RUSHING TRAINING'}
 
                     ></ListItem>
                     <ListItem
-                        title={'Reflexes: ' + this.state.reflexes}
-                        rightTitle={this.state.reflexesGrowth >= 0 ? 'Growth: +' + this.state.reflexesGrowth : 'Growth: ' + this.state.reflexesGrowth}
-                        rightTitleStyle={this.state.reflexesGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
-                        onPress={() => { this.train('reflexes') }}
-                        subtitle={'REFLEX TRAINING'}
+                        title={'Speed: ' + this.state.speed}
+                        rightTitle={this.state.speedGrowth >= 0 ? 'Growth: +' + this.state.speedGrowth : 'Growth: ' + this.state.speedGrowth}
+                        rightTitleStyle={this.state.speedGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => { this.train('speed') }}
+                        subtitle={'SPEED TRAINING'}
+
+                    ></ListItem>
+                    <ListItem
+                        title={'Catch: ' + this.state.catch}
+                        rightTitle={this.state.catchGrowth >= 0 ? 'Growth: +' + this.state.catchGrowth : 'Growth: ' + this.state.catchGrowth}
+                        rightTitleStyle={this.state.catchGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => { this.train('catch') }}
+                        subtitle={'CATCH TRAINING'}
+
+                    ></ListItem>
+                    <ListItem
+                        title={'Block: ' + this.state.block}
+                        rightTitle={this.state.blockGrowth >= 0 ? 'Growth: +' + this.state.blockGrowth : 'Growth: ' + this.state.blockGrowth}
+                        rightTitleStyle={this.state.blockGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => { this.train('block') }}
+                        subtitle={'BLOCKING TRAINING'}
+
+                    ></ListItem>
+                     <ListItem
+                        title={'Break Block: ' + this.state.breakBlock}
+                        rightTitle={this.state.breakBlockGrowth >= 0 ? 'Growth: +' + this.state.breakBlockGrowth : 'Growth: ' + this.state.breakBlockGrowth}
+                        rightTitleStyle={this.state.breakBlockGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => { this.train('breakBlock') }}
+                        subtitle={'BREAK BLOCK TRAINING'}
+
+                    ></ListItem>
+                     <ListItem
+                        title={'Tackle: ' + this.state.tackle}
+                        rightTitle={this.state.tackleGrowth >= 0 ? 'Growth: +' + this.state.tackleGrowth : 'Growth: ' + this.state.tackleGrowth}
+                        rightTitleStyle={this.state.tackleGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => { this.train('tackle') }}
+                        subtitle={'TACKLE TRAINING'}
+
+                    ></ListItem>
+                     <ListItem
+                        title={'Kick: ' + this.state.kick}
+                        rightTitle={this.state.kickGrowth >= 0 ? 'Growth: +' + this.state.kickGrowth : 'Growth: ' + this.state.kickGrowth}
+                        rightTitleStyle={this.state.kickGrowth >= 0 ? { color: 'rgb(22,154,68)', fontFamily: 'advent-pro', fontSize: 18 } : { color: 'rgba(255,0,0,1)', fontFamily: 'advent-pro', fontSize: 18 }}
+                        onPress={() => { this.train('kick') }}
+                        subtitle={'KICKING TRAINING'}
 
                     ></ListItem>
 

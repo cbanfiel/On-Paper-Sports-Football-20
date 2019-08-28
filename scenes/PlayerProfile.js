@@ -80,12 +80,16 @@ export default class PlayerProfile extends React.Component {
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Ratings'}</Text>
                             <Divider style={{ backgroundColor: 'black', margin: 10 }}></Divider>
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"OVR: " + this.state.player.rating}</Text>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"OFF: " + this.state.player.off}</Text>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"DEF: " + this.state.player.def}</Text>
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"PASS: " + this.state.player.pass}</Text>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"FACEOFF: " + this.state.player.faceOff}</Text>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"POSITIONING: " + this.state.player.positioning}</Text>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"REFLEXES: " + this.state.player.reflexes}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"AWARENESS: " + this.state.player.awareness}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"RUSH: " + this.state.player.rush}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"SPEED: " + this.state.player.speed}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"CATCH: " + this.state.player.catch}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"BLOCK: " + this.state.player.block}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"BREAKBLOCK: " + this.state.player.breakBlock}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"TACKLE: " + this.state.player.tackle}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"KICK: " + this.state.player.kick}</Text>
+
 
                         </Card>
                     </TouchableOpacity>

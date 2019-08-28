@@ -53,10 +53,10 @@ export default class SeasonStatsMenu extends React.Component {
                             >
 
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[0].teams[0].wins + '-' + (conferences[0].teams[0].losses-conferences[0].teams[0].otLosses) + '-' + conferences[0].teams[0].otLosses : teams[0].wins + '-' + (teams[0].losses-teams[0].otLosses) + '-' + teams[0].otLosses}</Text>
+                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[0].teams[0].wins + '-' + (conferences[0].teams[0].losses) : teams[0].wins + '-' + (teams[0].losses)}</Text>
                                 <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? conferences[0].teams[0].logoSrc : teams[0].logoSrc }/>
                                 <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? conferences[1].teams[0].logoSrc : teams[1].logoSrc } />
-                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[1].teams[0].wins + '-' + (conferences[1].teams[0].losses-conferences[1].teams[0].otLosses) + '-' + conferences[1].teams[0].otLosses : teams[0].wins + '-' + (teams[1].losses-teams[1].otLosses) + '-' + teams[1].otLosses}</Text>
+                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[1].teams[0].wins + '-' + (conferences[1].teams[0].losses) : teams[0].wins + '-' + (teams[1].losses)}</Text>
                             </View>
                             <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'League Standings'}</Text>
@@ -76,7 +76,7 @@ export default class SeasonStatsMenu extends React.Component {
                   <Text style={{ flex: 1, textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{ conferencesOn ? 'Seed #' + this.state.team.seed : 'Rank #' + this.state.team.seed}</Text>
                   <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={this.state.team.logoSrc } />
                     <CachedImage style={{ flex:1,  overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={sortedRoster(this.state.team,'ppg')[0].faceSrc } />
-                    <Text style={{ flex:1,  textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{sortedRoster(this.state.team,'ppg')[0].seasonGoals + ' GOALS'}</Text>
+                    <Text style={{ flex:1,  textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{sortedRoster(this.state.team,'ppg')[0].seasonTouchdowns + ' TDS'}</Text>
                 </View>
                 <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'#' + sortedRoster(this.state.team,'ppg')[0].number + ' ' + sortedRoster(this.state.team,'ppg')[0].name}</Text>
                 <Divider style={{backgroundColor:'black' ,  height:1, margin:5}} ></Divider>
@@ -98,7 +98,7 @@ export default class SeasonStatsMenu extends React.Component {
                   <Text style={{ flex: 1, textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{leaugeLeaders().roster[0].teamName}</Text>
                   <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={leaugeLeaders().roster[0].teamLogoSrc }/>
                     <CachedImage style={{ flex:1,  overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={leaugeLeaders().roster[0].faceSrc } />
-                    <Text style={{ flex:1,  textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{leaugeLeaders().roster[0].seasonGoals + leaugeLeaders().roster[0].seasonAssists + ' PTS'}</Text>
+                    <Text style={{ flex:1,  textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{leaugeLeaders().roster[0].seasonTouchdowns + ' TDS'}</Text>
                 </View>
                 <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'#' + leaugeLeaders().roster[0].number + ' ' + leaugeLeaders().roster[0].name}</Text>
                 <Divider style={{backgroundColor:'black' ,  height:1, margin:5}} ></Divider>
