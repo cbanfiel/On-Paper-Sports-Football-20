@@ -56,7 +56,7 @@ export default class SeasonStatsMenu extends React.Component {
                                 <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[0].teams[0].wins + '-' + (conferences[0].teams[0].losses) : teams[0].wins + '-' + (teams[0].losses)}</Text>
                                 <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? conferences[0].teams[0].logoSrc : teams[0].logoSrc }/>
                                 <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? conferences[1].teams[0].logoSrc : teams[1].logoSrc } />
-                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[1].teams[0].wins + '-' + (conferences[1].teams[0].losses) : teams[0].wins + '-' + (teams[1].losses)}</Text>
+                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[1].teams[0].wins + '-' + (conferences[1].teams[0].losses) : teams[1].wins + '-' + (teams[1].losses)}</Text>
                             </View>
                             <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'League Standings'}</Text>

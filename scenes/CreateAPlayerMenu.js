@@ -12,7 +12,7 @@ export default class CreateAPlayerMenu extends React.Component {
     state = {
         name: 'New Player',
         number: 0,
-        positionString: 'C',
+        positionString: 'QB',
         position: 0,
         age: 21,
         salary: 1200000,
@@ -128,22 +128,49 @@ export default class CreateAPlayerMenu extends React.Component {
     }
 
     position(value) {
-        var str = '';
-        if (value === 0) {
-            str = "C"
-        }
-        if (value === 1) {
-            str = "LW"
-        }
-        if (value === 2) {
-            str = "RW"
-        }
-        if (value === 3) {
-            str = "D"
-        }
-        if (value === 4) {
-            str = "G"
-        }
+            if (value === 0) {
+              str = "QB";
+            } else if (value === 1) {
+              str = "RB";
+            } else if (value === 2) {
+              str = "FB";
+            } else if (value === 3) {
+              str = "WR";
+            } else if (value === 4) {
+              str = "TE";
+            } else if (value === 5) {
+              str = "LT";
+            } else if (value === 6) {
+              str = "LG";
+            } else if (value === 7) {
+              str = "C";
+            } else if (value === 8) {
+              str = "RG";
+            } else if (value === 9) {
+              str = "RT";
+            } else if (value === 10) {
+              str = "LE";
+            } else if (value === 11) {
+              str = "RE";
+            } else if (value === 12) {
+              str = "DT";
+            } else if (value === 13) {
+              str = "LOLB";
+            } else if (value === 14) {
+              str = "MLB";
+            } else if (value === 15) {
+              str = "ROLB";
+            } else if (value === 16) {
+              str = "CB";
+            } else if (value === 17) {
+              str = "FS";
+            } else if (value === 18) {
+              str = "SS";
+            } else if (value === 19) {
+              str = "K";
+            } else if (value === 20) {
+              str = "P";
+            }
 
         this.setState({ position: value, positionString: str })
     }
@@ -189,7 +216,7 @@ export default class CreateAPlayerMenu extends React.Component {
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={0}
-                            maximumValue={4}
+                            maximumValue={20}
                             value={this.state.position}
                             onValueChange={value => this.position(value)}
                         />
@@ -224,7 +251,7 @@ export default class CreateAPlayerMenu extends React.Component {
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={0}
-                            maximumValue={25}
+                            maximumValue={16}
                             value={7}
                             onValueChange={value => this.height(value)}
                         />

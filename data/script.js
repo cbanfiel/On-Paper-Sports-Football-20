@@ -39,6 +39,25 @@ const POS_SS = 18;
 const POS_K = 19;
 const POS_P = 20;
 
+//OFFENSE TYPES
+const OFF_PRO = 0;
+//3 wrs 1TE 1RB
+const OFF_SPREAD = 1;
+//4wrs 1RB
+const OFF_PISTOL = 2;
+//3 wrs 1TE 1RB
+const OFF_OPTION = 3;
+//4wrs 1rb
+
+//DEFENSE TYEPS
+const DEF_43 = 0;
+const DEF_34 = 1;
+const DEF_335 = 2;
+const DEF_425 = 3;
+const DEF_52 = 4;
+
+
+
 
 const rosterSize = 70;
 export const CAPROOM = 190000000;
@@ -50,7 +69,7 @@ const POS_FB_REQUIREMENTS = 0;
 const POS_WR_REQUIREMENTS = 5;
 const POS_TE_REQUIREMENTS = 2;
 const POS_OL_REQUIREMENTS = 5;
-const POS_DL_REQUIREMENTS = 4;
+const POS_DL_REQUIREMENTS = 5;
 const POS_LB_REQUIREMENTS = 3;
 const POS_DB_REQUIREMENTS = 5;
 const POS_K_REQUIREMENTS = 1;
@@ -560,7 +579,6 @@ class Team {
     this.name = team.name;
     this.rating = 0;
     this.logoSrc = team.logoSrc;
-    this.uri = null;
     this.schedule = [];
     this.played = [];
     this.wins = 0;
@@ -691,6 +709,12 @@ class Team {
     this.dbs = [];
     this.ks = [];
     this.ps = [];
+
+    this.offenseType = Math.floor(Math.random()*4);
+    this.defenseType = Math.floor(Math.random()*3);
+
+    this.offStarters = {passers: [], runners:[], recievers:[], blockers:[]};
+    this.defStarters = {rushers: [], intercepters: []}
   }
 
   releaseExpiring() {
@@ -703,17 +727,21 @@ class Team {
   calculateRating() {
     try {
       let total = 0;
+      let rat = 0;
+      let kickers = 0;
       for (let i = 0; i < this.roster.length; i++) {
-        total += this.roster[i].rating;
+        if(this.roster[i].position === POS_K || this.roster[i].position === POS_P){
+          kickers++;
+        }else{
+          total+= this.roster[i].rating;
+        }
       }
-      let bests = 0;
-      for (let i = 0; i < 6; i++) {
-        bests += this.roster[i].rating;
-      }
-
-      this.rating = Math.round(
-        (total + bests + bests + bests + bests) / (this.roster.length + 24)
+      rat = Math.round(
+        (total / (this.roster.length-kickers))
       );
+
+      this.rating  = Math.round(scaleBetween(rat,60,99,65,85));
+
     } catch (err) {
       console.log(this.name + "calculateRating()");
     }
@@ -731,6 +759,75 @@ class Team {
 
 */
 
+  checkRequirements(){
+  let diff = 0;
+  if(this.qbs.length < POS_QB_REQUIREMENTS){
+    diff = POS_QB_REQUIREMENTS - this.qbs.length;
+    return {
+      position: POS_QB,
+      amount: diff
+    }
+  }
+  if(this.rbs.length < POS_HB_REQUIREMENTS){
+    diff = POS_HB_REQUIREMENTS - this.rbs.length;
+    return {
+      position: POS_HB,
+      amount: diff
+    }
+  }
+  if(this.wrs.length < POS_WR_REQUIREMENTS){
+    diff = POS_WR_REQUIREMENTS - this.wrs.length;
+    return {
+      position: POS_WR,
+      amount: diff
+    }
+  }
+  // if(this.tes.length < POS_TE_REQUIREMENTS){
+  //   diff = POS_TE_REQUIREMENTS - this.tes.length;
+  //   return {
+  //     position: POS_TE,
+  //     amount: diff
+  //   }
+  // }
+  if(this.ol.length < POS_OL_REQUIREMENTS){
+    diff = POS_OL_REQUIREMENTS - this.ol.length;
+    return {
+      position: POS_LT,
+      amount: diff
+    }
+  }
+  if(this.dl.length < POS_DL_REQUIREMENTS){
+    diff = POS_DL_REQUIREMENTS - this.dl.length;
+    return {
+      position: POS_LE,
+      amount: diff
+    }
+  }
+  if(this.dbs.length < POS_DB_REQUIREMENTS){
+    diff = POS_DB_REQUIREMENTS - this.dbs.length;
+    return {
+      position: POS_CB,
+      amount: diff
+    }
+  }
+  if(this.ks.length < POS_K_REQUIREMENTS){
+    diff = POS_K_REQUIREMENTS - this.ks.length;
+    return {
+      position: POS_K,
+      amount: diff
+    }
+  }
+  if(this.ps.length < POS_P_REQUIREMENTS){
+    diff = POS_P_REQUIREMENTS - this.ps.length;
+    return {
+      position: POS_P,
+      amount: diff
+    }
+  }
+
+  return null;
+}
+
   manageFootballLineup() {
     this.roster.sort(function (a, b) {
       if (a.rating > b.rating) {
@@ -742,6 +839,19 @@ class Team {
         return 0;
       }
     });
+
+
+    this.qbs = [];
+    this.rbs = [];
+    this.fbs = [];
+    this.tes = [];
+    this.wrs = [];
+    this.ol = [];
+    this.dl = [];
+    this.lbs = [];
+    this.dbs = [];
+    this.ks = [];
+    this.ps = [];
 
 
     for (let i = 0; i < this.roster.length; i++) {
@@ -760,7 +870,7 @@ class Team {
       else if (player.position > 4 && player.position < 10) {
         this.ol.push(player);
       }
-      else if (player.position > 9 && player.position < 13) {
+      else if (player.position >=POS_LE && player.position <= POS_DT) {
         this.dl.push(player);
       }
       else if (player.position >= 13 && player.position <= 15) {
@@ -776,6 +886,12 @@ class Team {
         this.ps.push(player);
       }
     }
+
+    let missingRequirements = this.checkRequirements()
+    if(missingRequirements != null){
+      console.log(this.name + ' is under requirements.. missing: ' + missingRequirements.amount + ' of positionId: ' + missingRequirements.position);
+    }
+
   }
 
   reorderLineup() {
@@ -1043,7 +1159,7 @@ export function loadRosters() {
       }
     }
     if (teams[i].roster.length <= 0) {
-      generateCustomRoster(teams[i], teamsData[i].rating);
+      generateCustomRoster(teams[i], 65);
     }
     for (let k = 0; k < conferences.length; k++) {
       if (teams[i].conferenceId === conferences[k].id) {
@@ -1098,6 +1214,7 @@ export function generateCustomRoster(team, rating) {
   let tes = 0;
   let ol = 0;
   let dl = 0;
+  let lbs = 0;
   let dbs = 0;
   let ks=0;
   let ps= 0;
@@ -1109,7 +1226,6 @@ export function generateCustomRoster(team, rating) {
     let faceSrc = draftData[0].faceSrc;
     let age = draftData[Math.floor(Math.random() * draftData.length)].age;
     let playerComparison = Math.floor(Math.random() * draftData.length);
-    let number = draftData[playerComparison].number;
 
     if (qbs < POS_QB_REQUIREMENTS) {
       while (draftData[playerComparison].position != POS_QB) {
@@ -1134,19 +1250,25 @@ export function generateCustomRoster(team, rating) {
       tes++;
     }
     else if (ol < POS_OL_REQUIREMENTS) {
-      while (draftData[playerComparison].position < POS_LT && draftData[playerComparison].position > POS_RT) {
+      while (draftData[playerComparison].position < POS_LT || draftData[playerComparison].position > POS_RT) {
         playerComparison = Math.floor(Math.random() * draftData.length);
       }
       ol++;
     }
     else if (dl < POS_DL_REQUIREMENTS) {
-      while (draftData[playerComparison].position < POS_LE && draftData[playerComparison].position > POS_RE) {
+      while (draftData[playerComparison].position < POS_LE || draftData[playerComparison].position > POS_DT) {
         playerComparison = Math.floor(Math.random() * draftData.length);
       }
       dl++;
     }
+    else if (lbs < POS_LB_REQUIREMENTS) {
+      while (draftData[playerComparison].position < POS_LOLB || draftData[playerComparison].position > POS_ROLB) {
+        playerComparison = Math.floor(Math.random() * draftData.length);
+      }
+      lbs++;
+    }
     else if (dbs < POS_DB_REQUIREMENTS) {
-      while (draftData[playerComparison].position < POS_CB && draftData[playerComparison].position > POS_SS) {
+      while (draftData[playerComparison].position < POS_CB || draftData[playerComparison].position > POS_SS) {
         playerComparison = Math.floor(Math.random() * draftData.length);
       }
       dbs++;
@@ -1164,7 +1286,7 @@ export function generateCustomRoster(team, rating) {
       ps++;
     }
   
-
+    let number = draftData[playerComparison].number;
     let position = draftData[playerComparison].position;
     let height = draftData[playerComparison].height;
     let pass =
@@ -1235,10 +1357,11 @@ export function generateCustomRoster(team, rating) {
   if (team.rating > rating) {
     while (team.rating != rating) {
       for (let i = 0; i < team.roster.length; i++) {
-        team.roster[i].off--;
-        team.roster[i].def--;
-        team.roster[i].threePoint--;
-        team.roster[i].reb--;
+        team.roster[i].awareness--;
+        team.roster[i].pass--;
+        team.roster[i].tackle--;
+        team.roster[i].block--;
+        team.roster[i].breakBlock--;
         team.roster[i].calculateRating();
         team.calculateRating();
         if (team.rating <= rating) {
@@ -1251,10 +1374,11 @@ export function generateCustomRoster(team, rating) {
   if (team.rating < rating) {
     while (team.rating != rating) {
       for (let i = 0; i < team.roster.length; i++) {
-        team.roster[i].off++;
-        team.roster[i].def++;
-        team.roster[i].threePoint++;
-        team.roster[i].reb++;
+        team.roster[i].awareness++;
+        team.roster[i].pass++;
+        team.roster[i].tackle++;
+        team.roster[i].block++;
+        team.roster[i].breakBlock++;
         team.roster[i].calculateRating();
         team.calculateRating();
         if (team.rating >= rating) {
@@ -1614,7 +1738,30 @@ export class Game {
     }
   }
 
+  selectRunner(off){
+    if(Math.random()*100 > 85){
+      //backup rb run
+      return off.rbs[1];
+    }
 
+    if(off.offenseType === OFF_SPREAD){
+      if(Math.random()*100 > 80){
+        return off.qbs[0];
+      }else{
+        return off.rbs[0];
+      }
+    }
+
+    if(off.offenseType === OFF_OPTION){
+      if(Math.random()*100 > 65){
+        return off.qbs[0];
+      }else{
+        return off.rbs[0];
+      }
+    }
+
+    return off.rbs[0];
+  }
 
 
   footballPlay() {
@@ -1622,9 +1769,9 @@ export class Game {
     let spotlightPlayer;
 
     let yardModifier = 0;
-    if (Math.random() * 100 < 4) {
-      yardModifier += Math.random() * 60;
-    }
+
+
+    
 
     let off = this.inPossesion;
     let def;
@@ -1632,6 +1779,18 @@ export class Game {
       def = away;
     } else {
       def = home;
+    }
+
+    let ratingDiff = Math.round((off.rating - def.rating) / 2);
+
+    if (Math.random() * 100 < 4 + ratingDiff) {
+      yardModifier += Math.round(Math.random() * 60);
+    }else{
+      yardModifier = Math.round(Math.random()* ratingDiff);
+    }
+
+    if(yardModifier < 0){
+      yardModifier = 0;
     }
 
 
@@ -1737,7 +1896,7 @@ export class Game {
         playSelection += 20;
       }
 
-      if (playSelection > 35) {
+      if (playSelection > 40) {
         //pass
         let qb = off.qbs[0];
         let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
@@ -1759,8 +1918,9 @@ export class Game {
           //completion
           qb.completions++;
           target.receptions++;
-          let wrSkill = scaleBetween(target.rating, 0, 7, 40, 99);
-          let wrYardage = wrSkill + (Math.random() * 10) - 5
+          let wrSkill = scaleBetween(target.rating, 0, 9, 40, 99);
+          let random = Math.random()*8;
+          let wrYardage = wrSkill + (Math.random() * scaledQbPass) - random;
           let yardsAfterCatch = scaleBetween(target.speed, 0, 5, 60, 99);
           if (yardsAfterCatch < 0) {
             yardsAfterCatch = 0;
@@ -1800,7 +1960,7 @@ export class Game {
             //int
             defender.interceptions++;
             qb.interceptions++;
-            let yardsReturned = Math.random()*10;
+            let yardsReturned = Math.round(Math.random()*15);
             this.inPossesion = def;
             this.yardMarker = (100 - this.yardMarker) + yardsReturned;
             this.down = 1;
@@ -1817,15 +1977,13 @@ export class Game {
 
       } else {
         //run
-        let runner = off.rbs[0];
+        let runner = this.selectRunner(off);
 
         let initialYardage = scaleBetween(runner.speed, 0, 4, 40, 99);
 
         let yardsAfterContact = scaleBetween(runner.rush, 0, 4, 40, 99);
 
         let randYards = Math.random()*4;
-
-        
 
         yardsGained = Math.round(initialYardage - randYards + yardModifier + lineInteraction + yardsAfterContact);
 
@@ -2968,7 +3126,7 @@ export class Franchise {
 
           if (
             teams[i].wrs.length < POS_WR_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_D
+            availableFreeAgents.roster[j].position === POS_WR
           ) {
             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
               availableFreeAgents.roster[j].teamName = teams[i].name;
@@ -2985,7 +3143,7 @@ export class Franchise {
 
           if (
             teams[i].tes.length < POS_TE_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_G
+            availableFreeAgents.roster[j].position === POS_TE
           ) {
             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
               availableFreeAgents.roster[j].teamName = teams[i].name;
@@ -3688,6 +3846,12 @@ function sortStandings() {
       }
     }
   } else {
+    //rating first then wins
+    teams.sort(function (a, b) {
+      if (a.rating > b.rating) return -1;
+      if (a.rating < b.rating) return 1;
+      return 0;
+    });
     teams.sort(function (a, b) {
       if (a.wins > b.wins) return -1;
       if (a.wins < b.wins) return 1;
@@ -3711,6 +3875,12 @@ export function standings(conferenceId) {
       }
     }
   }
+
+  sorted.sort(function (a, b) {
+    if (a.rating > b.rating) return -1;
+    if (a.rating < b.rating) return 1;
+    return 0;
+  });
 
   sorted.sort(function (a, b) {
     if (a.wins > b.wins) return -1;
@@ -4504,16 +4674,19 @@ export function createPlayer(
   let player = new Player({
     name: name,
     number: number,
-    position,
-    position,
+    position: position,
     age: age,
     height: height,
     salary: salary,
-    off: 75,
-    def: 75,
     pass: 75,
-    faceOff: 75,
-    save: 75,
+    awareness: 75,
+    rush: 75,
+    speed: 75,
+    catch: 75,
+    block: 75,
+    breakBlock: 75,
+    tackle: 75,
+    kick: 75,
     rating: 75,
     faceSrc: faceSrc
   });
@@ -5064,33 +5237,7 @@ export function manageSaveName(value) {
 }
 
 export function returnStatsView(player) {
-  let str;
-  if (player.position < 4) {
-    str =
-      "GOALS: " +
-      player.seasonGoals +
-      "\nSHOTS: " +
-      player.seasonShots +
-      "\nASSISTS: " +
-      player.seasonAssists;
-  } else {
-    str =
-      "STARTS: " +
-      player.gamesStarted +
-      "\nSAVE%: " +
-      Math.round(
-        (player.seasonSaves /
-          (player.seasonSaves + player.seasonGoalsAllowed)) *
-        1000
-      ) /
-      10 +
-      "\nGAA: " +
-      Math.round((player.seasonGoalsAllowed / player.gamesStarted) * 100) / 100;
-  }
-  return str;
-}
-export function returnSeasonStatsListView(player) {
-  let str ="";
+    let str ="";
   if (player.position === 0) {
     str = `ATT: ${player.seasonAttempts} CMP: ${player.seasonCompletions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns} INTS: ${player.seasonInterceptions} CMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 100)}`;
   }
@@ -5112,6 +5259,25 @@ export function returnSeasonStatsListView(player) {
     str = `TCKL: ${player.seasonTackles} INTS: ${player.seasonInterceptions} SACKS: ${player.seasonSacks} FUMBLESREC: ${player.seasonFumblesRecovered}`;
   }if (player.position === 19) {
     str = `KICKATT: ${player.seasonKicksAttempted} KICKMADE: ${player.seasonKicksMade}`;
+  }
+  return str;
+}
+export function returnSeasonStatsListView(player) {
+  let str ="";
+  if(player.attempts > 0){
+    str += `PASs: ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} CMP%: ${Math.round((player.completions / player.attempts) * 100)} `;
+  }
+
+  if(player.rushAttempts > 0){
+    str += `RUSH: ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.rushAttempts))} `;
+  }
+
+  if(player.catches > 0){
+    str += `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
+  }
+
+  if(player.tackles > 0){
+    str += `TACKLES: ${player.tackles} INTS: ${player.interceptions}`
   }
   return str;
 }
@@ -5419,3 +5585,46 @@ export const loadFranchise = data => {
 
 //     return fantasyDraftArray;
 // }
+
+export let checkRequirements = (team) => {
+  team.manageFootballLineup();
+  let diff = 0;
+  if(team.qbs.length < POS_QB_REQUIREMENTS){
+    diff = POS_QB_REQUIREMENTS - team.qbs.length;
+    return diff + " more QB's"
+  }
+  if(team.rbs.length < POS_HB_REQUIREMENTS){
+    diff = POS_HB_REQUIREMENTS - team.rbs.length;
+    return diff + " more hb's"
+  }
+  if(team.wrs.length < POS_WR_REQUIREMENTS){
+    diff = POS_WR_REQUIREMENTS - team.wrs.length;
+    return diff + " more wr's"
+  }
+  if(team.tes.length < POS_TE_REQUIREMENTS){
+    diff = POS_te_REQUIREMENTS - team.tes.length;
+    return diff + " more te's"
+  }
+  if(team.ol.length < POS_OL_REQUIREMENTS){
+    diff = POS_OL_REQUIREMENTS - team.ol.length;
+    return diff + " more O-linemen"
+  }
+  if(team.dl.length < POS_DL_REQUIREMENTS){
+    diff = POS_DL_REQUIREMENTS - team.dl.length;
+    return diff + " more D-linemen"
+  }
+  if(team.dbs.length < POS_DB_REQUIREMENTS){
+    diff = POS_DB_REQUIREMENTS - team.dbs.length;
+    return diff + " more db's"
+  }
+  if(team.ks.length < POS_K_REQUIREMENTS){
+    diff = POS_K_REQUIREMENTS - team.ks.length;
+    return diff + " more k's"
+  }
+  if(team.ps.length < POS_P_REQUIREMENTS){
+    diff = POS_P_REQUIREMENTS - team.ps.length;
+    return diff + " more p's"
+  }
+
+  return false;
+}

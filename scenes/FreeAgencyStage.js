@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, View, ScrollView, Alert } from 'react-native';
 import { Card, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { selectedTeam, leaugeLeaders, setSelectedTeam2, franchise, sortedRoster, conferencesOn, collegeMode, refreshOff, setRefreshOff, setAutoSign } from '../data/script';
+import { selectedTeam, leaugeLeaders, setSelectedTeam2, franchise, sortedRoster, conferencesOn, collegeMode, refreshOff, setRefreshOff, setAutoSign, checkRequirements } from '../data/script';
 import Background from '../components/background';
 import Picache from 'picache';
 import CachedImage from '../components/CachedImage';
@@ -13,29 +13,15 @@ export default class FreeAgencyStage extends React.Component{
 
 
   turnOffAutoSigning= () =>{
-    selectedTeam.reorderLineup();
+      let message = checkRequirements(selectedTeam);
 
-    let forwardCount = selectedTeam.offLine1.length + selectedTeam.offLine2.length + selectedTeam.offLine3.length + selectedTeam.offLine4.length;
-    let defenseCount = selectedTeam.defLine1.length + selectedTeam.defLine2.length + selectedTeam.defLine3.length;
-    let goalieCount = selectedTeam.goalies.length;
+      if(message != false){
+        Alert.alert('You must sign '+ message+ ' before turning off auto fill');
+      }else{
+        this.setState({autoSign: !this.state.autoSign});
+      }
 
-    if(forwardCount<12){
-      let diff = 12 - forwardCount;
-      Alert.alert('You must sign ' + diff + ' more forwards before turning off auto fill');
-      return;
-    }
-    if(defenseCount<6){
-      let diff = 6 - defenseCount;
-      Alert.alert('You must sign ' + diff + ' more defensemen before turning off auto fill');
-      return;
-    }
-    if(goalieCount<2){
-      let diff = 2 - goalieCount;
-      Alert.alert('You must sign ' + diff + ' more goalies before turning off auto fill');
-      return;
-    }
 
-      this.setState({autoSign: !this.state.autoSign});
   }
 
   state = {

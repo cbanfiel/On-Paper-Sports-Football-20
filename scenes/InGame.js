@@ -38,7 +38,8 @@ export default class InGame extends React.Component {
     freezeThePuckVsPlayThePuck: selectedTeam.freezeThePuckVsPlayThePuck,
     down: 1,
     yardsToGo: 10,
-    yardMarker: 20
+    yardMarker: 20,
+    yardMarkerString: '<20'
   }
 
   time = () => {
@@ -182,6 +183,7 @@ export default class InGame extends React.Component {
     }
 
       this.setState({homescore:this.props.game.homescore, awayscore:this.props.game.awayscore, playByPlay:this.props.game.possResult[0], down: this.props.game.down, yardsToGo: this.props.game.yardsToFirst, yardMarker: this.props.game.yardMarker});
+      this.getYardString();
   }.bind(this),this.state.speed);
     this.setState({timer: timer})
       
@@ -203,6 +205,17 @@ componentWillUnmount(){
 
   this.resetCoachingSliders();
 
+}
+
+getYardString(){
+  let ydString='';
+  if(this.state.yardMarker>50){
+    ydString = (100 - this.state.yardMarker) + '>';
+  }else{
+    ydString = '<' + this.state.yardMarker;
+  }
+
+  this.setState({yardMarkerString: ydString});
 }
 
 leavePage(){
@@ -239,7 +252,7 @@ leavePage(){
                   <Text style={{ flex: 1, textAlign: 'center', fontSize: 25, color: 'black', fontFamily: 'advent-pro' }}>{'DOWN: ' + this.state.down + '-' + this.state.yardsToGo}</Text>
                   </View>
                   <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'BALL AT THE: ' + this.state.yardMarker}</Text>
+                  <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'BALL AT THE: ' + this.state.yardMarkerString}</Text>
                   </View>
 
 

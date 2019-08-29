@@ -8,36 +8,119 @@ import CachedImage from '../components/CachedImage';
 
 export default class EditPlayerRatings extends React.Component {
     state = {
-        off: this.props.selectedPlayer.off,
+        awareness: this.props.selectedPlayer.awareness,
         rating: this.props.selectedPlayer.rating,
-        def: this.props.selectedPlayer.def,
+        rush: this.props.selectedPlayer.rush,
         pass: this.props.selectedPlayer.pass,
-        faceOff: this.props.selectedPlayer.faceOff,
-        positioning: this.props.selectedPlayer.positioning,
-        reflexes: this.props.selectedPlayer.reflexes,
+        speed: this.props.selectedPlayer.speed,
+        catch: this.props.selectedPlayer.catch,
+        block: this.props.selectedPlayer.block,
+        breakBlock: this.props.selectedPlayer.breakBlock,
+        tackle: this.props.selectedPlayer.tackle,
+        kick: this.props.selectedPlayer.kick,
     }
 
     ratingFormula(){
-        let bestrating = [this.state.off, this.state.def, this.state.pass, this.state.faceOff];
-        bestrating.sort(function (a, b) {
-            if (a < b) {
-                return 1;
-            }
-            if (a > b) {
-                return -1;
-            }
-            return 0;
-        });
-
-        let rat = 0;
-
-        if (this.props.selectedPlayer.position != 4) {
-            rat = Math.round(((this.state.off * 2) + (this.state.def * 2) + (this.state.faceOff / 2) + (this.state.pass / 2) + (bestrating[0] * 2)) / 7);
-            if (rat >= 99) {
-                rat = 99;
-            }
-        } else {
-            rat = Math.round((this.state.positioning + this.state.reflexes)/2);
+        let rat = 40;
+        switch (this.props.selectedPlayer.position) {
+            case 0:
+              rat = Math.round(
+                ((this.state.pass + this.state.awareness) * 2 + this.state.speed) / 5
+              );
+              break;
+            case 1:
+              rat = Math.round(
+                (this.state.speed + this.state.rush * 2 + this.state.awareness) / 4
+              );
+              break;
+            case 2:
+              rat = Math.round(
+                (this.state.block + this.state.rush * 2 + this.state.awareness) / 4
+              );
+              break;
+            case 3:
+              rat = Math.round(
+                (this.state.catch + this.state.speed + this.state.awareness) / 3
+              );
+              break;
+            case 4:
+              rat = Math.round(
+                (this.state.block + this.state.catch + this.state.speed + this.state.awareness) / 4
+              );
+              break;
+            case 5:
+              rat = Math.round((this.state.block + this.state.awareness) / 2);
+              break;
+            case 6:
+              rat = Math.round((this.state.block + this.state.awareness) / 2);
+              break;
+            case 7:
+              rat = Math.round((this.state.block + this.state.awareness) / 2);
+              break;
+            case 8:
+              rat = Math.round((this.state.block + this.state.awareness) / 2);
+              break;
+            case 9:
+              rat = Math.round((this.state.block + this.state.awareness) / 2);
+              break;
+            case 10:
+              rat = Math.round(
+                (this.state.tackle + this.state.breakBlock + this.state.awareness) / 3
+              );
+              break;
+            case 11:
+              rat = Math.round(
+                (this.state.tackle + this.state.breakBlock + this.state.awareness) / 3
+              );
+              break;
+            case 12:
+              rat = Math.round(
+                (this.state.tackle + this.state.breakBlock + this.state.awareness) / 3
+              );
+              break;
+            case 13:
+              rat = Math.round(
+                (this.state.tackle + this.state.breakBlock + this.state.awareness + this.state.speed) / 4
+              );
+              break;
+            case 14:
+              rat = Math.round(
+                (this.state.tackle + this.state.breakBlock + this.state.awareness + this.state.speed) / 4
+              );
+              break;
+            case 15:
+              rat = Math.round(
+                (this.state.tackle + this.state.breakBlock + this.state.awareness + this.state.speed) / 4
+              );
+              break;
+            case 16:
+              rat = Math.round(
+                (this.state.tackle + this.state.catch + this.state.awareness + this.state.speed) / 4
+              );
+              break;
+            case 17:
+              rat = Math.round(
+                (this.state.tackle + this.state.catch + this.state.awareness + this.state.speed) / 4
+              );
+              break;
+            case 18:
+              rat = Math.round(
+                (this.state.tackle + this.state.catch + this.state.awareness + this.state.speed) / 4
+              );
+              break;
+            case 19:
+              rat = Math.round(
+                (this.state.kick + this.state.awareness) / 2
+              );
+              break;
+            case 20:
+              rat = Math.round(
+                (this.state.kick + this.state.awareness) / 2
+              );
+              break;
+            default:
+              rat = 40;
+              break;
         }
 
         this.setState({rating: rat});
@@ -45,12 +128,15 @@ export default class EditPlayerRatings extends React.Component {
 
     saveChanges(){
         this.props.selectedPlayer.rating=this.state.rating;
-        this.props.selectedPlayer.off=this.state.off;
-        this.props.selectedPlayer.def=this.state.def;
+        this.props.selectedPlayer.awareness=this.state.awareness;
+        this.props.selectedPlayer.rush=this.state.rush;
         this.props.selectedPlayer.pass=this.state.pass;
-        this.props.selectedPlayer.faceOff=this.state.faceOff;
-        this.props.selectedPlayer.positioning=this.state.positioning;
-        this.props.selectedPlayer.reflexes=this.state.reflexes;
+        this.props.selectedPlayer.speed=this.state.speed;
+        this.props.selectedPlayer.catch=this.state.catch;
+        this.props.selectedPlayer.block=this.state.block;
+        this.props.selectedPlayer.breakBlock=this.state.breakBlock;
+        this.props.selectedPlayer.tackle=this.state.tackle;
+        this.props.selectedPlayer.kick=this.state.kick;
         selectedTeam.reorderLineup();
         this.props.updateState();
         Actions.pop();
@@ -61,13 +147,15 @@ export default class EditPlayerRatings extends React.Component {
         change=(this.state.rating - value);
         this.setState({
             rating: value,
-            off: (this.state.off - change>99 ? 99 : this.state.off-change<40 ? 40 : this.state.off-change ),
-            def: (this.state.def - change>99 ? 99 : this.state.def-change<40 ? 40 : this.state.def-change ),
+            awareness: (this.state.awareness - change>99 ? 99 : this.state.awareness-change<40 ? 40 : this.state.awareness-change ),
+            rush: (this.state.rush - change>99 ? 99 : this.state.rush-change<40 ? 40 : this.state.rush-change ),
             pass: (this.state.pass - change>99 ? 99 : this.state.pass-change<40 ? 40 : this.state.pass-change ),
-            faceOff: (this.state.faceOff - change>99 ? 99 : this.state.faceOff-change<40 ? 40 : this.state.faceOff-change ),
-            positioning: (this.state.positioning - change>99 ? 99 : this.state.positioning-change<40 ? 40 : this.state.positioning-change),
-            reflexes: (this.state.reflexes - change>99 ? 99 : this.state.reflexes-change<40 ? 40 : this.state.reflexes-change)
-
+            speed: (this.state.speed - change>99 ? 99 : this.state.speed-change<40 ? 40 : this.state.speed-change ),
+            catch: (this.state.catch - change>99 ? 99 : this.state.catch-change<40 ? 40 : this.state.catch-change),
+            block: (this.state.block - change>99 ? 99 : this.state.block-change<40 ? 40 : this.state.block-change),
+            breakBlock: (this.state.breakBlock - change>99 ? 99 : this.state.breakBlock-change<40 ? 40 : this.state.breakBlock-change),
+            tackle: (this.state.tackle - change>99 ? 99 : this.state.tackle-change<40 ? 40 : this.state.tackle-change),
+            kick: (this.state.kick - change>99 ? 99 : this.state.kick-change<40 ? 40 : this.state.kick-change),
         })
 
     }
@@ -107,26 +195,26 @@ export default class EditPlayerRatings extends React.Component {
 
 
 
-                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"OFF: " + this.state.off}</Text>
+                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"AWR: " + this.state.awareness}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={40}
                             maximumValue={99}
-                            value={this.state.off}
-                            onValueChange={value => {this.setState({ off: value }), this.ratingFormula()}}
+                            value={this.state.awareness}
+                            onValueChange={value => {this.setState({ awareness: value }), this.ratingFormula()}}
                         />
 
-                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"DEF: " + this.state.def}</Text>
+                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"RUSH: " + this.state.rush}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={40}
                             maximumValue={99}
-                            value={this.state.def}
-                            onValueChange={value =>{ this.setState({ def: value }), this.ratingFormula()}}
+                            value={this.state.rush}
+                            onValueChange={value =>{ this.setState({ rush: value }), this.ratingFormula()}}
                         />
 
                         <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"PASS: " + this.state.pass}</Text>
@@ -142,38 +230,72 @@ export default class EditPlayerRatings extends React.Component {
 
                         
 
-                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"FACEOFF: " + this.state.faceOff}</Text>
+                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"SPEED: " + this.state.speed}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={40}
                             maximumValue={99}
-                            value={this.state.faceOff}
-                            onValueChange={value => this.setState({ faceOff: value })}
+                            value={this.state.speed}
+                            onValueChange={value => this.setState({ speed: value })}
                         />
 
-<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"POSITIONING: " + this.state.positioning}</Text>
+<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"CATCH: " + this.state.catch}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={40}
                             maximumValue={99}
-                            value={this.state.positioning}
-                            onValueChange={value => {this.setState({ positioning: value }), this.ratingFormula()}}
+                            value={this.state.catch}
+                            onValueChange={value => {this.setState({ catch: value }), this.ratingFormula()}}
                         />
 
-<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"REFLEXES: " + this.state.reflexes}</Text>
+<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"BLOCK: " + this.state.block}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={40}
                             maximumValue={99}
-                            value={this.state.reflexes}
-                            onValueChange={value => {this.setState({ reflexes: value }), this.ratingFormula()}}
+                            value={this.state.block}
+                            onValueChange={value => {this.setState({ block: value }), this.ratingFormula()}}
                         />
+
+<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"BREAKBLOCK: " + this.state.breakBlock}</Text>
+                        <Slider
+                            thumbTintColor={'rgb(180,180,180)'}
+                            maximumTrackTintColor={'rgb(180,180,180)'}
+                            step={1}
+                            minimumValue={40}
+                            maximumValue={99}
+                            value={this.state.breakBlock}
+                            onValueChange={value => {this.setState({ breakBlock: value }), this.ratingFormula()}}
+                        />
+
+<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"TACKLE: " + this.state.tackle}</Text>
+                        <Slider
+                            thumbTintColor={'rgb(180,180,180)'}
+                            maximumTrackTintColor={'rgb(180,180,180)'}
+                            step={1}
+                            minimumValue={40}
+                            maximumValue={99}
+                            value={this.state.tackle}
+                            onValueChange={value => {this.setState({ tackle: value }), this.ratingFormula()}}
+                        />
+
+<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"KICK: " + this.state.kick}</Text>
+                        <Slider
+                            thumbTintColor={'rgb(180,180,180)'}
+                            maximumTrackTintColor={'rgb(180,180,180)'}
+                            step={1}
+                            minimumValue={40}
+                            maximumValue={99}
+                            value={this.state.kick}
+                            onValueChange={value => {this.setState({ kick: value }), this.ratingFormula()}}
+                        />
+
                 <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black'}} title="Commit Changes" onPress={() => {this.saveChanges()}}></Button>
 
 
