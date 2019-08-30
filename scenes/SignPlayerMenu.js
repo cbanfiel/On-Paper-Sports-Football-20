@@ -20,11 +20,42 @@ export default class SignPlayerMenu extends React.Component {
     if(this.props.updateState != null){
         this.props.updateState();
     }
+
+
+    if(this.props.collegeMode === true){
+      selectedTeam.offered = this.state.offered;
+    }
+
 }
 
 
 setModalVisible(visible, player) {
   this.setState({ modalVisible: visible, modalPlayer: player });
+}
+
+manageOffer(ply){
+  let offers = this.state.offered;
+  if(offers.includes(ply)){
+    offers.splice(offers.indexOf(ply),1);
+  }else{
+    if(this.state.scholarships>=1){
+      offers.push(ply);
+    }
+  }
+  this.setState({offered: offers, scholarships: selectedTeam.scholarshipsAvailable-offers.length});
+
+  let data = [];
+
+  for(let i=0; i<selectedTeam.interestedProspects.roster.length; i++){
+    data.push({
+      type:'NORMAL',
+      item: sortedRoster(selectedTeam.interestedProspects,'rating')[i]
+    })
+  }
+
+  this.setState({
+    list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data)
+  })
 }
 
 
@@ -33,17 +64,28 @@ setModalVisible(visible, player) {
     
         const data = [];
     
+        if(this.props.collegeMode === true){
+          for(let i=0; i<selectedTeam.interestedProspects.roster.length; i++){
+            data.push({
+              type:'NORMAL',
+              item: sortedRoster(selectedTeam.interestedProspects,'rating')[i]
+            })
+          }
+        }else{
         for(let i=0; i<availableFreeAgents.roster.length; i++){
           data.push({
             type:'NORMAL',
             item: sortedRoster(availableFreeAgents,'rating')[i]
           })
         }
+      }
     
         this.state={
           list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
           modalPlayer: null,
-          modalVisible:false
+          modalVisible:false,
+          offered: selectedTeam.offered,
+          scholarships: selectedTeam.scholarshipsAvailable - selectedTeam.offered.length
         };
       
         this.layoutProvider = new LayoutProvider((i) => {
@@ -64,6 +106,18 @@ setModalVisible(visible, player) {
     
       rowRenderer = (type,data) => {
             let player = data.item;
+            if(this.props.collegeMode === true){
+              return(
+                <ListItem
+                onPress={() => {this.manageOffer(player)}}
+                title={player.positionString + ' #' + player.number + ' ' + player.name}
+                leftAvatar={player.faceSrc }
+                subtitle={'Rating: ' + player.rating}
+                rightTitle = {this.state.offered.includes(player) ? 'OFFERED' : ''}
+                onLongPress={() => this.setModalVisible(true, player)}
+            />
+            )
+            }
         return(
             <ListItem
             onPress={() => {Actions.push('offercontractmenu', {selectedPlayer: player, back:this.props.back, playerpool:availableFreeAgents, update: this.forceUpdate, forced:this.props.forced} ) }}
@@ -118,7 +172,7 @@ setModalVisible(visible, player) {
                         style={{ resizeMode:'contain', height: 50 }}
                         uri= {selectedTeam.logoSrc }/>
                     <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20 }}>{selectedTeam.name}</Text>
-                    <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20 }}>{'Cap Space: $' + displaySalary((selectedTeam.salary - CAPROOM) *-1)}</Text>
+                    <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20 }}>{this.props.collegeMode ? 'Scholarships Available: ' + this.state.scholarships :'Cap Space: $' + displaySalary((selectedTeam.salary - CAPROOM) *-1)}</Text>
 
                 </View>
 

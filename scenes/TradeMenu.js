@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, ScrollView, Alert, TouchableOpacity, Modal } from 'react-native';
 import { Button, Card, Icon, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { selectedTeam, selectedTeam2, trade, sortedRoster, displaySalary, CAPROOM, setPowerRankings, getDraftPickProjectedPick, inDraft, teams, returnStatsView } from '../data/script';
+import { selectedTeam, selectedTeam2, trade, sortedRoster, displaySalary, CAPROOM, setPowerRankings, getDraftPickProjectedPick, inDraft, teams, returnStatsView, POS_QB_REQUIREMENTS, POS_HB_REQUIREMENTS, POS_WR_REQUIREMENTS, POS_TE_REQUIREMENTS, POS_OL_REQUIREMENTS, POS_DL_REQUIREMENTS, POS_LB_REQUIREMENTS, POS_DB_REQUIREMENTS, POS_K_REQUIREMENTS, POS_P_REQUIREMENTS } from '../data/script';
 import Background from '../components/background';
 import CachedImage from '../components/CachedImage';
 import ListItem from '../components/ListItem';
@@ -78,77 +78,150 @@ export default class TradeMenu extends React.Component {
                 t2PlayerAmount++;
             }
         }
-        let fws=0;
-        let def = 0;
-        let goalies = 0;
-        let t2fws=0;
-        let t2def = 0;
-        let t2goalies = 0;
+        let t1Qbs = selectedTeam.qbs.length;
+        let t1Rbs = selectedTeam.rbs.length;
+        let t1Tes = selectedTeam.tes.length;
+        let t1Wrs = selectedTeam.wrs.length;
+        let t1Ol = selectedTeam.ol.length;
+        let t1Dl = selectedTeam.dl.length;
+        let t1Lb = selectedTeam.lbs.length;
+        let t1Db = selectedTeam.dbs.length;
+        let t1K = selectedTeam.ks.length;
+        let t1P = selectedTeam.ps.length;
+
+        let t2Qbs = selectedTeam2.qbs.length;
+        let t2Rbs = selectedTeam2.rbs.length;
+        let t2Tes = selectedTeam2.tes.length;
+        let t2Wrs = selectedTeam2.wrs.length;
+        let t2Ol = selectedTeam2.ol.length;
+        let t2Dl = selectedTeam2.dl.length;
+        let t2Lb = selectedTeam2.lbs.length;
+        let t2Db = selectedTeam2.dbs.length;
+        let t2K = selectedTeam2.ks.length;
+        let t2P = selectedTeam2.ps.length;
+
         let t1CanTrade = false;
         let t2CanTrade = false;
-
-        for(let i=0; i<selectedTeam.roster.length; i++){
-            let ply = selectedTeam.roster[i];
-            if(ply.position < 3){
-                //forward
-                fws++;
-            }else if(ply.position === 3){
-                def++;
-            }else if(ply.position === 4){
-                goalies++;
-            }
-        }
-
-        for(let i=0; i<selectedTeam2.roster.length; i++){
-            let ply = selectedTeam2.roster[i];
-            if(ply.position < 3){
-                //forward
-                t2fws++;
-            }else if(ply.position === 3){
-                t2def++;
-            }else if(ply.position === 4){
-                t2goalies++;
-            }
-        }
+  
         for(let i=0; i<this.state.t1Offers.length; i++){
             let ply = this.state.t1Offers[i];
             if(ply.isPick){
                 //draft pick
             }
-            else if(ply.position < 3){
+            else if(ply.position === 0){
                 //forward
-                fws--;
-                t2fws++;
+                t1Qbs--;
+                t2Qbs++;
+            }else if(ply.position === 1){
+                t1Rbs--;
+                t2Rbs++;
             }else if(ply.position === 3){
-                def--;
-                t2def++;
-            }else if(ply.position === 4){
-                goalies--;
-                t2goalies++;
+                t1Wrs--;
+                t2Wrs++;
+            }
+            else if(ply.position === 4){
+                t1Tes--;
+                t2Tes++;
+            }
+            else if(ply.position >= 5 || ply.position <=9){
+                t1Ol--;
+                t2Ol++;
+            }
+            else if(ply.position >= 10 || ply.position <=12){
+                t1Dl--;
+                t2Dl++;
+            }
+            else if(ply.position >= 13 || ply.position <=15){
+                t1Lb--;
+                t2Lb++;
+            }
+            else if(ply.position >= 16 || ply.position <=18){
+                t1Db--;
+                t2Db++;
+            }
+            else if(ply.position === 19){
+                t1K--;
+                t2K++;
+            }
+            else if(ply.position === 20){
+                t1P--;
+                t2P++;
             }
         }
+
         for(let i=0; i<this.state.t2Offers.length; i++){
             let ply = this.state.t2Offers[i];
             if(ply.isPick){
                 //draft pick
             }
-            else if(ply.position < 3){
+            else if(ply.position === 0){
                 //forward
-                fws++;
-                t2fws--;
+                t2Qbs--;
+                t1Qbs++;
+            }else if(ply.position === 1){
+                t2Rbs--;
+                t1Rbs++;
             }else if(ply.position === 3){
-                def++;
-                t2def--;
-            }else if(ply.position === 4){
-                goalies++;
-                t2goalies--;
+                t2Wrs--;
+                t1Wrs++;
+            }
+            else if(ply.position === 4){
+                t2Tes--;
+                t1Tes++;
+            }
+            else if(ply.position >= 5 || ply.position <=9){
+                t2Ol--;
+                t1Ol++;
+            }
+            else if(ply.position >= 10 || ply.position <=12){
+                t2Dl--;
+                t1Dl++;
+            }
+            else if(ply.position >= 13 || ply.position <=15){
+                t2Lb--;
+                t1Lb++;
+            }
+            else if(ply.position >= 16 || ply.position <=18){
+                t2Db--;
+                t1Db++;
+            }
+            else if(ply.position === 19){
+                t2K--;
+                t1K++;
+            }
+            else if(ply.position === 20){
+                t2P--;
+                t1P++;
             }
         }
+     
 
-        if(fws >= 12 && def>=6 && goalies>=2){
+        if(t1Qbs >= POS_QB_REQUIREMENTS && 
+            t1Rbs>=POS_HB_REQUIREMENTS && 
+            t1Wrs>= POS_WR_REQUIREMENTS &&
+            t1Tes>= POS_TE_REQUIREMENTS &&
+            t1Ol>= POS_OL_REQUIREMENTS &&
+            t1Dl>= POS_DL_REQUIREMENTS&&
+            t1Lb>= POS_LB_REQUIREMENTS &&
+            t1Db>= POS_DB_REQUIREMENTS &&
+            t1K>= POS_K_REQUIREMENTS &&
+            t1P>= POS_P_REQUIREMENTS
+            ){
             t1CanTrade = true;
         }
-        if(t2fws >= 12 && t2def>=6 && t2goalies>=2){
+
+
+        if(t2Qbs >= POS_QB_REQUIREMENTS && 
+            t2Rbs>=POS_HB_REQUIREMENTS && 
+            t2Wrs>= POS_WR_REQUIREMENTS &&
+            t2Tes>= POS_TE_REQUIREMENTS &&
+            t2Ol>= POS_OL_REQUIREMENTS &&
+            t2Dl>= POS_DL_REQUIREMENTS&&
+            t2Lb>= POS_LB_REQUIREMENTS &&
+            t2Db>= POS_DB_REQUIREMENTS &&
+            t2K>= POS_K_REQUIREMENTS &&
+            t2P>= POS_P_REQUIREMENTS
+            ){
             t2CanTrade = true;
         }
 
