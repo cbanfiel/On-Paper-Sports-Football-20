@@ -19,16 +19,6 @@ export default class EditLineupMenu extends React.Component {
         }
     }
 
-    reserves(){
-        reserves = [];
-        for(let i=0; i<selectedTeam.roster.length; i++){
-            let ply = selectedTeam.roster[i];
-            if(!selectedTeam.offLine1.includes(ply) && !selectedTeam.offLine2.includes(ply) && !selectedTeam.offLine3.includes(ply) && !selectedTeam.offLine4.includes(ply) && !selectedTeam.defLine1.includes(ply) && !selectedTeam.defLine2.includes(ply) && !selectedTeam.defLine3.includes(ply) && !selectedTeam.goalies.includes(ply)){
-                reserves.push(ply);
-            }
-        }
-        return reserves;
-    }
 
     setModalVisible(visible, player) {
         this.setState({ modalVisible: visible, modalPlayer: player });
@@ -38,7 +28,6 @@ export default class EditLineupMenu extends React.Component {
     state={
         selectedPlayer: null,
         selectedPlayer2: null,
-        benchWarmers : selectedTeam.generateBenchWarmers(),
         arr : '',
         pos : '',
         arr2 : '',
@@ -97,23 +86,6 @@ export default class EditLineupMenu extends React.Component {
         Actions.refresh();
     }
 
-    getPositionString(key) {
-        let keyString;
-        if (key === 0) {
-            keyString = 'C'
-        } else if (key === 1) {
-            keyString = 'LW'
-        } else if (key === 2) {
-            keyString = 'RW'
-        } else if (key === 3) {
-            keyString = 'D'
-        } else if (key === 4) {
-            keyString = 'G'
-        }
-
-        return keyString;
-    }
-
     render() {
         return (
             <Background>
@@ -161,130 +133,136 @@ export default class EditLineupMenu extends React.Component {
 
                 <ScrollView contentContainerStyle={{paddingBottom: 20}}>
                     {
-                    selectedTeam.offLine1.map((player, i) => (
+                    selectedTeam.qbs.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
-                                rightSubtitle={'Off Line: 1'}
-                                rightTitle={this.getPositionString(i)}
+                                rightTitle={'QB ' + (i===0? 'STARTER' : 'BACKUP')}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.offLine1, i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.qbs, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
                     {
-                    selectedTeam.defLine1.map((player, i) => (
+                    selectedTeam.rbs.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
-                                rightTitle={'D'}
-                                rightSubtitle={'Def Line 1'}
+                                rightTitle={'RB ' + (i+1)}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.defLine1 , i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.rbs , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
                     {
-                    selectedTeam.offLine2.map((player, i) => (
+                    selectedTeam.wrs.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
-                                rightSubtitle={'Off Line: 2'}
-                                rightTitle={this.getPositionString(i)}
+                                rightTitle={'WR ' + (i+1)}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.offLine2, i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.wrs, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
                     {
-                    selectedTeam.defLine2.map((player, i) => (
+                    selectedTeam.tes.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
-                                rightTitle={'D'}
-                                rightSubtitle={'Def Line 2'}
+                                rightTitle={'TE ' + (i+1)}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.defLine2 , i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.tes , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
                     {
-                    selectedTeam.offLine3.map((player, i) => (
+                    selectedTeam.ol.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
-                                rightSubtitle={'Off Line: 3'}
-                                rightTitle={this.getPositionString(i)}
+                                rightTitle={'OL ' + (i+1)}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.offLine3, i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.ol, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
                     {
-                    selectedTeam.defLine3.map((player, i) => (
+                    selectedTeam.dl.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
-                                rightTitle={'D'}
-                                rightSubtitle={'Def Line 3'}
+                                rightTitle={'DL ' + (i+1)}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.defLine3 , i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.dl , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
                     {
-                    selectedTeam.offLine4.map((player, i) => (
+                    selectedTeam.lbs.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
-                                rightSubtitle={'Off Line: 4'}
-                                rightTitle={this.getPositionString(i)}
+                                rightTitle={'LB ' + (i+1)}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.offLine4, i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.lbs, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
                     {
-                    selectedTeam.goalies.map((player, i) => (
+                    selectedTeam.dbs.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
-                                rightTitle={'G'}
-                                rightSubtitle={i===0? 'STARTER' : 'BACKUP'}
+                                rightTitle={'DB ' + (i+1)}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, selectedTeam.goalies , i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.dbs , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
-                    {
-                    this.reserves().map((player, i) => (
+                       {
+                    selectedTeam.ks.map((player, i) => (
                             <ListItem 
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
-                                rightTitle={'RESERVES'}
+                                rightTitle={'K ' + (i===0? 'STARTER' : 'BACKUP')}
                                 color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
-                                onPress={() => this.selectPlayer(player, reserves , i)}
+                                onPress={() => this.selectPlayer(player, selectedTeam.ks , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
                                 ></ListItem>
                     ))}
+                       {
+                    selectedTeam.ps.map((player, i) => (
+                            <ListItem 
+                                title={player.positionString + ' #' + player.number + ' ' + player.name}
+                                key={i} leftAvatar={ player.faceSrc } 
+                                subtitle={'Rating: ' + player.rating}
+                                rightTitle={'P ' + (i===0? 'STARTER' : 'BACKUP')}
+                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                onPress={() => this.selectPlayer(player, selectedTeam.ps , i)}
+                                onLongPress={() => this.setModalVisible(true, player)}
+
+                                ></ListItem>
+                    ))}
+               
                     
                 </ScrollView>
 

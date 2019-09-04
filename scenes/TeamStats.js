@@ -62,10 +62,10 @@ export default class TeamStats extends React.Component {
               title={team.name}
               key={i}
               leftAvatar={team.logoSrc }
-              subtitle={'GOALS: ' + Math.round(team.seasonPoints/franchise.season.day)
-               + ', ' + 'OPPGOALS : ' + Math.round(team.seasonPointsAllowed/franchise.season.day) 
-               + ', SHOTS: ' + Math.round(team.seasonShots/franchise.season.day)
-               + ', SAVE%: ' + Math.round((team.seasonSaves/(team.seasonSaves + team.seasonGoalsAllowed)*1000))/10
+              subtitle={'PTS: ' + Math.round(team.seasonPoints/franchise.season.day)
+               + ', ' + 'OPPPTS : ' + Math.round(team.seasonPointsAllowed/franchise.season.day) 
+              //  + ', SHOTS: ' + Math.round(team.seasonShots/franchise.season.day)
+              //  + ', SAVE%: ' + Math.round((team.seasonSaves/(team.seasonSaves + team.seasonGoalsAllowed)*1000))/10
             // + ', FGA ' + Math.round(team.seasonFieldGoalsAttempted/franchise.season.day) 
             // + ', FGM ' + Math.round(team.seasonFieldGoalsMade/franchise.season.day) 
             // + ', FG% ' + Math.round((team.seasonFieldGoalsMade/team.seasonFieldGoalsAttempted)*100) 

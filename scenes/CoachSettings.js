@@ -3,34 +3,27 @@ import { Text, View, ScrollView } from 'react-native';
 import { Button, Card, Slider, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
-import { selectedTeam } from '../data/script';
+import { selectedTeam, OFF_PRO, OFF_SPREAD, OFF_OPTION, OFF_PISTOL, DEF_43, DEF_34, DEF_335, DEF_425, DEF_52 } from '../data/script';
 import CachedImage from '../components/CachedImage';
 
 export default class CoachSettings extends React.Component {
     state = {
         offVsDefFocus: selectedTeam.offVsDefFocus,
-        qualityVsQuantity: selectedTeam.qualityVsQuantity,
-        defenseAggresiveVsConservative: selectedTeam.defenseAggresiveVsConservative,
-        forwardsVsDefensemen: selectedTeam.forwardsVsDefensemen,
-        rotationSize: selectedTeam.rotationSize,
-        frontCourtVsBackCourt: selectedTeam.frontCourtVsBackCourt,
-        freezeThePuckVsPlayThePuck: selectedTeam.freezeThePuckVsPlayThePuck
+        offenseType: selectedTeam.offenseType,
+        defenseType: selectedTeam.defenseType
     }
 
 
 
     saveChanges() {
         selectedTeam.offVsDefFocus = this.state.offVsDefFocus;
-        selectedTeam.qualityVsQuantity = this.state.qualityVsQuantity;
-        selectedTeam.defenseAggresiveVsConservative = this.state.defenseAggresiveVsConservative;
-        selectedTeam.forwardsVsDefensemen = this.state.forwardsVsDefensemen;
-        selectedTeam.frontCourtVsBackCourt = this.state.frontCourtVsBackCourt;
-        selectedTeam.freezeThePuckVsPlayThePuck =  this.state.freezeThePuckVsPlayThePuck;
+        selectedTeam.offenseType = this.state.offenseType;
+        selectedTeam.defenseType = this.state.defenseType;
         if(this.props.inGame!=true){
-            if(this.state.rotationSize != selectedTeam.rotationSize){
-                selectedTeam.rotationSize = this.state.rotationSize;
-                selectedTeam.reorderLineup();
-            }
+            // if(this.state.rotationSize != selectedTeam.rotationSize){
+            //     selectedTeam.rotationSize = this.state.rotationSize;
+            //     selectedTeam.reorderLineup();
+            // }
         }
         Actions.pop();
     }
@@ -46,57 +39,38 @@ export default class CoachSettings extends React.Component {
         }
     }
 
-    getqualityVsQuantityString() {
-        if (this.state.qualityVsQuantity === 0) {
-            return "Shot Focus: Balanced"
-        } else if (this.state.qualityVsQuantity > 0) {
-            return "Shot Focus: Quantity"
-        } else {
-            return "Shot Focus: Quality"
+    getOffenseType(){
+        if(this.state.offenseType === OFF_PRO){
+            return "Pro Style"
+        }
+        if(this.state.offenseType === OFF_SPREAD){
+            return "Spread"
+        }
+        if(this.state.offenseType === OFF_OPTION){
+            return "Option"
+        }
+        if(this.state.offenseType === OFF_PISTOL){
+            return "Pistol"
         }
     }
 
-    getdefenseAggresiveVsConservative() {
-        if (this.state.defenseAggresiveVsConservative === 0) {
-            return "Defensive Focus: Balanced"
-        } else if (this.state.defenseAggresiveVsConservative > 0) {
-            return "Defensive Focus: Aggresive"
-        } else {
-            return "Defensive Focus: Conservative"
+    getDefenseType(){
+        if(this.state.defenseType === DEF_43){
+            return "4-3"
+        }
+        if(this.state.defenseType === DEF_34){
+            return "3-4"
+        }
+        if(this.state.defenseType === DEF_335){
+            return "3-3-5"
+        }
+        if(this.state.defenseType === DEF_425){
+            return "4-2-5"
+        }
+        if(this.state.defenseType === DEF_52){
+            return "5-2"
         }
     }
-
-    getforwardsVsDefensemen() {
-        if (this.state.forwardsVsDefensemen === 0) {
-            return "Scoring Focus: Balanced"
-        } else if (this.state.forwardsVsDefensemen > 0) {
-            return "Scoring Focus: Forwards"
-        } else {
-            return "Scoring Focus: Defenseman"
-        }
-    }
-
-    getFrontCourtVsBackCourt() {
-        if (this.state.frontCourtVsBackCourt === 0) {
-            return "Scoring Focus: Balanced"
-        } else if (this.state.frontCourtVsBackCourt > 0) {
-            return "Scoring Focus: Backcourt"
-        } else {
-            return "Scoring Focus: Frontcourt"
-        }
-    }
-
-    getfreezeThePuckVsPlayThePuck() {
-        if (this.state.freezeThePuckVsPlayThePuck === 0) {
-            return "Goalie Focus: Balanced"
-        } else if (this.state.freezeThePuckVsPlayThePuck > 0) {
-            return "Goalie Focus: Play The Puck"
-        } else {
-            return "Goalie Focus: Freeze The Puck"
-        }
-    }
-
-
 
     render() {
         return (
@@ -137,50 +111,27 @@ export default class CoachSettings extends React.Component {
 
 
 
-                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getqualityVsQuantityString()}</Text>
+                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getOffenseType()}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
-                            minimumValue={-3}
+                            minimumValue={0}
                             maximumValue={3}
-                            value={this.state.qualityVsQuantity}
-                            onValueChange={value => { this.setState({ qualityVsQuantity: value }) }}
+                            value={this.state.offenseType}
+                            onValueChange={value => { this.setState({ offenseType: value }) }}
                         />
 
-                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getdefenseAggresiveVsConservative()}</Text>
+                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getDefenseType()}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
-                            minimumValue={-3}
+                            minimumValue={0}
                             maximumValue={3}
-                            value={this.state.defenseAggresiveVsConservative}
-                            onValueChange={value => { this.setState({ defenseAggresiveVsConservative: value }) }}
+                            value={this.state.defenseType}
+                            onValueChange={value => { this.setState({ defenseType: value }) }}
                         />
-
-                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getforwardsVsDefensemen()}</Text>
-                        <Slider
-                            thumbTintColor={'rgb(180,180,180)'}
-                            maximumTrackTintColor={'rgb(180,180,180)'}
-                            step={1}
-                            minimumValue={-3}
-                            maximumValue={3}
-                            value={this.state.forwardsVsDefensemen}
-                            onValueChange={value => { this.setState({ forwardsVsDefensemen: value }) }}
-                        />
-
-                         <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getfreezeThePuckVsPlayThePuck()}</Text>
-                        <Slider
-                            thumbTintColor={'rgb(180,180,180)'}
-                            maximumTrackTintColor={'rgb(180,180,180)'}
-                            step={1}
-                            minimumValue={-3}
-                            maximumValue={3}
-                            value={this.state.freezeThePuckVsPlayThePuck}
-                            onValueChange={value => { this.setState({ freezeThePuckVsPlayThePuck: value }) }}
-                        />            
-
 
                         <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black' }} title="Commit Changes" onPress={() => { this.saveChanges() }}></Button>
 
