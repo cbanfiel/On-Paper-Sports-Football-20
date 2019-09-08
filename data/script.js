@@ -3628,8 +3628,12 @@ export class Franchise {
       //NEW WAY
       for(let i=0; i<teams.length; i++){
         let seedRat = teams.length - teams[i].seed;
-        let rating = Math.round((teams[i].rating + scaleBetween((seedRat), 50, 99, 0, teams.length))/2) - 15;
+        let rating = Math.round((teams[i].rating + scaleBetween((seedRat), 70, 99, 0, teams.length))/2) - 15;
         // console.log(`${teams[i].name} ${rating}`);
+
+        if(teams[i] === selectedTeam){
+          console.log(`generateprospect rating: ${rating}`);
+        }
 
         if(rating<=60){
           rating = 60;
@@ -6155,7 +6159,11 @@ export function generateProspects(team, rating) {
       ply = generatePlayer(chosenPosition, playerRating);
     }
 
-    let interest = Math.round(Math.random()*100);
+    //slight boost with extra random 20%
+    let interest = Math.round(Math.random()*100) + Math.round(Math.random()*20);
+    if(interest>=100){
+      interest = 99;
+    }
     ply.interest = interest;
     team.interestedProspects.roster.push(ply);
   }
@@ -6227,7 +6235,7 @@ let rush =
   Math.floor(Math.random() * 12);
 let speed =
   draftData[playerComparison].speed  -
-  Math.floor(Math.random() * 12);
+  Math.floor(Math.random() * 3);
 let catching =
   draftData[playerComparison].catch  -
   Math.floor(Math.random() * 12);
@@ -6277,6 +6285,37 @@ let block =
       break;
     }
     ply.awareness --;
+    if(ply.position === POS_QB){
+      ply.pass --;
+
+    }
+
+    if(ply.position >= POS_HB && ply.position <= POS_TE){
+      ply.rush --;
+      // ply.speed --;
+      ply.catch --;
+      ply.block --;
+    }
+
+    if(ply.position >= POS_LT && ply.position <= POS_RT){
+      ply.block --;
+    }
+
+    if(ply.position >= POS_LE && ply.position <= POS_RE){
+      ply.breakBlock --;
+      ply.tackle --;
+    }
+
+    if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+      ply.breakBlock --;
+      ply.tackle --;
+      ply.catch --;
+      // ply.speed --;
+    }
+
+    if(ply.position >= POS_K && ply.position <= POS_P){
+      ply.kick --;
+    }
     ply.calculateRating();
   }
 

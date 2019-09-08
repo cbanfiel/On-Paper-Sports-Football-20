@@ -137,6 +137,7 @@ export default class RosterList extends React.Component {
                     title={player.positionString + ' #' + player.number + ' ' + player.name}
                      leftAvatar={ player.faceSrc } 
                     subtitle={'Rating: ' + player.rating}
+                    rightAvatar= {player.teamLogoSrc}
                     onPress={() => {Actions.playerstatshistory({ player: player })}}
                     onLongPress={() => this.setModalVisible(true, player)}
 
