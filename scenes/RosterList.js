@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ScrollView, Alert, TouchableOpacity, Modal, Text, Dimensions } from 'react-native';
 import { Button, Input, Icon } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { sortedRoster, collegeMode, releasePlayer, saveAsDraftClass, manageSaveName, selectedTeam } from '../data/script';
+import { sortedRoster, collegeMode, releasePlayer, saveAsDraftClass, manageSaveName, selectedTeam, REDSHIRT_LOGO, checkRequirementsWithoutPlayer } from '../data/script';
 import Background from '../components/background';
 import TeamHeader from '../components/TeamHeader';
 import ListItem from '../components/ListItem';
@@ -13,6 +13,38 @@ var {height, width} = Dimensions.get('window');
 
 
 export default class RosterList extends React.Component {
+
+    redshirtPlayer = (ply) => {
+
+        if(!ply.redshirt){
+            //check requirements 
+            let requirementsMet = true;
+            if(ply.redshirted === false){
+                requirementsMet = checkRequirementsWithoutPlayer(ply,selectedTeam);
+            }
+                if(!requirementsMet){
+                    Alert.alert('Position requirements not met!');
+                    return;
+                }
+
+                ply.redshirted = !ply.redshirted;
+                selectedTeam.manageFootballLineup();
+                let data = [];
+        
+                for(let i=0; i<this.props.selectedTeam.roster.length; i++){
+                    data.push({
+                      type:'NORMAL',
+                      item: sortedRoster(this.props.selectedTeam,'rating')[i]
+                    })
+                  }
+                this.setState({
+                  list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data)
+                });
+        }else{
+            Alert.alert(`${ply.name} was already redshirted before`);
+        }
+
+    }
 
     updateState = () =>{
         let data = [];
@@ -162,10 +194,24 @@ export default class RosterList extends React.Component {
                                 title={player.positionString + ' #' + player.number + ' ' + player.name}
                                  leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
-                                rightTitle={collegeMode?( player.age >= 21? 'SR' : player.age === 20? 'JR' : player.age===19? 'SO' : player.age===18? 'FR' : null ) : null }
+                                rightTitle={collegeMode?(player.getCollegeYearString()) : null }
                                 onPress={() => {Actions.trainingscreen({player: player, points: this.props.selectedTeam.trainingPoints, update:this.updateState})}}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
+                                ></ListItem>
+                )
+            } 
+            if(this.props.view === 'redshirt'){
+                return(
+                    <ListItem
+                                title={player.positionString + ' #' + player.number + ' ' + player.name}
+                                 leftAvatar={ player.faceSrc } 
+                                subtitle={'Rating: ' + player.rating}
+                                rightTitle={collegeMode?(player.getCollegeYearString()) : null }
+                                rightAvatar={player.redshirted? REDSHIRT_LOGO: null}
+                                rightAvatarStyle={ {flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 15, width: 1}}
+                                onPress={() => {this.redshirtPlayer(player)}}
+                                onLongPress={() => this.setModalVisible(true, player)}
                                 ></ListItem>
                 )
             } 
@@ -174,7 +220,7 @@ export default class RosterList extends React.Component {
                     title={player.positionString + ' #' + player.number + ' ' + player.name}
                      leftAvatar={ player.faceSrc } 
                     subtitle={'Rating: ' + player.rating}
-                    rightTitle={collegeMode?( player.age >= 21? 'SR' : player.age === 20? 'JR' : player.age===19? 'SO' : player.age===18? 'FR' : null ) : null }
+                    rightTitle={collegeMode?(player.getCollegeYearString()) : null }
                     onPress={() => {Actions.playerprofile({selectedPlayer : player, update:this.updateState})}}
                     onLongPress={() => this.setModalVisible(true, player)}
 

@@ -60,6 +60,8 @@ export const DEF_335 = 2;
 export const DEF_425 = 3;
 export const DEF_52 = 4;
 
+export const REDSHIRT_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Redshirt.svg/1280px-Redshirt.svg.png';
+
 
 
 
@@ -226,6 +228,8 @@ class Player {
     this.role = 0;
     this.tempRole = 0;
     this.trained = false;
+    this.redshirted = false;
+    this.redshirt = false;
 
     //rotation
     this.minutes = 0;
@@ -317,6 +321,27 @@ class Player {
     this.seasonAssists = 0;
 
     // console.log(this.name + " " + this.years + " " + this.salary);
+  }
+
+  getCollegeYearString(){
+    let str = ''
+    if(this.age === 18){
+      str = 'FR'
+    }
+    if(this.age === 19){
+      str = 'SO'
+    }
+    if(this.age === 20){
+      str = 'JR'
+    }
+    if(this.age >= 21){
+      str = 'SR'
+    }
+
+    if(this.redshirt || this.redshirted){
+      str += ' (RS)';
+    }
+    return str;
   }
 
   getPositionString() {
@@ -831,38 +856,7 @@ class Team {
 
     for (let i = 0; i < this.roster.length; i++) {
       let player = this.roster[i];
-      if (player.position === 0) {
-        this.qbs.push(player);
-      } else if (player.position === 1) {
-        this.rbs.push(player);
-      } else if (player.position === 2) {
-        this.fbs.push(player);
-      } else if (player.position === 3) {
-        this.wrs.push(player);
-      } else if (player.position === 4) {
-        this.tes.push(player);
-      }
-      else if (player.position > 4 && player.position < 10) {
-        this.ol.push(player);
-      }
-      else if (player.position >=POS_LE && player.position <= POS_DT) {
-        this.dl.push(player);
-      }
-      else if (player.position >= 13 && player.position <= 15) {
-        this.lbs.push(player);
-      }
-      else if (player.position > 15 && player.position < 19) {
-        this.dbs.push(player);
-      }
-      else if (player.position === 19) {
-        this.ks.push(player);
-      }
-      else if (player.position === 20) {
-        this.ps.push(player);
-      }
-
-      for (let i = 0; i < this.offered.length; i++) {
-        let player = this.offered[i];
+      if(!player.redshirted){
         if (player.position === 0) {
           this.qbs.push(player);
         } else if (player.position === 1) {
@@ -892,7 +886,41 @@ class Team {
         else if (player.position === 20) {
           this.ps.push(player);
         }
-    }
+
+      }
+
+    //   for (let i = 0; i < this.offered.length; i++) {
+    //     let player = this.offered[i];
+    //     if (player.position === 0) {
+    //       this.qbs.push(player);
+    //     } else if (player.position === 1) {
+    //       this.rbs.push(player);
+    //     } else if (player.position === 2) {
+    //       this.fbs.push(player);
+    //     } else if (player.position === 3) {
+    //       this.wrs.push(player);
+    //     } else if (player.position === 4) {
+    //       this.tes.push(player);
+    //     }
+    //     else if (player.position > 4 && player.position < 10) {
+    //       this.ol.push(player);
+    //     }
+    //     else if (player.position >=POS_LE && player.position <= POS_DT) {
+    //       this.dl.push(player);
+    //     }
+    //     else if (player.position >= 13 && player.position <= 15) {
+    //       this.lbs.push(player);
+    //     }
+    //     else if (player.position > 15 && player.position < 19) {
+    //       this.dbs.push(player);
+    //     }
+    //     else if (player.position === 19) {
+    //       this.ks.push(player);
+    //     }
+    //     else if (player.position === 20) {
+    //       this.ps.push(player);
+    //     }
+    // }
   }
 
     // let missingRequirements = this.checkRequirements()
@@ -1787,6 +1815,35 @@ export class Game {
     } else {
       def = home;
     }
+    //4-3
+    let lbsOnField = 4;
+    let dlOnField = 3;
+    let dbsOnField = 4;
+    if(def.defenseType === DEF_43){
+      dlOnField = 4;
+      lbsOnField = 3;
+      dbsOnField = 4;
+    }
+    if(def.defenseType === DEF_335){
+      dlOnField = 3;
+      lbsOnField = 3;
+      dbsOnField = 5;
+    }
+    if(def.defenseType === DEF_34){
+      dlOnField = 3;
+      lbsOnField = 4;
+      dbsOnField = 4;
+    }
+    if(def.defenseType === DEF_425){
+      dlOnField = 4;
+      lbsOnField = 2;
+      dbsOnField = 5;
+    }
+    if(def.defenseType === DEF_52){
+      dlOnField = 5;
+      lbsOnField = 2;
+      dbsOnField = 4;
+    }
 
     // let ratingDiff = Math.round((off.rating - def.rating) / 6);
     let ratingDiff =  0;
@@ -1847,7 +1904,6 @@ export class Game {
         }
         spotlightPlayer = punter;
 
-
         let power = scaleBetween(punter.kick, 20, 55, 40, 99);
         let rand = Math.random() * 10;
 
@@ -1885,7 +1941,7 @@ export class Game {
       }
 
       let dLineModifier = 0;
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < dlOnField; i++) {
         dLineModifier += def.dl[i].rating;
       }
 
@@ -2714,7 +2770,12 @@ export class Franchise {
     for (let i = 0; i < teams.length; i++) {
       for (let j = 0; j < teams[i].roster.length; j++) {
         let ply = teams[i].roster[j];
-        ply.age++;
+        if(ply.redshirted){
+          ply.redshirted = false;
+          ply.redshirt = true;
+        }else{
+          ply.age++;
+        }
 
         let history = "";
         //SAVE PREVIOUS SEASONS STATS
@@ -3628,7 +3689,7 @@ export class Franchise {
       //NEW WAY
       for(let i=0; i<teams.length; i++){
         let seedRat = teams.length - teams[i].seed;
-        let rating = Math.round((teams[i].rating + scaleBetween((seedRat), 70, 99, 0, teams.length))/2) - 15;
+        let rating = Math.round((teams[i].rating + scaleBetween((seedRat), 70, 99, 0, teams.length))/2) - 10;
         // console.log(`${teams[i].name} ${rating}`);
 
         if(teams[i] === selectedTeam){
@@ -6325,4 +6386,40 @@ let block =
 
   return ply;
 
+}
+
+
+export function checkRequirementsWithoutPlayer(ply, team){
+  if(ply.position === POS_QB){
+    return (team.qbs.length - 1) >= POS_QB_REQUIREMENTS
+  }
+  if(ply.position === POS_HB){
+    return (team.rbs.length - 1) >= POS_HB_REQUIREMENTS
+  }
+  if(ply.position === POS_WR){
+    return (team.wrs.length - 1) >= POS_WR_REQUIREMENTS
+  }
+  if(ply.position === POS_TE){
+    return (team.tes.length - 1) >= POS_TE_REQUIREMENTS
+  }
+  if(ply.position >= POS_LT && ply.position <= POS_RT){
+    return (team.ol.length - 1) >= POS_OL_REQUIREMENTS
+  }
+  if(ply.position >= POS_LE && ply.position <= POS_DT){
+    return (team.dl.length - 1) >= POS_DL_REQUIREMENTS
+  }
+  if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
+    return (team.lbs.length - 1) >= POS_LB_REQUIREMENTS
+  }
+  if(ply.position >= POS_CB && ply.position <= POS_SS){
+    return (team.dbs.length - 1) >= POS_DB_REQUIREMENTS
+  }
+  if(ply.position === POS_K){
+    return (team.ks.length - 1) >= POS_K_REQUIREMENTS
+  }
+  if(ply.position === POS_P){
+    return (team.ps.length - 1) >= POS_P_REQUIREMENTS
+  }
+
+  return true;
 }
