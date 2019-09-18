@@ -31,4 +31,17 @@ Pick Play
 
 
 
+//updated 9-12-19 
+OFFENSIVE Play
+
+A) pick play (depends on offensive scheme){
+    1.select recievers (wrs, rbs, tes);
+    2.
+}
+
+
+
+
+
+
 

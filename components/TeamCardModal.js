@@ -35,7 +35,7 @@ export default class TeamCardModal extends Component {
                     
                 <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"OVR: " + this.props.modalTeam.rating}</Text>
                 <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"CAP ROOM: $" + displaySalary(calculateCapRoom(this.props.modalTeam)) }</Text>
-                <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"RECORD: " + this.props.modalTeam.wins + '-' + (this.props.modalTeam.losses-this.props.modalTeam.otLosses) + '-' + this.props.modalTeam.otLosses }</Text>
+                <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"RECORD: " + this.props.modalTeam.wins + '-' + this.props.modalTeam.losses}</Text>
                 <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"SEED: " + this.props.modalTeam.seed }</Text>
                 <Text style={{ color: 'black', fontSize: 18, fontFamily: 'advent-pro' }}>{"OVR RANK: " + this.powerRanking() }</Text>
                 

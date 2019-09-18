@@ -65,7 +65,7 @@ export const REDSHIRT_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/thu
 
 
 
-const rosterSize = 55;
+const rosterSize = 65;
 const maxRosterSize = 70;
 export const CAPROOM = 190000000;
 const VETERANSMINIMUM = 900000;
@@ -577,6 +577,15 @@ class Team {
     this.id = team.id;
     this.name = team.name;
     this.rating = 0;
+
+    //this will be updated every game
+    this.defenseRating = 0;
+    this.offenseRating = 0;
+
+    this.scheduleRating = 0;
+
+    this.totalRankingRating = 0;
+
     this.logoSrc = team.logoSrc;
     this.schedule = [];
     this.played = [];
@@ -715,6 +724,16 @@ class Team {
 
     this.offStarters = {passers: [], runners:[], recievers:[], blockers:[]};
     this.defStarters = {rushers: [], intercepters: []}
+  }
+
+  generateScheduleRating(){
+    let rat = 0;
+    for(let i=0; i<this.schedule.length; i++){
+      rat += this.schedule[i].rating;
+    }
+
+    this.scheduleRating = Math.round(rat/this.schedule.length);
+    
   }
 
   releaseExpiring() {
@@ -1654,6 +1673,11 @@ export class Game {
     this.possResult = [];
     this.quarter = 1;
     this.overtime = false;
+    this.setOffRating(home);
+    this.setOffRating(away);
+    this.setDefRating(home);
+    this.setDefRating(away);
+
 
     this.down = 1;
     this.yardsToFirst = 10;
@@ -1705,12 +1729,11 @@ export class Game {
 
   }
 
-  selectDBTackler(def){
+  selectDBTackler(def, dbsOnField){
     let tacklers = [];
-    tacklers.push(def.dbs[0]);
-    tacklers.push(def.dbs[1]);
-    tacklers.push(def.dbs[2]);
-    tacklers.push(def.dbs[3]);
+    for(let i=0; i<dbsOnField; i++){
+      tacklers.push(def.dbs[i]);
+    }
 
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
@@ -1726,16 +1749,16 @@ export class Game {
     }
   }
 
-  selectLBTackler(def){
+  selectLBTackler(def, lbsOnField){
     let tacklers = [];
 
    
 
-    for(let i=0; i<def.lbs.length; i++){
-      tacklers.push(def.lbs[i]);
-      if(i>=3){
+    for(let i=0; i<lbsOnField; i++){
+      if(i===def.lbs.length){
         break;
       }
+      tacklers.push(def.lbs[i]);
     }
 
     let tot = 0;
@@ -1752,13 +1775,11 @@ export class Game {
     }
   }
 
-  selectDLTackler(def){
+  selectDLTackler(def, dlOnField){
     let tacklers = [];
-    tacklers.push(def.dl[0]);
-    tacklers.push(def.dl[1]);
-    tacklers.push(def.dl[2]);
-    tacklers.push(def.dl[3]);
-
+    for(let i=0; i<dlOnField; i++){
+      tacklers.push(def.dl[i]);
+    }
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
       tot += tacklers[i].tackle + tacklers[i].awareness;
@@ -1798,6 +1819,54 @@ export class Game {
     return off.rbs[0];
   }
 
+  setOffRating(team){
+    let sum = 0;
+    sum+=(team.qbs[0].rating);
+    sum+=(team.rbs[0].rating);
+    
+    let recievers = [];
+    for(let i=0; i<team.tes.length; i++){
+      recievers.push(team.tes[i]);
+    }
+    for(let i=0; i<team.wrs.length; i++){
+      recievers.push(team.wrs[i]);
+    }
+
+    recievers.sort(function (a, b) {
+      if (a.rating > b.rating) return -1;
+      if (a.rating < b.rating) return 1;
+      return 0;
+    });
+
+    for(let i=0; i<5; i++){
+      sum += recievers[i].rating;
+    }
+    
+    sum+=(team.ol[0].rating);
+    sum+=(team.ol[1].rating);
+    sum+=(team.ol[2].rating);
+    sum+=(team.ol[3].rating);
+    sum+=(team.ol[4].rating);
+
+    team.offenseRating = Math.round(sum/11);
+  }
+  setDefRating(team){
+    let sum = 0;
+    sum+=(team.dl[0].rating);
+    sum+=(team.dl[1].rating);
+    sum+=(team.dl[2].rating);
+    sum+=(team.dl[3].rating);
+    sum+=(team.lbs[0].rating);
+    sum+=(team.lbs[1].rating);
+    sum+=(team.lbs[2].rating);
+    sum+=(team.dbs[0].rating);
+    sum+=(team.dbs[1].rating);
+    sum+=(team.dbs[2].rating);
+    sum+=(team.dbs[3].rating);
+    team.defenseRating = Math.round(sum/11);
+
+  }
+
 
   footballPlay() {
     let result = ""
@@ -1815,6 +1884,15 @@ export class Game {
     } else {
       def = home;
     }
+
+    let totalOffMod = scaleBetween(off.offenseRating, 0, 10, 40, 99);
+    let totalDefMod = scaleBetween(def.defenseRating, 0, 10, 40, 99);
+
+    yardModifier = Math.round(Math.random()*(totalOffMod - totalDefMod));
+    // console.log(totalOffMod - totalDefMod);
+    // console.log(`yard ${yardModifier}`);
+
+
     //4-3
     let lbsOnField = 4;
     let dlOnField = 3;
@@ -1970,7 +2048,7 @@ export class Game {
 
         let target = this.selectReciever(off);
         
-        let defender = def.dbs[0];
+        let defender = this.selectDBTackler(def, dbsOnField);
 
         let speedVsSpeed = (target.speed - defender.speed) / 2;
         let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99)
@@ -1993,12 +2071,12 @@ export class Game {
           let tackler;
           yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier);
           if(yardsGained > 12){
-            tackler = this.selectDBTackler(def);
+            tackler = this.selectDBTackler(def, dbsOnField);
           }else{
             if(Math.random()*100 > 50){
-              tackler = this.selectLBTackler(def);
+              tackler = this.selectLBTackler(def, lbsOnField);
             }else{
-              tackler = this.selectDBTackler(def);
+              tackler = this.selectDBTackler(def, dbsOnField);
             }
           }
           qb.yards += yardsGained;
@@ -2061,12 +2139,12 @@ export class Game {
 
 
         if(yardsGained > 12){
-          tackler = this.selectDBTackler(def);
+          tackler = this.selectDBTackler(def, dbsOnField);
         }else{
           if(Math.random()*100 > 50){
-            tackler = this.selectLBTackler(def);
+            tackler = this.selectLBTackler(def, lbsOnField);
           }else{
-            tackler = this.selectDLTackler(def);
+            tackler = this.selectDLTackler(def, dlOnField);
           }
         }
 
@@ -2443,11 +2521,19 @@ export class Season {
             teams[j].schedule[i] = teams[j + 1];
             teams[j + 1].schedule[i] = teams[j];
           } catch {
+            //bye week catch
             teams[j].schedule[i] = teams[j];
           }
         }
       }
+
     }
+
+    for(let i=0; i<teams.length; i++){
+      teams[i].generateScheduleRating();
+    }
+
+
   }
 
   manualDay() {
@@ -4350,14 +4436,19 @@ function sortStandings() {
     }
   } else {
     //rating first then wins
+    //rating formula
+    for(let i=0; i<teams.length; i++){
+      teams[i].totalRankingRating = (teams[i].scheduleRating + (teams[i].rating*2) + ((teams[i].wins/teams[i].schedule.length)*100)) / 4;
+      // console.log(`Team: ${teams[i].name} schedRat:${teams[i].scheduleRating} wins:${((teams[i].wins/teams[i].schedule.length)*100)} total:${(teams[i].scheduleRating + teams[i].rating + ((teams[i].wins/teams[i].schedule.length)*100)) / 3}`)
+
+      
+    }
+
+
+
     teams.sort(function (a, b) {
-      if (a.rating > b.rating) return -1;
-      if (a.rating < b.rating) return 1;
-      return 0;
-    });
-    teams.sort(function (a, b) {
-      if (a.wins > b.wins) return -1;
-      if (a.wins < b.wins) return 1;
+      if (a.totalRankingRating > b.totalRankingRating) return -1;
+      if (a.totalRankingRating < b.totalRankingRating) return 1;
       return 0;
     });
 
@@ -4379,15 +4470,22 @@ export function standings(conferenceId) {
     }
   }
 
-  sorted.sort(function (a, b) {
-    if (a.rating > b.rating) return -1;
-    if (a.rating < b.rating) return 1;
-    return 0;
-  });
+  //CHANGED TO USE SEED NOT RESORTING
+  // sorted.sort(function (a, b) {
+  //   if (a.rating > b.rating) return -1;
+  //   if (a.rating < b.rating) return 1;
+  //   return 0;
+  // });
+
+  // sorted.sort(function (a, b) {
+  //   if (a.wins > b.wins) return -1;
+  //   if (a.wins < b.wins) return 1;
+  //   return 0;
+  // });
 
   sorted.sort(function (a, b) {
-    if (a.wins > b.wins) return -1;
-    if (a.wins < b.wins) return 1;
+    if (a.seed < b.seed) return -1;
+    if (a.seed > b.seed) return 1;
     return 0;
   });
   return sorted;
