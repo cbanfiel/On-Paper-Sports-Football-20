@@ -582,6 +582,9 @@ class Team {
     this.defenseRating = 0;
     this.offenseRating = 0;
 
+    this.division = team.division;
+   
+
     this.scheduleRating = 0;
 
     this.totalRankingRating = 0;
@@ -2513,21 +2516,51 @@ export class Season {
       availableFreeAgents.roster[i].seasonSacks = 0;
     }
 
+    //scheduling
     for (let i = 0; i < this.games; i++) {
       shuffle(teams);
+
+      teams.sort(function (a, b) {
+        if (a.division > b.division) return -1;
+        if (a.division < b.division) return 1;
+        return 0;
+      });
+
+      let nonConfGames = [];
+
       for (let j = 0; j < teams.length; j++) {
         if (teams[j].schedule[i] == null) {
-          try {
-            teams[j].schedule[i] = teams[j + 1];
-            teams[j + 1].schedule[i] = teams[j];
-          } catch {
-            //bye week catch
-            teams[j].schedule[i] = teams[j];
+            if(j+1 > teams.length-1){
+              //push to nonconf
+              nonConfGames.push(teams[j]);
+            }else{
+
+            if(teams[j].division != teams[j+1].division || (teams[j].schedule.includes(teams[j+1]))){
+              nonConfGames.push(teams[j]);
+              nonConfGames.push(teams[j+1]);
+              j++;
+            }else{
+              teams[j].schedule[i] = teams[j + 1];
+              teams[j + 1].schedule[i] = teams[j];
+            }
           }
         }
       }
 
-    }
+      shuffle(nonConfGames);
+
+      for (let j = 0; j < nonConfGames.length; j++) {
+        if (nonConfGames[j].schedule[i] == null) {
+          if(j+1 > nonConfGames.length-1){
+            //bye week
+            nonConfGames[j].schedule[i] = nonConfGames[j];
+          }else{
+            nonConfGames[j].schedule[i] = nonConfGames[j + 1];
+            nonConfGames[j + 1].schedule[i] = nonConfGames[j];
+          }
+          }
+        }
+      }
 
     for(let i=0; i<teams.length; i++){
       teams[i].generateScheduleRating();
@@ -2696,6 +2729,7 @@ export class Franchise {
 
   startPlayoffs() {
     for (let i = 0; i < conferences.length; i++) {
+      //check this again
       conferences[i].teams.sort(function (a, b) {
         if (a.wins > b.wins) return -1;
         if (a.wins < b.wins) return 1;
@@ -4438,7 +4472,7 @@ function sortStandings() {
     //rating first then wins
     //rating formula
     for(let i=0; i<teams.length; i++){
-      teams[i].totalRankingRating = (teams[i].scheduleRating + (teams[i].rating*2) + ((teams[i].wins/teams[i].schedule.length)*100)) / 4;
+      teams[i].totalRankingRating = ((teams[i].scheduleRating*1.5) + (teams[i].rating*1.5) + ((teams[i].wins/teams[i].schedule.length)*100)) / 4;
       // console.log(`Team: ${teams[i].name} schedRat:${teams[i].scheduleRating} wins:${((teams[i].wins/teams[i].schedule.length)*100)} total:${(teams[i].scheduleRating + teams[i].rating + ((teams[i].wins/teams[i].schedule.length)*100)) / 3}`)
 
       
