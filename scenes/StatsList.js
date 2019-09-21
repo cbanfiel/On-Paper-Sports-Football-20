@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, Dimensions, Modal, TouchableOpacity, View } from 'react-native';
-import {Icon} from 'react-native-elements';
+import {Icon, Button} from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
 import { sortedRoster, allPlayers, returnStatsListView, returnSeasonStatsListView } from '../data/script';
@@ -118,8 +118,6 @@ export default class StatsList extends React.Component {
                         </Modal>
                     ) : null
                 }
-
-
 
 <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
 

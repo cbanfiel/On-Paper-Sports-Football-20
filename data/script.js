@@ -706,6 +706,9 @@ class Team {
     this.offVsDefFocus = Math.round(Math.random() * 6) - 3;
     this.offenseType = Math.floor(Math.random()*4);
     this.defenseType = Math.floor(Math.random()*3);
+    //run pref is lower number
+    //rand between 40-60
+    this.runVsPass = (Math.round(Math.random()*20))+40;
 
     //football
     this.qbs = [];
@@ -1798,13 +1801,18 @@ export class Game {
   }
 
   selectRunner(off){
+
+    let qbRunPercentageBoost = scaleBetween(off.qbs[0].speed, -10,10,40,99);
+    // console.log(`qbrunpercentboost: ${qbRunPercentageBoost}`);
+
+
     if(Math.random()*100 > 85){
       //backup rb run
       return off.rbs[1];
     }
 
     if(off.offenseType === OFF_SPREAD){
-      if(Math.random()*100 > 80){
+      if(Math.random()*100 > (80-qbRunPercentageBoost)){
         return off.qbs[0];
       }else{
         return off.rbs[0];
@@ -1812,7 +1820,7 @@ export class Game {
     }
 
     if(off.offenseType === OFF_OPTION){
-      if(Math.random()*100 > 65){
+      if(Math.random()*100 > (65-qbRunPercentageBoost)){
         return off.qbs[0];
       }else{
         return off.rbs[0];
@@ -1875,11 +1883,6 @@ export class Game {
     let result = ""
     let spotlightPlayer;
 
-    let yardModifier = 0;
-
-
-    
-
     let off = this.inPossesion;
     let def;
     if (off === home) {
@@ -1888,153 +1891,23 @@ export class Game {
       def = home;
     }
 
-    let totalOffMod = scaleBetween(off.offenseRating, 0, 10, 40, 99);
-    let totalDefMod = scaleBetween(def.defenseRating, 0, 10, 40, 99);
+    let yardModifier = 0;
 
-    yardModifier = Math.round(Math.random()*(totalOffMod - totalDefMod));
-    // console.log(totalOffMod - totalDefMod);
-    // console.log(`yard ${yardModifier}`);
-
-
-    //4-3
-    let lbsOnField = 4;
-    let dlOnField = 3;
-    let dbsOnField = 4;
-    if(def.defenseType === DEF_43){
-      dlOnField = 4;
-      lbsOnField = 3;
-      dbsOnField = 4;
-    }
-    if(def.defenseType === DEF_335){
-      dlOnField = 3;
-      lbsOnField = 3;
-      dbsOnField = 5;
-    }
-    if(def.defenseType === DEF_34){
-      dlOnField = 3;
-      lbsOnField = 4;
-      dbsOnField = 4;
-    }
-    if(def.defenseType === DEF_425){
-      dlOnField = 4;
-      lbsOnField = 2;
-      dbsOnField = 5;
-    }
-    if(def.defenseType === DEF_52){
-      dlOnField = 5;
-      lbsOnField = 2;
-      dbsOnField = 4;
-    }
-
-    // let ratingDiff = Math.round((off.rating - def.rating) / 6);
-    let ratingDiff =  0;
-
-
-    if (Math.random() * 100 < 4 + ratingDiff) {
-      yardModifier += Math.round(Math.random() * 60);
-    }else{
-      yardModifier = Math.round(Math.random()* ratingDiff);
-    }
-
-    if(yardModifier < 0){
-      yardModifier = 0;
-    }
-
+    let { dlOnField, dbsOnField, lbsOnField } = this.defensiveScheme(def);
 
     if (this.down >= 4) {
-
       let kickerDistance = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
       if (kickerDistance >= (100 - this.yardMarker)) {
         //att fg
-        off.ks[0].kicksAttempted++;
-
-        let kickerPercentage = scaleBetween(off.ks[0].kick, 50, 99, 40, 99);
-        let distanceAdjustment = scaleBetween((100 - this.yardMarker), 0, 30, 0, 60);
-
-        let percent = kickerPercentage - distanceAdjustment;
-        // console.log('kickerpower' + kickerDistance);
-        // console.log('distance' + (100- this.yardMarker));
-
-        // console.log(kickerPercentage);
-        // console.log(distanceAdjustment);
-        // console.log(percent);
-        if (percent > Math.random() * 100) {
-          off.ks[0].kicksMade++;
-          if (off === home) {
-            this.homescore += 3;
-          } else {
-            this.awayscore += 3;
-          }
-          spotlightPlayer = off.ks[0];
-          result = "makes a " + (100 - this.yardMarker) + "yard fieldgoal!";
-        } else {
-          spotlightPlayer = off.ks[0];
-          result = "misses a " + (100 - this.yardMarker) + "yard fieldgoal!";
-        }
-
-        this.inPossesion = def;
-        this.yardMarker = 20;
-        this.down = 1;
-        this.yardsToFirst = 10;
-
+        ({ spotlightPlayer, result } = this.fieldGoal(off, spotlightPlayer, result, def));
       } else {
-
-        let punter = off.ps[0];
-        if(off.ps.length < 1){
-          punter = off.ks[0];
-        }
-        spotlightPlayer = punter;
-
-        let power = scaleBetween(punter.kick, 20, 55, 40, 99);
-        let rand = Math.random() * 10;
-
-        let kickDistance = Math.round(power + rand);
-
-        let smtn = kickDistance + this.yardMarker;
-
-        if (smtn <= 0) {
-          this.yardMarker = 20;
-        } else {
-          this.yardMarker = 100 - smtn
-        }
-
-        result = "punts it away for " + kickDistance + " yards!";
-
-        this.inPossesion = def;
-        this.yardMarker = 20;
-        this.down = 1;
-        this.yardsToFirst = 10;
-
-
         //punt
+        ({ spotlightPlayer, result } = this.punt(off, spotlightPlayer, result, def));
       }
-
     } else {
-
       let yardsGained = 0;
       //slider setup move out of function when complete
-      oLineSlider = 12;
-      dLineSlider = 12;
-
-      let oLineModifier = 0;
-      for (let i = 0; i < 5; i++) {
-        oLineModifier += off.ol[i].rating;
-      }
-
-      let dLineModifier = 0;
-      for (let i = 0; i < dlOnField; i++) {
-        dLineModifier += def.dl[i].rating;
-      }
-
-      let scaledOline = scaleBetween(oLineModifier, 0, oLineSlider, (40 * 5), (99 * 5));
-      let scaledDline = scaleBetween(dLineModifier, 0, dLineSlider, (40 * 3), (99 * 5));
-
-
-      // console.log(`scaledOline:  ${scaledOline}`);
-      // console.log(`scaledDline:  ${scaledDline}`);
-
-      let lineInteraction = Math.random()*scaledOline - Math.random()*scaledDline;
-
+      let lineInteraction = this.playerModifiers(off, dlOnField, def, dbsOnField, lbsOnField);
 
       let playSelection = Math.random() * 100;
       
@@ -2042,124 +1915,14 @@ export class Game {
         playSelection += 20;
       }
 
-      if (playSelection > 40) {
+      if (playSelection < off.runVsPass) {
         //pass
-        let qb = off.qbs[0];
-        let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
-        let scaledQbPass = scaleBetween(qb.pass, 0, 15, 40, 99);
-
-
-        let target = this.selectReciever(off);
-        
-        let defender = this.selectDBTackler(def, dbsOnField);
-
-        let speedVsSpeed = (target.speed - defender.speed) / 2;
-        let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99)
-
-        let scaledDefenderAwareness = scaleBetween(defender.awareness, 0, 10, 40, 99);
-
-        let completionPercentage = 37 + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction;
-        qb.attempts++;
-        if (Math.random() * 100 < completionPercentage) {
-          //completion
-          qb.completions++;
-          target.receptions++;
-          let wrSkill = scaleBetween(target.rating, 0, 9, 40, 99);
-          let random = Math.random()*8;
-          let wrYardage = wrSkill + (Math.random() * scaledQbPass) - random;
-          let yardsAfterCatch = scaleBetween(target.speed, 0, 5, 60, 99);
-          if (yardsAfterCatch < 0) {
-            yardsAfterCatch = 0;
-          }
-          let tackler;
-          yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier);
-          if(yardsGained > 12){
-            tackler = this.selectDBTackler(def, dbsOnField);
-          }else{
-            if(Math.random()*100 > 50){
-              tackler = this.selectLBTackler(def, lbsOnField);
-            }else{
-              tackler = this.selectDBTackler(def, dbsOnField);
-            }
-          }
-          qb.yards += yardsGained;
-          target.yards += yardsGained;
-          tackler.tackles++;
-          if (this.checkForTouchDown(yardsGained)) {
-            qb.touchdowns++;
-            target.touchdowns++;
-          }
-          spotlightPlayer = qb;
-          result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
-        } else {
-          //incomplete check for int
-          spotlightPlayer = qb;
-          result = " throws an incomplete pass intended for " + target.name;
-
-          let defenderInt = scaleBetween(defender.catch, 0, 5, 40, 99);
-
-          let qbDecisionMaking = scaleBetween(qb.awareness, 0, 5, 40, 99);
-          let random  = Math.random()*10;
-          let intPercentage = random - qbDecisionMaking + defenderInt;
-          // console.log(intPercentage);
-          if(intPercentage > Math.random()*100){
-            //int
-            defender.interceptions++;
-            qb.interceptions++;
-            let yardsReturned = Math.round(Math.random()*15);
-            this.inPossesion = def;
-            this.yardMarker = (100 - this.yardMarker) + yardsReturned;
-            this.down = 1;
-            this.yardsToFirst = 10;
-            spotlightPlayer = defender;
-            result = " intercepts  " + qb.name;
-          }
-
-
-
-
-          yardsGained = 0;
-        }
+        ({ yardsGained, spotlightPlayer, result } = this.pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField));
 
       } else {
         //run
-        let runner = this.selectRunner(off);
-
-        let initialYardage = scaleBetween(runner.speed, 0, 4, 40, 99);
-
-        let yardsAfterContact = scaleBetween(runner.rush, 0, 4, 40, 99);
-
-        let randYards = Math.random()*4;
-
-        yardsGained = Math.round(initialYardage - randYards + yardModifier + lineInteraction + yardsAfterContact);
-
-        // console.log(`lineInteraction:  ${lineInteraction}`);
-        // console.log(`initialYdg:  ${initialYardage}`);
-        // console.log(`randYards:  ${randYards}`);
-        // console.log(`ydsGained:  ${yardsGained}`);
-        // console.log(' ');
-
-
-
-        if(yardsGained > 12){
-          tackler = this.selectDBTackler(def, dbsOnField);
-        }else{
-          if(Math.random()*100 > 50){
-            tackler = this.selectLBTackler(def, lbsOnField);
-          }else{
-            tackler = this.selectDLTackler(def, dlOnField);
-          }
-        }
-
-        tackler.tackles++;
-        runner.rushAttempts++;
-        runner.rushYards += yardsGained;
-        if (this.checkForTouchDown(yardsGained)) {
-          runner.rushTouchdowns++;
-        }
-        spotlightPlayer = runner;
-        result = " runs for " + yardsGained + " yards";
-      }
+        ({ yardsGained, spotlightPlayer, result } = this.run(off, yardsGained, yardModifier, lineInteraction, def, dbsOnField, lbsOnField, dlOnField, spotlightPlayer, result));
+    }
 
       // console.log('time: ' + this.time);
       // console.log('down: ' + this.down);
@@ -2205,6 +1968,275 @@ export class Game {
     })
 
 
+  }
+
+  playerModifiers(off, dlOnField, def, dbsOnField, lbsOnField) {
+    oLineSlider = 12;
+    dLineSlider = 12;
+    let oLineModifier = 0;
+    for (let i = 0; i < 5; i++) {
+      oLineModifier += off.ol[i].rating;
+    }
+    let dLineModifier = 0;
+    for (let i = 0; i < dlOnField; i++) {
+      dLineModifier += def.dl[i].rating;
+    }
+    let scaledOline = scaleBetween(oLineModifier, 0, oLineSlider, (40 * 5), (99 * 5));
+    let scaledDline = scaleBetween(dLineModifier, 0, dLineSlider, (40 * 3), (99 * 5));
+    // console.log(`Dlinemen: ${dlOnField} Mod: ${scaledDline}`);
+    // console.log(`scaledOline:  ${scaledOline}`);
+    // console.log(`scaledDline:  ${scaledDline}`);
+    let lineInteraction = Math.random() * scaledOline - Math.random() * scaledDline;
+    //LB Interaction and DB Interaction
+    let dbModifier = 0;
+    let lbModifier = 0;
+    for (let i = 0; i < dbsOnField; i++) {
+      dbModifier += def.dbs[i].rating;
+    }
+    for (let i = 0; i < lbsOnField; i++) {
+      lbModifier += def.lbs[i].rating;
+    }
+    let scaledDbModifier = scaleBetween(dbModifier, -5, 5, (40 * 4), (99 * 5));
+    let scaledLbModifier = scaleBetween(lbModifier, -5, 5, (40 * 2), (99 * 4));
+    defensePassPercentageMod = Math.random() * (scaledDbModifier + scaledLbModifier);
+    defenseRushMod = Math.random() * ((scaledLbModifier) / 2);
+    return lineInteraction;
+  }
+
+  defensiveScheme(def) {
+    let lbsOnField = 4;
+    let dlOnField = 3;
+    let dbsOnField = 4;
+    if (def.defenseType === DEF_43) {
+      dlOnField = 4;
+      lbsOnField = 3;
+      dbsOnField = 4;
+    }
+    if (def.defenseType === DEF_335) {
+      dlOnField = 3;
+      lbsOnField = 3;
+      dbsOnField = 5;
+    }
+    if (def.defenseType === DEF_34) {
+      dlOnField = 3;
+      lbsOnField = 4;
+      dbsOnField = 4;
+    }
+    if (def.defenseType === DEF_425) {
+      dlOnField = 4;
+      lbsOnField = 2;
+      dbsOnField = 5;
+    }
+    if (def.defenseType === DEF_52) {
+      dlOnField = 5;
+      lbsOnField = 2;
+      dbsOnField = 4;
+    }
+    return { dlOnField, dbsOnField, lbsOnField };
+  }
+
+  punt(off, spotlightPlayer, result, def) {
+    let punter = off.ps[0];
+    if (off.ps.length < 1) {
+      punter = off.ks[0];
+    }
+    spotlightPlayer = punter;
+    //changed low to 25
+    let power = scaleBetween(punter.kick, 25, 55, 40, 99);
+    let rand = Math.random() * 10;
+    let kickDistance = Math.round(power + rand);
+    let smtn = kickDistance + this.yardMarker;
+    if (smtn <= 0) {
+      this.yardMarker = 20;
+    }
+    else {
+      this.yardMarker = 100 - smtn;
+    }
+    result = "punts it away for " + kickDistance + " yards!";
+    this.inPossesion = def;
+    this.yardMarker = 20;
+    this.down = 1;
+    this.yardsToFirst = 10;
+    return { spotlightPlayer, result };
+  }
+
+  fieldGoal(off, spotlightPlayer, result, def) {
+    off.ks[0].kicksAttempted++;
+    let kickerPercentage = scaleBetween(off.ks[0].kick, 50, 99, 40, 99);
+    let distanceAdjustment = scaleBetween((100 - this.yardMarker), 0, 30, 0, 60);
+    let percent = kickerPercentage - distanceAdjustment;
+    // console.log('kickerpower' + kickerDistance);
+    // console.log('distance' + (100- this.yardMarker));
+    // console.log(kickerPercentage);
+    // console.log(distanceAdjustment);
+    // console.log(percent);
+    if (percent > Math.random() * 100) {
+      off.ks[0].kicksMade++;
+      if (off === home) {
+        this.homescore += 3;
+      }
+      else {
+        this.awayscore += 3;
+      }
+      spotlightPlayer = off.ks[0];
+      result = "makes a " + (100 - this.yardMarker) + "yard fieldgoal!";
+    }
+    else {
+      spotlightPlayer = off.ks[0];
+      result = "misses a " + (100 - this.yardMarker) + "yard fieldgoal!";
+    }
+    this.inPossesion = def;
+    this.yardMarker = 20;
+    this.down = 1;
+    this.yardsToFirst = 10;
+    return { spotlightPlayer, result };
+  }
+
+  run(off, yardsGained, yardModifier, lineInteraction, def, dbsOnField, lbsOnField, dlOnField, spotlightPlayer, result) {
+    let runner = this.selectRunner(off);
+    let fumble = false;
+    //check for fumble
+    let fumblePercentage = scaleBetween(runner.rush, 5, 0.1, 40, 99);
+    if (fumblePercentage > Math.random() * 100) {
+      //fumble
+      fumble = true;
+    }
+    let initialYardage = scaleBetween(runner.speed, 0, 4, 40, 99);
+    let yardsAfterContact = scaleBetween(runner.rush, 0, 4, 40, 99);
+    let randYards = Math.random() * 4;
+    yardsGained = Math.round(initialYardage - randYards + yardModifier + lineInteraction + yardsAfterContact - defenseRushMod);
+    // console.log(`lineInteraction:  ${lineInteraction}`);
+    // console.log(`initialYdg:  ${initialYardage}`);
+    // console.log(`randYards:  ${randYards}`);
+    // console.log(`ydsGained:  ${yardsGained}`);
+    // console.log(' ');
+    if (yardsGained > 12) {
+      tackler = this.selectDBTackler(def, dbsOnField);
+    }
+    else {
+      if (Math.random() * 100 > 50) {
+        tackler = this.selectLBTackler(def, lbsOnField);
+      }
+      else {
+        tackler = this.selectDLTackler(def, dlOnField);
+      }
+    }
+    if (!fumble) {
+      tackler.tackles++;
+      runner.rushAttempts++;
+      runner.rushYards += yardsGained;
+      if (this.checkForTouchDown(yardsGained)) {
+        runner.rushTouchdowns++;
+      }
+      spotlightPlayer = runner;
+      result = " runs for " + yardsGained + " yards";
+    }
+    else {
+      tackler.tackles++;
+      tackler.fumblesRecovered++;
+      runner.fumbles++;
+      runner.rushAttempts++;
+      spotlightPlayer = tackler;
+      result = " recovers a fumble ";
+    }
+    return { yardsGained, spotlightPlayer, result };
+  }
+
+
+  pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField) {
+    let qb = off.qbs[0];
+    let sacked = false;
+
+    ({ sacked, spotlightPlayer, result, yardsGained } = this.checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained));
+
+    if(!sacked){
+    let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
+    let scaledQbPass = scaleBetween(qb.pass, 0, 15, 40, 99);
+    //check for sack
+    let target = this.selectReciever(off);
+    let defender = this.selectDBTackler(def, dbsOnField);
+    let speedVsSpeed = (target.speed - defender.speed) / 2;
+    let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99);
+    let scaledDefenderAwareness = scaleBetween(defender.awareness, 0, 10, 40, 99);
+    let completionPercentage = 40 + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction - defensePassPercentageMod;
+    qb.attempts++;
+    if (Math.random() * 100 < completionPercentage) {
+      //completion
+      qb.completions++;
+      target.receptions++;
+      let wrSkill = scaleBetween(target.rating, 0, 9, 40, 99);
+      let random = Math.random() * 8;
+      let randomWrSkill = Math.random() * wrSkill;
+      let wrYardage = wrSkill + (Math.random() * scaledQbPass) - random + randomWrSkill;
+      let yardsAfterCatch = scaleBetween(target.speed, 0, 5, 60, 99);
+      if (yardsAfterCatch < 0) {
+        yardsAfterCatch = 0;
+      }
+      let tackler;
+      yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier);
+      if (yardsGained > 12) {
+        tackler = this.selectDBTackler(def, dbsOnField);
+      }
+      else {
+        if (Math.random() * 100 > 50) {
+          tackler = this.selectLBTackler(def, lbsOnField);
+        }
+        else {
+          tackler = this.selectDBTackler(def, dbsOnField);
+        }
+      }
+      qb.yards += yardsGained;
+      target.yards += yardsGained;
+      tackler.tackles++;
+      if (this.checkForTouchDown(yardsGained)) {
+        qb.touchdowns++;
+        target.touchdowns++;
+      }
+      spotlightPlayer = qb;
+      result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
+    }
+    else {
+      //incomplete check for int
+      spotlightPlayer = qb;
+      result = " throws an incomplete pass intended for " + target.name;
+      let defenderInt = scaleBetween(defender.catch, 0, 40, 40, 99);
+      let qbDecisionMaking = scaleBetween(qb.awareness, 0, 10, 40, 99);
+      //mess with
+      let intPercentage = (Math.random() * defenderInt) - (Math.random() * qbDecisionMaking);
+      // console.log(intPercentage);
+      if (intPercentage > Math.random() * 100) {
+        //int
+        defender.interceptions++;
+        qb.interceptions++;
+        let yardsReturned = Math.round(Math.random() * 15);
+        this.inPossesion = def;
+        this.yardMarker = (100 - this.yardMarker) + yardsReturned;
+        this.down = 1;
+        this.yardsToFirst = 10;
+        spotlightPlayer = defender;
+        result = " intercepts  " + qb.name;
+      }
+      yardsGained = 0;
+    }
+  }
+    return { yardsGained, spotlightPlayer, result };
+  }
+
+  checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained) {
+    let sackPerc = (Math.random() * lineInteraction)+2;
+    // console.log(sackPerc);
+    if (sackPerc >= Math.random() * 100) {
+      //sack
+      sacked = true;
+      let sacker = this.selectDLTackler(def, dlOnField);
+      yardsLoss = Math.floor(Math.random() * 10) + 1;
+      sacker.sacks++;
+      qb.rushYards -= yardsLoss;
+      spotlightPlayer = sacker;
+      result = ` sacks ${qb.name} for a loss of ${yardsLoss} yards`;
+      yardsGained = yardsLoss * -1;
+    }
+    return { sacked, spotlightPlayer, result, yardsGained };
   }
 
   clearStats() {
@@ -3734,52 +3766,52 @@ export class Franchise {
   manageWalkOns(){
     let ply;
     for(let i=0; i<teams.length; i++){
-      if(teams[i].qbs.length < POS_QB_REQUIREMENTS){
+      while(teams[i].qbs.length < POS_QB_REQUIREMENTS){
         ply = generatePlayer(POS_QB,60);
         teams[i].roster.push(ply);
         teams[i].qbs.push(ply);
       }
-      if(teams[i].rbs.length < POS_HB_REQUIREMENTS){
+      while(teams[i].rbs.length < POS_HB_REQUIREMENTS){
         ply = generatePlayer(POS_HB,60);
         teams[i].roster.push(ply);
         teams[i].rbs.push(ply);
       }
-      if(teams[i].wrs.length < POS_WR_REQUIREMENTS){
+      while(teams[i].wrs.length < POS_WR_REQUIREMENTS){
         ply = generatePlayer(POS_WR,60);
         teams[i].roster.push(ply);
         teams[i].wrs.push(ply);
       }
-      if(teams[i].tes.length < POS_TE_REQUIREMENTS){
+      while(teams[i].tes.length < POS_TE_REQUIREMENTS){
         ply = generatePlayer(POS_TE,60);
         teams[i].roster.push(ply);
         teams[i].tes.push(ply);
       }
-      if(teams[i].ol.length < POS_OL_REQUIREMENTS){
+      while(teams[i].ol.length < POS_OL_REQUIREMENTS){
         ply = generatePlayer(POS_LT,60);
         teams[i].roster.push(ply);
         teams[i].ol.push(ply);
       }
-      if(teams[i].dl.length < POS_DL_REQUIREMENTS){
+      while(teams[i].dl.length < POS_DL_REQUIREMENTS){
         ply = generatePlayer(POS_LE,60);
         teams[i].roster.push(ply);
         teams[i].dl.push(ply);
       }
-      if(teams[i].lbs.length < POS_LB_REQUIREMENTS){
+      while(teams[i].lbs.length < POS_LB_REQUIREMENTS){
         ply = generatePlayer(POS_LOLB,60);
         teams[i].roster.push(ply);
         teams[i].lbs.push(ply);
       }
-      if(teams[i].dbs.length < POS_DB_REQUIREMENTS){
+      while(teams[i].dbs.length < POS_DB_REQUIREMENTS){
         ply = generatePlayer(POS_CB,60);
         teams[i].roster.push(ply);
         teams[i].dbs.push(ply);
       }
-      if(teams[i].ks.length < POS_K_REQUIREMENTS){
+      while(teams[i].ks.length < POS_K_REQUIREMENTS){
         ply = generatePlayer(POS_K,60);
         teams[i].roster.push(ply);
         teams[i].ks.push(ply);
       }
-      if(teams[i].ps.length < POS_P_REQUIREMENTS){
+      while(teams[i].ps.length < POS_P_REQUIREMENTS){
         ply = generatePlayer(POS_P,60);
         teams[i].roster.push(ply);
         teams[i].ps.push(ply);
@@ -3946,10 +3978,6 @@ export class Franchise {
           // }
           
           team.manageFootballLineup();
-            if(team.name === 'Auburn Tigers'){
-              console.log(team.roster[0].rating);
-            }
-
         
         let released = [];
         for (let j = team.roster.length-1; j >= 0; j--) {
@@ -4472,7 +4500,14 @@ function sortStandings() {
     //rating first then wins
     //rating formula
     for(let i=0; i<teams.length; i++){
-      teams[i].totalRankingRating = ((teams[i].scheduleRating*1.5) + (teams[i].rating*1.5) + ((teams[i].wins/teams[i].schedule.length)*100)) / 4;
+      scheduleRating = teams[i].scheduleRating * 1.5;
+      teamRating = teams[i].rating * 1.5;
+      winPercentage = ((teams[i].wins/teams[i].schedule.length)*100);
+
+
+
+
+      teams[i].totalRankingRating = (scheduleRating + teamRating + winPercentage) / 4;
       // console.log(`Team: ${teams[i].name} schedRat:${teams[i].scheduleRating} wins:${((teams[i].wins/teams[i].schedule.length)*100)} total:${(teams[i].scheduleRating + teams[i].rating + ((teams[i].wins/teams[i].schedule.length)*100)) / 3}`)
 
       
@@ -5898,46 +5933,54 @@ export function returnStatsView(player) {
   }
 
   if(player.tackles > 0){
-    str += `\nTACKLES: ${player.seasonTackles} \nINTS: ${player.seasonInterceptions}`
+    str += `\nTACKLES: ${player.seasonTackles} \nSACKS: ${player.seasonSacks} \nINTS: ${player.seasonInterceptions}`
   }
   return str;
 }
 export function returnSeasonStatsListView(player) {
   let str ="";
-  if(player.attempts > 0){
-    str += `PASS: ATT: ${player.seasonAttempts} CMP: ${player.seasonCompletions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns} CMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 100)} `;
+  if(player.seasonAttempts > 0){
+    str += `PASS: ATT: ${player.seasonAttempts} CMP: ${player.seasonCompletions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns} INTS: ${player.seasonInterceptions} CMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 1000)/10}% `;
   }
 
-  if(player.rushAttempts > 0){
-    str += `RUSH: ATT: ${player.seasonRushAttempts} YDS: ${player.seasonRushYards} TDS: ${player.seasonRushTouchdowns} AVG: ${Math.round((player.seasonRushYards / player.seasonRushAttempts))} `;
+  if(player.seasonRushAttempts > 0){
+    str += `RUSH: ATT: ${player.seasonRushAttempts} YDS: ${player.seasonRushYards} TDS: ${player.seasonRushTouchdowns} FUM: ${player.seasonFumbles} AVG: ${Math.round((player.seasonRushYards / player.seasonRushAttempts)*10)/10} `;
   }
 
   if(player.seasonReceptions > 0){
     str += `REC: ${player.seasonReceptions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns}`;
   }
 
-  if(player.tackles > 0){
-    str += `TACKLES: ${player.seasonTackles} INTS: ${player.seasonInterceptions}`
+  if(player.seasonTackles > 0){
+    str += `TACKLES: ${player.seasonTackles} SACKS: ${player.seasonSacks} INTS: ${player.seasonInterceptions} FUM: ${player.seasonFumblesRecovered}`
+  }
+
+  if(player.seasonKicksAttempted > 0){
+    str += `FGM: ${player.seasonKicksMade} FGA: ${player.seasonKicksAttempted} AVG: ${Math.round((player.seasonKicksMade/player.seasonKicksAttempted)*1000)/10}%`
   }
   return str;
 }
 
 export function returnStatsListView(player) {
   let str = "";
-  if (player.position === 0) {
-    str = `ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} CMP%: ${Math.round((player.completions / player.attempts) * 100)}`;
+  if(player.attempts > 0){
+    str += `PASS: ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} CMP%: ${Math.round((player.completions / player.attempts) * 1000)/10}% `;
   }
-  if (player.position === 1) {
-    str = `ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.rushAttempts))}`;
+
+  if(player.rushAttempts > 0){
+    str += `RUSH: ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.seasonRushAttempts)*10)/10} `;
   }
-  if (player.position === 2) {
-    str = `ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.touchdowns}`;
+
+  if(player.seasonReceptions > 0){
+    str += `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
   }
-  if (player.position === 3) {
-    str = `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
+
+  if(player.seasonTackles > 0){
+    str += `TACKLES: ${player.tackles} SACKS: ${player.sacks} INTS: ${player.interceptions}`
   }
-  if (player.position === 4) {
-    str = `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
+
+  if(player.seasonKicksAttempted > 0){
+    str += `FGM: ${player.kicksMade} FGA: ${player.kicksAttempted} AVG: ${Math.round((player.kicksMade/player.kicksAttempted)*1000)/10}%`
   }
 
   return str;

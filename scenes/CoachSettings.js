@@ -10,7 +10,8 @@ export default class CoachSettings extends React.Component {
     state = {
         offVsDefFocus: selectedTeam.offVsDefFocus,
         offenseType: selectedTeam.offenseType,
-        defenseType: selectedTeam.defenseType
+        defenseType: selectedTeam.defenseType,
+        runVsPass: selectedTeam.runVsPass
     }
 
 
@@ -19,6 +20,7 @@ export default class CoachSettings extends React.Component {
         selectedTeam.offVsDefFocus = this.state.offVsDefFocus;
         selectedTeam.offenseType = this.state.offenseType;
         selectedTeam.defenseType = this.state.defenseType;
+        selectedTeam.runVsPass = this.state.runVsPass;
         if(this.props.inGame!=true){
             // if(this.state.rotationSize != selectedTeam.rotationSize){
             //     selectedTeam.rotationSize = this.state.rotationSize;
@@ -70,6 +72,17 @@ export default class CoachSettings extends React.Component {
         if(this.state.defenseType === DEF_52){
             return "5-2"
         }
+    }
+
+    getRunVsPass(){
+        if(this.state.runVsPass>50){
+            return "Focus: Pass";
+        }
+        if(this.state.runVsPass<50){
+            return "Focus: Run";
+        }
+
+        return "Focus: Balanced";
     }
 
     render() {
@@ -128,9 +141,20 @@ export default class CoachSettings extends React.Component {
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
                             minimumValue={0}
-                            maximumValue={3}
+                            maximumValue={4}
                             value={this.state.defenseType}
                             onValueChange={value => { this.setState({ defenseType: value }) }}
+                        />
+
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getRunVsPass()}</Text>
+                        <Slider
+                            thumbTintColor={'rgb(180,180,180)'}
+                            maximumTrackTintColor={'rgb(180,180,180)'}
+                            step={1}
+                            minimumValue={40}
+                            maximumValue={60}
+                            value={this.state.runVsPass}
+                            onValueChange={value => { this.setState({ runVsPass: value }) }}
                         />
 
                         <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black' }} title="Commit Changes" onPress={() => { this.saveChanges() }}></Button>
