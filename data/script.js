@@ -79,12 +79,12 @@ const POS_P_MAX = 1;
 export const POS_QB_REQUIREMENTS = 2;
 export const POS_HB_REQUIREMENTS = 3;
 export const POS_FB_REQUIREMENTS = 0;
-export const POS_WR_REQUIREMENTS = 5;
+export const POS_WR_REQUIREMENTS = 6;
 export const POS_TE_REQUIREMENTS = 2;
-export const POS_OL_REQUIREMENTS = 5;
-export const POS_DL_REQUIREMENTS = 5;
-export const POS_LB_REQUIREMENTS = 3;
-export const POS_DB_REQUIREMENTS = 5;
+export const POS_OL_REQUIREMENTS = 6;
+export const POS_DL_REQUIREMENTS = 6;
+export const POS_LB_REQUIREMENTS = 5;
+export const POS_DB_REQUIREMENTS = 6;
 export const POS_K_REQUIREMENTS = 1;
 export const POS_P_REQUIREMENTS = 1;
 
@@ -681,9 +681,9 @@ class Team {
     //stats
     this.seasonPoints = 0;
     this.seasonPointsAllowed = 0;
-    this.seasonShots = 0;
-    this.seasonSaves = 0;
-    this.seasonGoalsAllowed = 0;
+    this.seasonPassYards = 0;
+    this.seasonRushYards = 0;
+    this.seasonPlays = 0;
 
 
     this.expiring = {
@@ -709,6 +709,7 @@ class Team {
     //run pref is lower number
     //rand between 40-60
     this.runVsPass = (Math.round(Math.random()*20))+40;
+    this.offTempo = (Math.round(Math.random()*10))-5;
 
     //football
     this.qbs = [];
@@ -1882,6 +1883,7 @@ export class Game {
   footballPlay() {
     let result = ""
     let spotlightPlayer;
+    let timeRemoved;
 
     let off = this.inPossesion;
     let def;
@@ -1891,6 +1893,8 @@ export class Game {
       def = home;
     }
 
+    off.seasonPlays++;
+
     let yardModifier = 0;
 
     let { dlOnField, dbsOnField, lbsOnField } = this.defensiveScheme(def);
@@ -1899,10 +1903,16 @@ export class Game {
       let kickerDistance = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
       if (kickerDistance >= (100 - this.yardMarker)) {
         //att fg
-        ({ spotlightPlayer, result } = this.fieldGoal(off, spotlightPlayer, result, def));
+        ({ spotlightPlayer, result, timeRemoved } = this.fieldGoal(off, spotlightPlayer, result, def));
+        if(timeRemoved<1){
+          console.log('kick');
+        }
       } else {
         //punt
-        ({ spotlightPlayer, result } = this.punt(off, spotlightPlayer, result, def));
+        ({ spotlightPlayer, result, timeRemoved } = this.punt(off, spotlightPlayer, result, def));
+        if(timeRemoved<1){
+          console.log('punt');
+        }
       }
     } else {
       let yardsGained = 0;
@@ -1917,12 +1927,18 @@ export class Game {
 
       if (playSelection < off.runVsPass) {
         //pass
-        ({ yardsGained, spotlightPlayer, result } = this.pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField));
+        ({ yardsGained, spotlightPlayer, result, timeRemoved } = this.pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField));
 
+        if(timeRemoved<1){
+          console.log('pass');
+        }
       } else {
         //run
-        ({ yardsGained, spotlightPlayer, result } = this.run(off, yardsGained, yardModifier, lineInteraction, def, dbsOnField, lbsOnField, dlOnField, spotlightPlayer, result));
-    }
+        ({ yardsGained, spotlightPlayer, result, timeRemoved } = this.run(off, yardsGained, yardModifier, lineInteraction, def, dbsOnField, lbsOnField, dlOnField, spotlightPlayer, result));
+        if(timeRemoved<1){
+          console.log('run');
+        }
+      }
 
       // console.log('time: ' + this.time);
       // console.log('down: ' + this.down);
@@ -1933,7 +1949,8 @@ export class Game {
       // console.log('uhhhhhhhhhh');
 
 
-      this.time -= Math.round(25 + Math.random() * 20);
+      
+      this.time -= timeRemoved;
       this.down++;
       this.yardsToFirst -= yardsGained;
       this.yardMarker += yardsGained;
@@ -2057,7 +2074,8 @@ export class Game {
     this.yardMarker = 20;
     this.down = 1;
     this.yardsToFirst = 10;
-    return { spotlightPlayer, result };
+    let timeRemoved = (Math.floor(Math.random()*10))+8;
+    return { spotlightPlayer, result, timeRemoved };
   }
 
   fieldGoal(off, spotlightPlayer, result, def) {
@@ -2089,10 +2107,12 @@ export class Game {
     this.yardMarker = 20;
     this.down = 1;
     this.yardsToFirst = 10;
-    return { spotlightPlayer, result };
+    let timeRemoved = (Math.floor(Math.random()*8))+5;
+    return { spotlightPlayer, result, timeRemoved };
   }
 
   run(off, yardsGained, yardModifier, lineInteraction, def, dbsOnField, lbsOnField, dlOnField, spotlightPlayer, result) {
+    let timeRemoved = 0;
     let runner = this.selectRunner(off);
     let fumble = false;
     //check for fumble
@@ -2125,6 +2145,7 @@ export class Game {
       tackler.tackles++;
       runner.rushAttempts++;
       runner.rushYards += yardsGained;
+      off.seasonRushYards += yardsGained;
       if (this.checkForTouchDown(yardsGained)) {
         runner.rushTouchdowns++;
       }
@@ -2139,15 +2160,18 @@ export class Game {
       spotlightPlayer = tackler;
       result = " recovers a fumble ";
     }
-    return { yardsGained, spotlightPlayer, result };
+    timeRemoved = (Math.floor(Math.random()*15))+30;
+    timeRemoved -= off.offTempo;
+    return { yardsGained, spotlightPlayer, result, timeRemoved };
   }
 
 
   pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField) {
     let qb = off.qbs[0];
+    let timeRemoved = 0;
     let sacked = false;
 
-    ({ sacked, spotlightPlayer, result, yardsGained } = this.checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained));
+    ({ sacked, spotlightPlayer, result, yardsGained, timeRemoved } = this.checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained, off));
 
     if(!sacked){
     let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
@@ -2186,6 +2210,7 @@ export class Game {
         }
       }
       qb.yards += yardsGained;
+      off.seasonPassYards += yardsGained;
       target.yards += yardsGained;
       tackler.tackles++;
       if (this.checkForTouchDown(yardsGained)) {
@@ -2194,6 +2219,10 @@ export class Game {
       }
       spotlightPlayer = qb;
       result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
+      timeRemoved = (Math.floor(Math.random()*15))+25;
+    timeRemoved -= off.offTempo;
+
+
     }
     else {
       //incomplete check for int
@@ -2215,15 +2244,20 @@ export class Game {
         this.yardsToFirst = 10;
         spotlightPlayer = defender;
         result = " intercepts  " + qb.name;
+      timeRemoved = (Math.floor(Math.random()*15))+10;
+        
       }
       yardsGained = 0;
+      timeRemoved = (Math.floor(Math.random()*5))+3;
+
     }
   }
-    return { yardsGained, spotlightPlayer, result };
+    return { yardsGained, spotlightPlayer, result, timeRemoved };
   }
 
-  checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained) {
+  checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained, off) {
     let sackPerc = (Math.random() * lineInteraction)+2;
+    let timeRemoved = 0;
     // console.log(sackPerc);
     if (sackPerc >= Math.random() * 100) {
       //sack
@@ -2232,11 +2266,16 @@ export class Game {
       yardsLoss = Math.floor(Math.random() * 10) + 1;
       sacker.sacks++;
       qb.rushYards -= yardsLoss;
+      off.seasonRushYards -= yardsLoss;
       spotlightPlayer = sacker;
       result = ` sacks ${qb.name} for a loss of ${yardsLoss} yards`;
       yardsGained = yardsLoss * -1;
+      timeRemoved = (Math.floor(Math.random()*15))+30;
+    timeRemoved -= off.offTempo;
+
+
     }
-    return { sacked, spotlightPlayer, result, yardsGained };
+    return { sacked, spotlightPlayer, result, yardsGained, timeRemoved };
   }
 
   clearStats() {
@@ -2599,6 +2638,8 @@ export class Season {
     }
 
 
+    //setup rankings
+    sortStandings();
   }
 
   manualDay() {
@@ -2763,12 +2804,11 @@ export class Franchise {
     for (let i = 0; i < conferences.length; i++) {
       //check this again
       conferences[i].teams.sort(function (a, b) {
-        if (a.wins > b.wins) return -1;
-        if (a.wins < b.wins) return 1;
+        if (a.seed > b.seed) return -1;
+        if (a.seed < b.seed) return 1;
         return 0;
       });
     }
-
     //JUST IN CASE OF PLAYOFF SEED NUMBER BEING BIGGER THAN CONF TEAMS
     this.playoffs = new Playoffs();
     if (conferencesOn) {
@@ -4528,8 +4568,7 @@ function sortStandings() {
 }
 
 export function standings(conferenceId) {
-  let sorted = [];
-  sorted = teams;
+  let sorted = [...teams];
 
   if (conferenceId != 3) {
     for (let i = 0; i < conferences.length; i++) {
@@ -4557,6 +4596,14 @@ export function standings(conferenceId) {
     if (a.seed > b.seed) return 1;
     return 0;
   });
+
+  if(collegeMode){
+    while(sorted.length>25){
+      sorted.pop();
+    }
+  }
+
+
   return sorted;
 }
 
@@ -4612,6 +4659,56 @@ export function sortedRoster(team, sortAttribute) {
   return sortedRoster;
 }
 
+function hasPlayed(ply){
+  if(ply.seasonCompletions > 0){
+return true;
+  }
+  if(ply.seasonAttempts > 0){
+return true;
+  }
+  if(ply.seasonTouchdowns > 0){
+return true;
+  }
+  if(ply.seasonYards > 0){
+return true;
+  }
+  if(ply.seasonRushYards > 0){
+return true;
+  }
+  if(ply.seasonRushAttempts > 0){
+return true;
+  }
+  if(ply.seasonRushTouchdowns > 0){
+return true;
+  }
+  if(ply.seasonKicksAttempted > 0){
+return true;
+  }
+  if(ply.seasonKicksMade > 0){
+return true;
+  }
+  if(ply.seasonReceptions > 0){
+return true;
+  }
+  if(ply.seasonTackles > 0){
+return true;
+  }
+  if(ply.seasonInterceptions > 0){
+return true;
+  }
+  if(ply.seasonFumbles > 0){
+return true;
+  }
+  if(ply.seasonFumblesRecovered > 0){
+return true;
+  }
+  if(ply.seasonSacks > 0){
+return true;
+  }
+
+  return false;
+}
+
 export function leaugeLeaders() {
   const leaugeLeaders = {
     roster: []
@@ -4625,10 +4722,20 @@ export function leaugeLeaders() {
         return 1;
       return 0;
     });
-    for (let j = 0; j < 5; j++) {
-      leaugeLeaders.roster.push(teams[i].roster[j]);
+    for (let j = 0; j < teams[i].roster.length; j++) {
+      if(hasPlayed(teams[i].roster[j]) || j<3){
+        leaugeLeaders.roster.push(teams[i].roster[j]);
+      }
     }
   }
+
+  leaugeLeaders.roster.sort(function (a, b) {
+    if (a.rating > b.rating)
+      return -1;
+    if (a.rating < b.rating)
+      return 1;
+    return 0;
+  });
 
   leaugeLeaders.roster.sort(function (a, b) {
     if (a.seasonTouchdowns > b.seasonTouchdowns)

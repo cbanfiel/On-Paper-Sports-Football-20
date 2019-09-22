@@ -64,6 +64,10 @@ export default class TeamStats extends React.Component {
               leftAvatar={team.logoSrc }
               subtitle={'PTS: ' + Math.round(team.seasonPoints/franchise.season.day)
                + ', ' + 'OPPPTS : ' + Math.round(team.seasonPointsAllowed/franchise.season.day) 
+               + ', ' + 'PASSYDS : ' + Math.round(team.seasonPassYards/franchise.season.day) 
+               + ', ' + 'RUSHYDS : ' + Math.round(team.seasonRushYards/franchise.season.day) 
+               + ', ' + 'PLAYS : ' + Math.round(team.seasonPlays/franchise.season.day) 
+
               //  + ', SHOTS: ' + Math.round(team.seasonShots/franchise.season.day)
               //  + ', SAVE%: ' + Math.round((team.seasonSaves/(team.seasonSaves + team.seasonGoalsAllowed)*1000))/10
             // + ', FGA ' + Math.round(team.seasonFieldGoalsAttempted/franchise.season.day) 

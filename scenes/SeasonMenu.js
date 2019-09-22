@@ -213,10 +213,26 @@ export default class SeasonMenu extends React.Component {
                           alignSelf: 'center'
                         }} >
                           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                              {
+                                collegeMode? (
+                                  <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.seed <= 25? `#${this.state.team.seed}` : null}</Text>
+                                ):null
+                              }
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses )}</Text>
+                              </View>
                             <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} source={{ uri: this.state.team.logoSrc }} />
                             <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginLeft: 20 }} source={{ uri: this.state.team.schedule[franchise.season.day].logoSrc }} />
+                           
+                            <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                            {
+                              collegeMode? (
+                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.schedule[franchise.season.day].seed <= 25? (`#${this.state.team.schedule[franchise.season.day].seed}`) : null}</Text>
+                              ):null
+                            }
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.schedule[franchise.season.day].wins + '-' + (this.state.team.schedule[franchise.season.day].losses)}</Text>
+                           </View>
+
                           </View>
                           <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
                           <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Play Next Game'}</Text>

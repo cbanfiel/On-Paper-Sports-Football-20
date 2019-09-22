@@ -7,6 +7,7 @@ import { sortedRoster, allPlayers, returnStatsListView, returnSeasonStatsListVie
 import ListItem from '../components/ListItem';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import PlayerCardModal from '../components/PlayerCardModal';
+import PositionFilter from '../components/PositionFilter';
 
 
 var {height, width} = Dimensions.get('window');
@@ -24,6 +25,22 @@ export default class StatsList extends React.Component {
     }
   }
 
+  setPositionFilter(arr){
+    const data = [];
+    const empty = [];
+
+    for(let i=0; i<arr.length; i++){
+      data.push({
+        type:'NORMAL',
+        item: arr[i]
+      })
+    }
+
+    this.setState({
+      list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data)
+    });
+  }
+
   setModalVisible(visible, player) {
     this.setState({ modalVisible: visible, modalPlayer: player });
 }
@@ -35,6 +52,9 @@ export default class StatsList extends React.Component {
     const data = [];
 
     for(let i=0; i<this.props.selectedTeam.roster.length; i++){
+      if(i>=150){
+        break;
+      }
       data.push({
         type:'NORMAL',
         item: sortedRoster(this.props.selectedTeam, 'ppg')[i]
@@ -47,6 +67,8 @@ export default class StatsList extends React.Component {
       modalPlayer: null,
       modalVisible: false
     };
+
+    this.setPositionFilter = this.setPositionFilter.bind(this);
   
     this.layoutProvider = new LayoutProvider((i) => {
       return this.state.list.getDataForIndex(i).type
@@ -118,8 +140,9 @@ export default class StatsList extends React.Component {
                         </Modal>
                     ) : null
                 }
+<PositionFilter selectedTeam={this.props.selectedTeam} setPositionFilter={this.setPositionFilter}></PositionFilter>
 
-+<RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
+<RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
 
 
       </Background>

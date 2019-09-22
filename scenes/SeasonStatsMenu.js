@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, View, ScrollView } from 'react-native';
 import { Card, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { selectedTeam, leaugeLeaders, sortedRoster, conferences, conferencesOn, teams } from '../data/script';
+import { selectedTeam, leaugeLeaders, sortedRoster, conferences, conferencesOn, teams, standings } from '../data/script';
 import Background from '../components/background';
 import CachedImage from '../components/CachedImage';
 
@@ -54,8 +54,8 @@ export default class SeasonStatsMenu extends React.Component {
 
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[0].teams[0].wins + '-' + (conferences[0].teams[0].losses) : teams[0].wins + '-' + (teams[0].losses)}</Text>
-                                <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? conferences[0].teams[0].logoSrc : teams[0].logoSrc }/>
-                                <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? conferences[1].teams[0].logoSrc : teams[1].logoSrc } />
+                                <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? standings(0)[0].logoSrc : standings(3)[0].logoSrc }/>
+                                <CachedImage style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} uri={conferencesOn ? standings(1)[0].logoSrc : standings(3)[1].logoSrc } />
                                 <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{conferencesOn ? conferences[1].teams[0].wins + '-' + (conferences[1].teams[0].losses) : teams[1].wins + '-' + (teams[1].losses)}</Text>
                             </View>
                             <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>

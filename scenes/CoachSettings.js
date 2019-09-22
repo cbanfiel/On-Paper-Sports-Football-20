@@ -11,7 +11,9 @@ export default class CoachSettings extends React.Component {
         offVsDefFocus: selectedTeam.offVsDefFocus,
         offenseType: selectedTeam.offenseType,
         defenseType: selectedTeam.defenseType,
-        runVsPass: selectedTeam.runVsPass
+        runVsPass: selectedTeam.runVsPass,
+        offTempo: selectedTeam.offTempo
+
     }
 
 
@@ -21,6 +23,8 @@ export default class CoachSettings extends React.Component {
         selectedTeam.offenseType = this.state.offenseType;
         selectedTeam.defenseType = this.state.defenseType;
         selectedTeam.runVsPass = this.state.runVsPass;
+        selectedTeam.offTempo = this.state.offTempo;
+
         if(this.props.inGame!=true){
             // if(this.state.rotationSize != selectedTeam.rotationSize){
             //     selectedTeam.rotationSize = this.state.rotationSize;
@@ -83,6 +87,16 @@ export default class CoachSettings extends React.Component {
         }
 
         return "Focus: Balanced";
+    }
+    getOffTempo(){
+        if(this.state.offTempo>1){
+            return `Tempo: Fast + ${this.state.offTempo}`;
+        }
+        if(this.state.offTempo<-1){
+            return `Tempo: Slow  ${this.state.offTempo}`;
+        }
+
+        return `Tempo: Balanced  ${this.state.offTempo}`;
     }
 
     render() {
@@ -155,6 +169,17 @@ export default class CoachSettings extends React.Component {
                             maximumValue={60}
                             value={this.state.runVsPass}
                             onValueChange={value => { this.setState({ runVsPass: value }) }}
+                        />
+
+                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getOffTempo()}</Text>
+                        <Slider
+                            thumbTintColor={'rgb(180,180,180)'}
+                            maximumTrackTintColor={'rgb(180,180,180)'}
+                            step={1}
+                            minimumValue={-5}
+                            maximumValue={5}
+                            value={this.state.offTempo}
+                            onValueChange={value => { this.setState({ offTempo: value }) }}
                         />
 
                         <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black' }} title="Commit Changes" onPress={() => { this.saveChanges() }}></Button>
