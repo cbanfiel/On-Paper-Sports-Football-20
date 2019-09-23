@@ -115,7 +115,7 @@ export let playoffSeeds = 4;
 export let seriesWinCount = 1;
 export let conferencesOn = false;
 export let collegeMode = true;
-export let difficulty = -1;
+export let difficulty = 0;
 //************************************ */
 
 let autoSign = true;
@@ -1895,7 +1895,23 @@ export class Game {
 
     off.seasonPlays++;
 
-    let yardModifier = 0;
+    let offvdef = Math.random()*off.offVsDefFocus + Math.random()*def.offVsDefFocus;
+
+    let yardModifier = Math.round(offvdef);
+
+
+
+    //difficulty slider kicks in 50% of the time
+    if(Math.random()*100 <= 50){
+      if(off === selectedTeam){
+        yardModifier -= Math.round(Math.random()*difficulty);
+      }
+      if(def === selectedTeam){
+        yardModifier += Math.round(Math.random()*difficulty);
+      }
+    }
+
+
 
     let { dlOnField, dbsOnField, lbsOnField } = this.defensiveScheme(def);
 
@@ -2783,6 +2799,7 @@ export class Franchise {
     this.stage;
     this.currentDraft;
     this.playoffs;
+    this.bowlGames;
     this.pastChampions = [];
     this.classLength = 0;
 
@@ -2801,11 +2818,21 @@ export class Franchise {
   }
 
   startPlayoffs() {
+    if(collegeMode){
+      this.bowlGames = bowlGameSetup();
+    }
+    //check glitch in hockey/basketball
+    // need to sort teams before playoffs
+    teams.sort(function (a, b) {
+      if (a.seed > b.seed) return 1;
+      if (a.seed < b.seed) return -1;
+      return 0;
+    });
     for (let i = 0; i < conferences.length; i++) {
       //check this again
       conferences[i].teams.sort(function (a, b) {
-        if (a.seed > b.seed) return -1;
-        if (a.seed < b.seed) return 1;
+        if (a.seed > b.seed) return 1;
+        if (a.seed < b.seed) return -1;
         return 0;
       });
     }
@@ -2898,7 +2925,6 @@ export class Franchise {
 
   simStage() {
     //playoffs
-
     if (this.stage === "playoffs") {
       this.startPlayoffs();
       this.offSeason = true;
@@ -3758,7 +3784,7 @@ export class Franchise {
 
 
 
-        while (teams[i].scholarshipsAvailable > 0 && teams[i].interestedProspects.roster.length < 1) {
+        while (teams[i].scholarshipsAvailable > 0 ) {
           if (teams[i] != selectedTeam) {
             let index = Math.floor(Math.random()*5);
             if (index >= teams[i].interestedProspects.roster.length) {
@@ -3881,7 +3907,7 @@ export class Franchise {
       //NEW WAY
       for(let i=0; i<teams.length; i++){
         let seedRat = teams.length - teams[i].seed;
-        let rating = Math.round((teams[i].rating + scaleBetween((seedRat), 70, 99, 0, teams.length))/2) - 10;
+        let rating = Math.round((teams[i].rating + scaleBetween((seedRat), 70, 99, 0, teams.length))/2) - 15;
         // console.log(`${teams[i].name} ${rating}`);
 
         if(teams[i] === selectedTeam){
@@ -4188,6 +4214,11 @@ export class Franchise {
           currentTeam: null
         }
       ];
+    }
+
+
+    if(collegeMode){
+      cpuRedshirting();
     }
 
     //fix for free agents having old team logos
@@ -4542,12 +4573,12 @@ function sortStandings() {
     for(let i=0; i<teams.length; i++){
       scheduleRating = teams[i].scheduleRating * 1.5;
       teamRating = teams[i].rating * 1.5;
-      winPercentage = ((teams[i].wins/teams[i].schedule.length)*100);
+      winPercentage = ((teams[i].wins/teams[i].schedule.length)*100) *2 ;
 
 
 
 
-      teams[i].totalRankingRating = (scheduleRating + teamRating + winPercentage) / 4;
+      teams[i].totalRankingRating = (scheduleRating + teamRating + winPercentage) / 5;
       // console.log(`Team: ${teams[i].name} schedRat:${teams[i].scheduleRating} wins:${((teams[i].wins/teams[i].schedule.length)*100)} total:${(teams[i].scheduleRating + teams[i].rating + ((teams[i].wins/teams[i].schedule.length)*100)) / 3}`)
 
       
@@ -6705,3 +6736,147 @@ export function checkRequirementsWithoutPlayer(ply, team){
 
   return true;
 }
+
+
+function cpuRedshirting(){
+  for(let i=0; i<teams.length; i++){
+    if(teams[i] != selectedTeam){
+    let sortedRos = [...teams[i].roster];
+    //sort worst to best
+    sortedRos.sort(function(a,b){
+      if(a.rating>b.rating){
+        return 1;
+      }
+      if(a.rating<b.rating){
+        return -1
+      }
+      return 0;
+    });
+    for(let j=0; j<sortedRos.length; j++){
+      let ply = sortedRos[j];
+      if(ply.age <= 18 && checkRequirementsWithoutPlayer(ply,teams[i]) && !playerWillStart(ply, teams[i])){
+        ply.redshirted = true;
+
+        //faster then just reordering lineup every time
+        if(ply.position === POS_QB){
+          teams[i].qbs.splice(teams[i].qbs.indexOf(ply),1);
+        }
+        if(ply.position === POS_HB){
+          teams[i].rbs.splice(teams[i].rbs.indexOf(ply),1);
+        }
+        if(ply.position === POS_WR){
+          teams[i].wrs.splice(teams[i].wrs.indexOf(ply),1);
+        }
+        if(ply.position === POS_TE){
+          teams[i].tes.splice(teams[i].tes.indexOf(ply),1);
+        }
+        if(ply.position >= POS_LT && ply.position <= POS_RT){
+          teams[i].ol.splice(teams[i].ol.indexOf(ply),1);
+        }
+        if(ply.position >= POS_LE && ply.position <= POS_DT){
+          teams[i].dl.splice(teams[i].dl.indexOf(ply),1);
+        }
+        if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
+          teams[i].lbs.splice(teams[i].lbs.indexOf(ply),1);
+        }
+        if(ply.position >= POS_CB && ply.position <= POS_SS){
+          teams[i].dbs.splice(teams[i].dbs.indexOf(ply),1);
+        }
+        if(ply.position === POS_K){
+          teams[i].ks.splice(teams[i].ks.indexOf(ply),1);
+        }
+        if(ply.position === POS_P){
+          teams[i].ps.splice(teams[i].ps.indexOf(ply),1);
+        }
+        
+      }
+
+    }
+    teams[i].reorderLineup();
+  }
+}
+}
+
+
+function playerWillStart(ply, team){
+  if(ply.position === POS_QB){
+    return team.qbs.indexOf(ply)<=0;
+  }
+  if(ply.position === POS_HB){
+    return team.rbs.indexOf(ply)<=1;
+  }
+  if(ply.position === POS_WR){
+    return team.wrs.indexOf(ply)<=3;
+  }
+  if(ply.position === POS_TE){
+    return team.tes.indexOf(ply)<=1;
+  }
+  if(ply.position >= POS_LT && ply.position <= POS_RT){
+    return team.ol.indexOf(ply)<=4;
+  }
+  if(ply.position >= POS_LE && ply.position <= POS_DT){
+    return team.dl.indexOf(ply)<=2;
+  }
+  if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
+    return team.lbs.indexOf(ply)<=2;
+  }
+  if(ply.position >= POS_CB && ply.position <= POS_SS){
+    return team.lbs.indexOf(ply)<=3;
+  }
+  if(ply.position === POS_K){
+    return team.ks.indexOf(ply)<=0;
+  }
+  if(ply.position === POS_P){
+    return team.ps.indexOf(ply)<=0;
+  }
+}
+
+function bowlGameSetup(){
+  let bowlTeams = [];
+  let games = [];
+  // return [];
+  for(let i=0; i<teams.length; i++){
+    if(teams[i].seed> playoffSeeds && teams[i].wins >= (gamesPerSeason/2)){
+      //bowl elligible
+      bowlTeams.push(teams[i]);
+    }
+  }
+
+    bowlTeams.sort(function(a,b){
+      //sort by rating instead of seed:)
+      if(a.seed<b.seed){
+        return 1;
+      }
+      if(a.seed>b.seed){
+        return -1;
+      }
+      return 0;
+    })
+
+    if(bowlTeams.length%2>0){
+      bowlTeams.pop();
+      //pop last team if odd teams :(
+    }
+
+    bowlTeams.sort(function(a,b){
+      //sort by rating instead of seed :)
+      if(a.rating<b.rating){
+        return 1;
+      }
+      if(a.rating>b.rating){
+        return -1;
+      }
+      return 0;
+    });
+
+    for(let i=0; i<bowlTeams.length; i++){
+      let series = new Series();
+      series.team1 = bowlTeams[i];
+      series.team2 = bowlTeams[i+1];
+      games.push(series);
+      i++;
+    }
+
+    return games;
+    
+  }

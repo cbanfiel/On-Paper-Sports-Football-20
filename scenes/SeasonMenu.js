@@ -213,25 +213,21 @@ export default class SeasonMenu extends React.Component {
                           alignSelf: 'center'
                         }} >
                           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ flex:1, textAlign: "center", fontSize: 25, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses )}</Text>
                               {
                                 collegeMode? (
-                                  <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.seed <= 25? `#${this.state.team.seed}` : null}</Text>
+                                  <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro', marginRight:5 }}>{this.state.team.seed <= 25? `#${this.state.team.seed}` : '  '}</Text>
                                 ):null
                               }
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.wins + '-' + (this.state.team.losses )}</Text>
-                              </View>
                             <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} source={{ uri: this.state.team.logoSrc }} />
                             <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5, marginLeft: 20 }} source={{ uri: this.state.team.schedule[franchise.season.day].logoSrc }} />
                            
-                            <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                             {
                               collegeMode? (
-                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.schedule[franchise.season.day].seed <= 25? (`#${this.state.team.schedule[franchise.season.day].seed}`) : null}</Text>
+                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro', marginLeft:5 }}>{this.state.team.schedule[franchise.season.day].seed <= 25? (`#${this.state.team.schedule[franchise.season.day].seed}`) : '  '}</Text>
                               ):null
                             }
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.schedule[franchise.season.day].wins + '-' + (this.state.team.schedule[franchise.season.day].losses)}</Text>
-                           </View>
+                            <Text style={{ flex:1, textAlign: "center", fontSize: 25, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.schedule[franchise.season.day].wins + '-' + (this.state.team.schedule[franchise.season.day].losses)}</Text>
 
                           </View>
                           <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
@@ -399,7 +395,7 @@ export default class SeasonMenu extends React.Component {
                   </Card>
                 </TouchableOpacity>
               ) :
-                <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.props.teamListStage('playoffs'), franchise.advance = true, franchise.stage = 'playoffs', franchise.simStage(), Actions.replace('playoffmenu', { teamListStage: this.props.teamListStage }) }}>
+                <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.props.teamListStage('playoffs'), franchise.advance = true, franchise.stage = 'playoffs', franchise.simStage(), Actions.replace('bowlgames', { teamListStage: this.props.teamListStage }) }}>
                   <Card
                     containerStyle={{
                       width: '95%', backgroundColor: 'rgba(0,0,0,0)',
@@ -412,7 +408,7 @@ export default class SeasonMenu extends React.Component {
                       <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
                     </View>
                     <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
-                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{collegeMode ? 'Advance To Tournament' : 'Advance To Playoffs'}</Text>
+                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{collegeMode ? 'Advance To Bowl Games' : 'Advance To Playoffs'}</Text>
                   </Card>
                 </TouchableOpacity>
             }

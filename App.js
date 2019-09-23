@@ -47,6 +47,7 @@ import RecentUpdates from './scenes/RecentUpdates';
 import PlayerSearch from './scenes/PlayerSearch';
 import TrainingStage from './scenes/TrainingStage';
 import TrainingScreen from './scenes/TrainingScreen';
+import BowlGames from './scenes/BowlGames';
 
 
 export default class App extends React.Component {
@@ -105,6 +106,8 @@ export default class App extends React.Component {
               <Scene key="playersearch" component={PlayerSearch} title="Reccent Updates" hideNavBar />
               <Scene key="trainingstage" component={TrainingStage} title="Training Stage" hideNavBar />
               <Scene key="trainingscreen" component={TrainingScreen} title="Training Stage" hideNavBar />
+              <Scene key="bowlgames" component={BowlGames} title="Training Stage" hideNavBar />
+
               {/* <Scene key="recoverymenu" component={RecoveryMenu} title="FreeAgency" hideNavBar /> */}
 
               
