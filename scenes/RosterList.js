@@ -8,11 +8,29 @@ import TeamHeader from '../components/TeamHeader';
 import ListItem from '../components/ListItem';
 import PlayerCardModal from '../components/PlayerCardModal';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
+import PositionFilter from '../components/PositionFilter';
 var {height, width} = Dimensions.get('window');
 
 
 
 export default class RosterList extends React.Component {
+
+    setPositionFilter(arr){
+        const data = [];
+        const empty = [];
+    
+        for(let i=0; i<arr.length; i++){
+          data.push({
+            type:'NORMAL',
+            item: arr[i]
+          })
+        }
+    
+        this.setState({
+          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
+            filteredList: arr
+        });
+      }
 
     redshirtPlayer = (ply) => {
 
@@ -49,12 +67,21 @@ export default class RosterList extends React.Component {
     updateState = () =>{
         let data = [];
 
+        if(this.state.filteredList != null){
+            for(let i=0; i<this.state.filteredList.length; i++){
+                data.push({
+                  type:'NORMAL',
+                  item: this.state.filteredList[i]
+                })
+              }
+        }else{
         for(let i=0; i<this.props.selectedTeam.roster.length; i++){
             data.push({
               type:'NORMAL',
               item: sortedRoster(this.props.selectedTeam,'rating')[i]
             })
           }
+        }
         this.setState({
           list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
           modalPlayer: null,
@@ -96,9 +123,11 @@ export default class RosterList extends React.Component {
         super(props);
     
         const data = [];
+        let arrayForFilter = [];
+        this.setPositionFilter = this.setPositionFilter.bind(this);
 
         if(this.props.view === 'resigning'){
-
+            arrayForFilter = this.props.selectedTeam.expiring.roster;
             for(let i=0; i<this.props.selectedTeam.expiring.roster.length; i++){
                 data.push({
                   type:'NORMAL',
@@ -106,7 +135,7 @@ export default class RosterList extends React.Component {
                 })
               }
         }else{
-
+            arrayForFilter = this.props.selectedTeam.roster;
             for(let i=0; i<this.props.selectedTeam.roster.length; i++){
               data.push({
                 type:'NORMAL',
@@ -119,7 +148,8 @@ export default class RosterList extends React.Component {
         this.state={
           list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
           modalPlayer: null,
-          modalVisible:false
+          modalVisible:false,
+          arrayForFilter: arrayForFilter
         };
       
         this.layoutProvider = new LayoutProvider((i) => {
@@ -297,6 +327,8 @@ export default class RosterList extends React.Component {
                 </View>
             ):null
 }
+
+<PositionFilter roster={this.state.arrayForFilter} setPositionFilter={this.setPositionFilter}></PositionFilter>
 
 <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
 

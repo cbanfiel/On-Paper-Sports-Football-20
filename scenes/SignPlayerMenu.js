@@ -8,6 +8,8 @@ import ListItem from '../components/ListItem';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import {Icon} from 'react-native-elements';
 import PlayerCardModal from '../components/PlayerCardModal';
+import PositionFilter from '../components/PositionFilter';
+
 
 var {height, width} = Dimensions.get('window');
 
@@ -20,6 +22,23 @@ export default class SignPlayerMenu extends React.Component {
     if(this.props.updateState != null){
         this.props.updateState();
     }
+}
+
+setPositionFilter(arr){
+  const data = [];
+  const empty = [];
+
+  for(let i=0; i<arr.length; i++){
+    data.push({
+      type:'NORMAL',
+      item: arr[i]
+    })
+  }
+
+  this.setState({
+    list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
+    filteredList: arr
+  });
 }
 
 
@@ -112,12 +131,21 @@ manageOffer(ply){
 
   let data = [];
 
+  if(this.state.filteredList != null){
+    for(let i=0; i<this.state.filteredList.length; i++){
+      data.push({
+        type:'NORMAL',
+        item: this.state.filteredList[i]
+      })
+    }
+  }else{
   for(let i=0; i<selectedTeam.interestedProspects.roster.length; i++){
     data.push({
       type:'NORMAL',
       item: sortedRoster(selectedTeam.interestedProspects,'rating')[i]
     })
   }
+}
 
   this.setState({
     list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data)
@@ -129,8 +157,11 @@ manageOffer(ply){
         super(props);
     
         const data = [];
+        let arrayForFilter = [];
+        this.setPositionFilter = this.setPositionFilter.bind(this);
     
         if(this.props.collegeMode === true){
+          arrayForFilter = selectedTeam.interestedProspects.roster;
           for(let i=0; i<selectedTeam.interestedProspects.roster.length; i++){
             data.push({
               type:'NORMAL',
@@ -138,6 +169,7 @@ manageOffer(ply){
             })
           }
         }else{
+          arrayForFilter = availableFreeAgents.roster;
         for(let i=0; i<availableFreeAgents.roster.length; i++){
           data.push({
             type:'NORMAL',
@@ -151,7 +183,8 @@ manageOffer(ply){
           modalPlayer: null,
           modalVisible:false,
           offered: selectedTeam.offered,
-          scholarships: selectedTeam.scholarshipsAvailable - selectedTeam.offered.length
+          scholarships: selectedTeam.scholarshipsAvailable - selectedTeam.offered.length,
+          arrayForFilter : arrayForFilter
         };
       
         this.layoutProvider = new LayoutProvider((i) => {
@@ -244,6 +277,7 @@ manageOffer(ply){
                     <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20 }}>{this.props.collegeMode ? 'Requirements: ' + this.rosterRequirements()  : null}</Text>
                 </View>
 
+                <PositionFilter roster={this.state.arrayForFilter} setPositionFilter={this.setPositionFilter}></PositionFilter>
 
 <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
 

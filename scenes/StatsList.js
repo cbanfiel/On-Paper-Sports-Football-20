@@ -7,7 +7,7 @@ import { sortedRoster, allPlayers, returnStatsListView, returnSeasonStatsListVie
 import ListItem from '../components/ListItem';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import PlayerCardModal from '../components/PlayerCardModal';
-import PositionFilter from '../components/PositionFilter';
+import StatFilter from '../components/StatFilter';
 
 
 var {height, width} = Dimensions.get('window');
@@ -25,7 +25,7 @@ export default class StatsList extends React.Component {
     }
   }
 
-  setPositionFilter(arr){
+  setStatFilter(arr){
     const data = [];
     const empty = [];
 
@@ -68,7 +68,7 @@ export default class StatsList extends React.Component {
       modalVisible: false
     };
 
-    this.setPositionFilter = this.setPositionFilter.bind(this);
+    this.setStatFilter = this.setStatFilter.bind(this);
   
     this.layoutProvider = new LayoutProvider((i) => {
       return this.state.list.getDataForIndex(i).type
@@ -140,7 +140,7 @@ export default class StatsList extends React.Component {
                         </Modal>
                     ) : null
                 }
-<PositionFilter selectedTeam={this.props.selectedTeam} setPositionFilter={this.setPositionFilter}></PositionFilter>
+<StatFilter selectedTeam={this.props.selectedTeam} setStatFilter={this.setStatFilter}></StatFilter>
 
 <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
 

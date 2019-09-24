@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import CachedImage from './CachedImage';
+import { POS_QB, POS_HB, POS_DT, POS_LOLB, POS_ROLB, POS_CB, POS_K, POS_P, POS_WR, POS_TE, POS_LT, POS_RT, POS_SS, POS_LE } from '../data/script';
 
 var {height, width} = Dimensions.get('window');
 
@@ -9,96 +10,27 @@ var {height, width} = Dimensions.get('window');
 export default class PositionFilter extends React.Component {
 
     state={
-        selectedTeam: this.props.selectedTeam,
-        roster:this.props.selectedTeam.roster,
+        roster:this.props.roster,
     }
 
-    setFilter(filter){
+    setFilter(filter, filter2){
+        if(filter2 == null){
+            filter2 = filter;
+        }
         let filteredArray = [];
-        if(filter === 'passing'){
-            for(let i=0; i<this.props.selectedTeam.roster.length; i++){
-                let ply = this.props.selectedTeam.roster[i]
-                if(ply.seasonAttempts>0 && ply.position === 0 ){
+        if(filter === 'all'){
+            this.props.setPositionFilter(this.props.roster);
+            return;
+        }
+
+
+
+            for(let i=0; i<this.props.roster.length; i++){
+                let ply = this.props.roster[i]
+                if(ply.position >= filter && ply.position<= filter2){
                     filteredArray.push(ply);
                 }
             }
-        }
-
-        if(filter === 'rushing'){
-            for(let i=0; i<this.props.selectedTeam.roster.length; i++){
-                let ply = this.props.selectedTeam.roster[i]
-                if(ply.seasonRushAttempts>0){
-                    filteredArray.push(ply);
-                }
-            }
-
-            filteredArray.sort(function(a,b){
-                if(a.seasonRushYards < b.seasonRushYards){
-                    return 1;
-                }
-                if(a.seasonRushYards > b.seasonRushYards){
-                    return -1;
-                }
-                return 0;
-            })
-        }
-
-        if(filter === 'receiving'){
-            for(let i=0; i<this.props.selectedTeam.roster.length; i++){
-                let ply = this.props.selectedTeam.roster[i]
-                if(ply.seasonReceptions>0){
-                    filteredArray.push(ply);
-                }
-            }
-
-            filteredArray.sort(function(a,b){
-                if(a.seasonYards < b.seasonYards){
-                    return 1;
-                }
-                if(a.seasonYards > b.seasonYards){
-                    return -1;
-                }
-                return 0;
-            })
-        }
-
-        if(filter === 'defense'){
-            for(let i=0; i<this.props.selectedTeam.roster.length; i++){
-                let ply = this.props.selectedTeam.roster[i]
-                if(ply.seasonTackles>0){
-                    filteredArray.push(ply);
-                }
-            }
-
-            filteredArray.sort(function(a,b){
-                if(a.seasonTackles < b.seasonTackles){
-                    return 1;
-                }
-                if(a.seasonTackles > b.seasonTackles){
-                    return -1;
-                }
-                return 0;
-            })
-        }
-
-        if(filter === 'kicking'){
-            for(let i=0; i<this.props.selectedTeam.roster.length; i++){
-                let ply = this.props.selectedTeam.roster[i]
-                if(ply.seasonKicksAttempted>0){
-                    filteredArray.push(ply);
-                }
-            }
-
-            filteredArray.sort(function(a,b){
-                if(a.seasonKicksMade < b.seasonKicksMade){
-                    return 1;
-                }
-                if(a.seasonKicksMade > b.seasonKicksMade){
-                    return -1;
-                }
-                return 0;
-            })
-        }
 
         while(filteredArray.length>=150){
             filteredArray.pop();
@@ -110,33 +42,58 @@ export default class PositionFilter extends React.Component {
     render() {
         return (
                 <View style={{ backgroundColor: 'rgba(255,255,255,0)', height:50, width:width, flexDirection:'row', justifyContent:'center', alignItems:'center', display:'flex'}}>
-                    <TouchableOpacity  onPress={() => this.setFilter('passing')} style={{flex:1}}>
+                    <TouchableOpacity  onPress={() => this.setFilter('all')} style={{flex:1}}>
                         <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
-                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>Passing</Text>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>ALL</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity  onPress={() => this.setFilter(POS_QB)} style={{flex:1}}>
+                        <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>QB</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter('rushing')}>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_HB)}>
                         <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
-                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>Rushing</Text>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>RB</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter('receiving')}>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_WR)}>
                         <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
-                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>Receiving</Text>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>WR</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter('defense')}>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_TE)}>
                         <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
-                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>Defense</Text>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>TE</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter('kicking')}>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_LT, POS_RT)}>
                         <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
-                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>Kicking</Text>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>OL</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_LE, POS_DT)}>
+                        <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>DL</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_LOLB, POS_ROLB)}>
+                        <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>LB</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_CB, POS_SS)}>
+                        <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>DB</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter(POS_K, POS_P)}>
+                        <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>K</Text>
                         </View>
                     </TouchableOpacity>
 
