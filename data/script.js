@@ -1,8 +1,8 @@
-// var teamsData = require("./JSON/Teams.json");
-var teamsData = require("./JSON/NCAA/Teams.json");
+var teamsData = require("./JSON/Teams.json");
+// var teamsData = require("./JSON/NCAA/Teams.json");
 
-// var playerData = require("./JSON/Players.json");
-var playerData = require("./JSON/NCAA/Players.json");
+var playerData = require("./JSON/Players.json");
+// var playerData = require("./JSON/NCAA/Players.json");
 
 var freeAgents = require("./JSON/FreeAgents.json");
 
@@ -110,11 +110,11 @@ export let goalieAdjustmentSlider = 3;
 
 //Seconds Off Clock Random Factor
 let secondsOffClockRandomFactor = 6;
-export let gamesPerSeason = 12;
+export let gamesPerSeason = 16;
 export let playoffSeeds = 4;
 export let seriesWinCount = 1;
-export let conferencesOn = false;
-export let collegeMode = true;
+export let conferencesOn = true;
+export let collegeMode = false;
 export let difficulty = 0;
 //************************************ */
 
@@ -767,6 +767,9 @@ class Team {
       );
 
       this.rating  = Math.round(scaleBetween(rat,60,99,65,85));
+      if(this.rating>=99){
+        this.rating = 99;
+      }
 
     } catch (err) {
       console.log(this.name + "calculateRating()");
@@ -3020,8 +3023,7 @@ export class Franchise {
           if (ply.age <= 23) {
 
             //testing scaled growth
-            let scaledGrowth = scaleBetween(ply.awareness, 8, 3, 40, 99);
-            ply.awareness += Math.round(Math.random() * scaledGrowth);
+            ply.awareness += Math.round(Math.random() * 3)+1;
             if(ply.position === POS_QB){
               ply.pass += Math.round(Math.random() * 1);
 
@@ -3791,13 +3793,15 @@ export class Franchise {
               index = 0;
             }
             let signing = teams[i].interestedProspects.roster[index];
-            signing.salary = VETERANSMINIMUM;
-              signing.teamName = teams[i].name;
-              signing.teamLogoSrc = teams[i].logoSrc;
-              signing.years = 1;
-              teams[i].roster.push(signing);
-              teams[i].interestedProspects.roster.splice(index, 1);
-              teams[i].scholarshipsAvailable --;
+            teams[i].scholarshipsAvailable --;
+            if(Math.random()*100 <= signing.interest){
+              signing.salary = VETERANSMINIMUM;
+                signing.teamName = teams[i].name;
+                signing.teamLogoSrc = teams[i].logoSrc;
+                signing.years = 1;
+                teams[i].roster.push(signing);
+                teams[i].interestedProspects.roster.splice(index, 1);
+            }
 
           } else {
             // console.log(teams[i].interestedProspects.roster.length + ' int pros');
@@ -3805,17 +3809,19 @@ export class Franchise {
               // console.log(teams[i].name + ' has no interested prospects')
               break;
             }
-            let index = Math.floor(Math.random()*15);
+            let index = Math.floor(Math.random()*5);
             if (index >= teams[i].interestedProspects.roster.length) {
               index = 0;
             }
             let signing = teams[i].interestedProspects.roster[index];
+            teams[i].scholarshipsAvailable --;
+            if(Math.random()*100 <= signing.interest){
               signing.teamName = teams[i].name;
               signing.teamLogoSrc = teams[i].logoSrc;
               signing.years = 1;
               teams[i].roster.push(signing);
               teams[i].interestedProspects.roster.splice(index, 1);
-              teams[i].scholarshipsAvailable --;
+            }
           }
         }
       }
@@ -3908,20 +3914,18 @@ export class Franchise {
       for(let i=0; i<teams.length; i++){
         let seedRat = teams.length - teams[i].seed;
         let teamRating = teams[i].rating;
-        if(teamRating<60){
-          teamRating = 60;
-        }
-        if(teamRating>90){
-          teamRating = 90;
-        }
-        let scaledSeed = scaleBetween((seedRat), 60, 95, 0, teams.length);
+        let scaledSeed = scaleBetween((seedRat), 70, 99, 0, teams.length);
 
 
-        let rating = Math.round((teamRating + scaledSeed)/2) - 22;
+        let rating = Math.round((teamRating + scaledSeed)/2) - 20;
         // console.log(`${teams[i].name} ${rating}`);
 
         if(teams[i] === selectedTeam){
           console.log(`generateprospect rating: ${rating}`);
+        }
+
+        if(rating<=60){
+          rating = 60;
         }
         
         generateProspects(teams[i], rating);
@@ -6498,13 +6502,20 @@ export function generateProspects(team, rating) {
   let ps= 0;
   let ply;
   for (let i = 0; i < rosterSize*3; i++) {
-    let playerRating = rating + (Math.round(Math.random()*10)-5);
-    //5% elite players
-    if(Math.random()*100 <= 5){
+    let playerRating = rating - (Math.round(Math.random()*10));
+    //10% elite players
+    if(Math.random()*100 <= 10){
       playerRating += Math.round(Math.random()*20)+2;
     }
+
+    //block over 89
     if(playerRating>=89){
       playerRating = 89;
+    }
+
+    //block 60 and under
+    if(playerRating<=61){
+      playerRating = Math.round(Math.random()*4)+61;
     }
     
     if (qbs < POS_QB_REQUIREMENTS*3) {
@@ -6857,7 +6868,8 @@ function cpuRedshirting(){
     });
     for(let j=0; j<sortedRos.length; j++){
       let ply = sortedRos[j];
-      if(ply.age <= 18 && checkRequirementsWithoutPlayer(ply,teams[i]) && !playerWillStart(ply, teams[i])){
+      let rand = Math.random()*100;
+      if(ply.age <= 18 && checkRequirementsWithoutPlayer(ply,teams[i]) && !playerWillStart(ply, teams[i]) && rand>50){
         ply.redshirted = true;
 
         //faster then just reordering lineup every time

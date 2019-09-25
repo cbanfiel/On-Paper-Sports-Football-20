@@ -49,12 +49,21 @@ export default class RosterList extends React.Component {
                 selectedTeam.manageFootballLineup();
                 let data = [];
         
-                for(let i=0; i<this.props.selectedTeam.roster.length; i++){
-                    data.push({
-                      type:'NORMAL',
-                      item: sortedRoster(this.props.selectedTeam,'rating')[i]
-                    })
-                  }
+                if(this.state.filteredList != null){
+                    for(let i=0; i<this.state.filteredList.length; i++){
+                        data.push({
+                          type:'NORMAL',
+                          item: this.state.filteredList[i]
+                        })
+                      }  
+                }else{
+                    for(let i=0; i<this.props.selectedTeam.roster.length; i++){
+                        data.push({
+                          type:'NORMAL',
+                          item: sortedRoster(this.props.selectedTeam,'rating')[i]
+                        })
+                      }
+                }
                 this.setState({
                   list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data)
                 });

@@ -405,7 +405,7 @@ export default class SeasonMenu extends React.Component {
                   </Card>
                 </TouchableOpacity>
               ) :
-                <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.props.teamListStage('playoffs'), franchise.advance = true, franchise.stage = 'playoffs', franchise.simStage(), Actions.replace('bowlgames', { teamListStage: this.props.teamListStage }) }}>
+                <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.props.teamListStage('playoffs'), franchise.advance = true, franchise.stage = 'playoffs', franchise.simStage(), collegeMode? Actions.replace('bowlgames', { teamListStage: this.props.teamListStage }) :  Actions.replace('playoffmenu', { teamListStage: this.props.teamListStage })  }}>
                   <Card
                     containerStyle={{
                       width: '95%', backgroundColor: 'rgba(0,0,0,0)',
