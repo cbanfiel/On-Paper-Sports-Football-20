@@ -107,7 +107,7 @@ export default class SeasonRosterMenu extends React.Component {
                         </Card>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{ width: '100%' }} onPress={() => { Actions.signplayermenu({ back: 'seasonmenu', forced:false }) }}>
+                    <TouchableOpacity style={{ width: '100%' }} onPress={() => { Actions.signplayermenu({ back: 'seasonmenu', forced:false, requirementsOff:false }) }}>
                         <Card
                             containerStyle={{
                                 width: '95%', backgroundColor: 'rgba(0,0,0,0)',

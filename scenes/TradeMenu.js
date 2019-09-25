@@ -15,7 +15,7 @@ import PositionFilter from '../components/PositionFilter';
 
 export default class TradeMenu extends React.Component {
 
-    setPositionFilter(arr){
+    setPositionFilter(arr, tm){
         const data = [];
         const empty = [];
     
@@ -26,7 +26,7 @@ export default class TradeMenu extends React.Component {
           })
         }
     
-        if(selectedTeam.roster.includes(arr[0])){
+        if(tm === selectedTeam){
             this.setState({
               list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
               filteredList: arr
@@ -58,13 +58,13 @@ export default class TradeMenu extends React.Component {
                 })
             }
 
-            for(let i=0; i<selectedTeam.draftPicks.length; i++){
-                data.push({
-                  type:'NORMAL',
-                  item: selectedTeam.draftPicks[i]
-                })
-                arrayForFilter.push(selectedTeam.draftPicks[i]);
-            }
+            // for(let i=0; i<selectedTeam.draftPicks.length; i++){
+            //     data.push({
+            //       type:'NORMAL',
+            //       item: selectedTeam.draftPicks[i]
+            //     })
+            //     arrayForFilter.push(selectedTeam.draftPicks[i]);
+            // }
 
             arrayForFilterT2 = selectedTeam2.roster;
             for(let i=0; i<selectedTeam2.roster.length; i++){
@@ -74,13 +74,13 @@ export default class TradeMenu extends React.Component {
                 })
             }
 
-            for(let i=0; i<selectedTeam.draftPicks.length; i++){
-                dataT2.push({
-                  type:'NORMAL',
-                  item: selectedTeam2.draftPicks[i]
-                })
-                arrayForFilterT2.push(selectedTeam2.draftPicks[i]);
-            }
+            // for(let i=0; i<selectedTeam.draftPicks.length; i++){
+            //     dataT2.push({
+            //       type:'NORMAL',
+            //       item: selectedTeam2.draftPicks[i]
+            //     })
+            //     arrayForFilterT2.push(selectedTeam2.draftPicks[i]);
+            // }
 
         this.state = {
             t1Offers: [],
@@ -246,12 +246,12 @@ export default class TradeMenu extends React.Component {
                     })
                 }
         
-                for(let i=0; i<team.draftPicks.length; i++){
-                    data.push({
-                      type:'NORMAL',
-                      item: team.draftPicks[i]
-                    })
-                }
+                // for(let i=0; i<team.draftPicks.length; i++){
+                //     data.push({
+                //       type:'NORMAL',
+                //       item: team.draftPicks[i]
+                //     })
+                // }
             }
     
                 this.setState({
@@ -274,12 +274,12 @@ export default class TradeMenu extends React.Component {
                     })
                 }
         
-                for(let i=0; i<team.draftPicks.length; i++){
-                    data.push({
-                      type:'NORMAL',
-                      item: team.draftPicks[i]
-                    })
-                }
+                // for(let i=0; i<team.draftPicks.length; i++){
+                //     data.push({
+                //       type:'NORMAL',
+                //       item: team.draftPicks[i]
+                //     })
+                // }
             }
 
             this.setState({
@@ -347,19 +347,19 @@ export default class TradeMenu extends React.Component {
                 t1Tes--;
                 t2Tes++;
             }
-            else if(ply.position >= 5 || ply.position <=9){
+            else if(ply.position >= 5 && ply.position <=9){
                 t1Ol--;
                 t2Ol++;
             }
-            else if(ply.position >= 10 || ply.position <=12){
+            else if(ply.position >= 10 && ply.position <=12){
                 t1Dl--;
                 t2Dl++;
             }
-            else if(ply.position >= 13 || ply.position <=15){
+            else if(ply.position >= 13 && ply.position <=15){
                 t1Lb--;
                 t2Lb++;
             }
-            else if(ply.position >= 16 || ply.position <=18){
+            else if(ply.position >= 16 && ply.position <=18){
                 t1Db--;
                 t2Db++;
             }
@@ -393,19 +393,19 @@ export default class TradeMenu extends React.Component {
                 t2Tes--;
                 t1Tes++;
             }
-            else if(ply.position >= 5 || ply.position <=9){
+            else if(ply.position >= 5 && ply.position <=9){
                 t2Ol--;
                 t1Ol++;
             }
-            else if(ply.position >= 10 || ply.position <=12){
+            else if(ply.position >= 10 && ply.position <=12){
                 t2Dl--;
                 t1Dl++;
             }
-            else if(ply.position >= 13 || ply.position <=15){
+            else if(ply.position >= 13 && ply.position <=15){
                 t2Lb--;
                 t1Lb++;
             }
-            else if(ply.position >= 16 || ply.position <=18){
+            else if(ply.position >= 16 && ply.position <=18){
                 t2Db--;
                 t1Db++;
             }
@@ -418,7 +418,7 @@ export default class TradeMenu extends React.Component {
                 t1P++;
             }
         }
-     
+
 
         if(t1Qbs >= POS_QB_REQUIREMENTS && 
             t1Rbs>=POS_HB_REQUIREMENTS && 
@@ -473,7 +473,6 @@ export default class TradeMenu extends React.Component {
                 this.props.updateScene();
             }
 
-            console.log(inDraft);
             Actions.pop();
         }
     }
@@ -538,7 +537,7 @@ export default class TradeMenu extends React.Component {
                             <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ padding: 15, borderRadius: 0, borderBottomWidth: 1, backgroundColor: 'rgba(255,255,255,0)', borderColor: 'rgba(255,255,255,0)' }} title="Offer Trade" onPress={() => { this.offer(), Actions.refresh() }}></Button>
 
                 }
-                <PositionFilter roster={this.state.arrayForFilter} setPositionFilter={this.setPositionFilter}></PositionFilter>
+                <PositionFilter roster={this.state.arrayForFilter} setPositionFilter={this.setPositionFilter} draftPicks={selectedTeam.draftPicks} team={selectedTeam}></PositionFilter>
 
                 <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
 
@@ -585,7 +584,7 @@ export default class TradeMenu extends React.Component {
                     <Text style={{ fontFamily: 'advent-pro', textAlign: 'center', fontSize: 20 }}>{'Cap Space: $' + displaySalary((this.state.t2salary - CAPROOM) * -1)}</Text>
 
                 </View>
-                <PositionFilter roster={this.state.arrayForFilterT2} setPositionFilter={this.setPositionFilter}></PositionFilter>
+                <PositionFilter roster={this.state.arrayForFilterT2} setPositionFilter={this.setPositionFilter} draftPicks={selectedTeam2.draftPicks} team={selectedTeam2}></PositionFilter>
 
                 <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRendererT2} dataProvider={this.state.listT2} layoutProvider={this.layoutProvider2} forceNonDeterministicRendering={false}/>
 

@@ -7,6 +7,7 @@ import ListItem from '../components/ListItem';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import { Input, Icon } from 'react-native-elements';
 import PlayerCardModal from '../components/PlayerCardModal';
+import PositionFilter from '../components/PositionFilter';
 
 
 var {height, width} = Dimensions.get('window');
@@ -14,6 +15,23 @@ var {height, width} = Dimensions.get('window');
 let allPlayers = [];
 
 export default class PlayerSearch extends React.Component {
+
+  setPositionFilter(arr){
+    const data = [];
+    const empty = [];
+
+    for(let i=0; i<arr.length; i++){
+      data.push({
+        type:'NORMAL',
+        item: arr[i]
+      })
+    }
+
+    this.setState({
+      list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
+        filteredList: arr
+    });
+  }
 
 
 //   statsView(player) {
@@ -70,6 +88,8 @@ setModalVisible(visible, player) {
 
     const data = [];
 
+    let arrayForFilter = [];
+    this.setPositionFilter = this.setPositionFilter.bind(this);
     allPlayers = [];
 
     for (let i = 0; i < teams.length; i++) {
@@ -93,6 +113,7 @@ setModalVisible(visible, player) {
     })
 
     for(let i=0; i<allPlayers.length; i++){
+      arrayForFilter.push(allPlayers[i])
       data.push({
         type:'NORMAL',
         item: allPlayers[i]
@@ -101,7 +122,8 @@ setModalVisible(visible, player) {
 
     this.state={
       list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
-      order: data
+      order: data,
+      arrayForFilter
     };
   
     this.layoutProvider = new LayoutProvider((i) => {
@@ -175,6 +197,7 @@ setModalVisible(visible, player) {
 
 
     <Input containerStyle = {{backgroundColor:'rgba(255,255,255,0)', padding: 15}} onChangeText={value => {this.search(value)}} placeholder={'Enter player name'} placeholderTextColor={'rgb(80,80,80)'} inputStyle={{ color: 'black', fontFamily: 'advent-pro', textAlign:'center' }} ></Input>
+    <PositionFilter roster={this.state.arrayForFilter} setPositionFilter={this.setPositionFilter}></PositionFilter>
 
 
 <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>

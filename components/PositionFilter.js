@@ -17,26 +17,30 @@ export default class PositionFilter extends React.Component {
         if(filter2 == null){
             filter2 = filter;
         }
+
         let filteredArray = [];
         if(filter === 'all'){
-            this.props.setPositionFilter(this.props.roster);
+            this.props.setPositionFilter(this.props.roster, this.props.team);
+            return;
+        }
+
+        if(filter === 'picks'){
+            this.props.setPositionFilter(this.props.draftPicks, this.props.team);
             return;
         }
 
 
 
             for(let i=0; i<this.props.roster.length; i++){
-                let ply = this.props.roster[i]
+                let ply = this.props.roster[i];
                 if(ply.position >= filter && ply.position<= filter2){
                     filteredArray.push(ply);
                 }
             }
 
-        while(filteredArray.length>=150){
-            filteredArray.pop();
-        }
+      
         
-        this.props.setPositionFilter(filteredArray);
+        this.props.setPositionFilter(filteredArray, this.props.team);
     }
 
     render() {
@@ -96,6 +100,17 @@ export default class PositionFilter extends React.Component {
                         <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>K</Text>
                         </View>
                     </TouchableOpacity>
+{
+    this.props.draftPicks != null?(
+
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter('picks')}>
+                        <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>PICKS</Text>
+                        </View>
+                    </TouchableOpacity>
+    ): null
+
+}
 
                     </View>
                
