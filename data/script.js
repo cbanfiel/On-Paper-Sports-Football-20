@@ -65,8 +65,7 @@ export const REDSHIRT_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/thu
 
 
 
-const rosterSize = 55;
-const maxRosterSize = 70;
+export let rosterSize = 55;
 export const CAPROOM = 190000000;
 const VETERANSMINIMUM = 700000;
 
@@ -87,6 +86,12 @@ export const POS_LB_REQUIREMENTS = 5;
 export const POS_DB_REQUIREMENTS = 6;
 export const POS_K_REQUIREMENTS = 1;
 export const POS_P_REQUIREMENTS = 1;
+
+//football sliders
+export let qbCompletionSlider = 40;
+export let passSlider = 3;
+export let runSlider = 3;
+
 
 
 //sliders
@@ -111,7 +116,7 @@ export let goalieAdjustmentSlider = 3;
 //Seconds Off Clock Random Factor
 let secondsOffClockRandomFactor = 6;
 export let gamesPerSeason = 16;
-export let playoffSeeds = 3;
+export let playoffSeeds = 6;
 export let seriesWinCount = 1;
 export let conferencesOn = true;
 export let collegeMode = false;
@@ -127,65 +132,57 @@ export function setAutoSign(bool) {
 export function resetSliders() {
   tradeThreshold = 0.3;
   trainingPointsAvailable = 2;
-  defenseSlider = 12;
-  offenseSlider = 6;
-  passSkillFactorSlider = 7;
-  shotSkillFactorSlider = 7;
-  goalieAdjustmentSlider = 3;
+  passSlider = 3;
+  runSlider = 3;
+  qbCompletionSlider = 40;
+  gamesPerSeason = 16;
+  playoffSeeds = 6;
+  seriesWinCount = 1;
+  conferencesOn = true;
+  collegeMode = false;
+  difficulty = 0;
+  trainingPointsAvailable = 2;
+  rosterSize = 55;
+
 }
 
 export function collegeSliderPreset() {
-  twoPointPercentageLow = 20;
-  twoPointPercentageHigh = 73;
-  threePointPercentageLow = 25;
-  threePointPercentageHigh = 55;
-  defenseLow = 0;
-  defenseHigh = 16;
-  secondsOffClock = 24;
-  gamesPerSeason = 38;
-  seriesWinCount = 1;
-  conferencesOn = false;
-  collegeMode = true;
-  difficulty = -1;
   tradeThreshold = 0.3;
-  reboundSlider = 50;
   trainingPointsAvailable = 2;
+  passSlider = 4;
+  runSlider = 4;
+  qbCompletionSlider = 40;
+  rosterSize = 65;
 
-  if (teams.length >= 64) {
-    playoffSeeds = 64;
-  } else if (teams.length >= 32) {
-    playoffSeeds = 32;
-  } else if (teams.length >= 16) {
-    playoffSeeds = 16;
-  } else if (teams.length >= 8) {
-    playoffSeeds = 8;
-  } else if (teams.length >= 4) {
+  if (teams.length >= 4) {
     playoffSeeds = 4;
   } else if (teams.length >= 2) {
     playoffSeeds = 2;
   } else if (teams.length >= 1) {
     playoffSeeds = 1;
   }
+  gamesPerSeason = 12;
+  seriesWinCount = 1;
+  conferencesOn = false;
+  collegeMode = true;
 }
 
 export function setSliders(
-  def,
-  off,
-  pass,
-  shot,
-  goalies,
   diff,
   tradeDiff,
-  tptsavail
+  tptsavail,
+  pass,
+  run,
+  comp,
+  size
 ) {
-  defenseSlider = def;
-  offenseSlider = off;
-  passSkillFactorSlider = pass;
-  shotSkillFactorSlider = shot;
-  goalieAdjustmentSlider = goalies;
   difficulty = diff;
   tradeThreshold = tradeDiff;
   trainingPointsAvailable = tptsavail;
+  passSlider = pass;
+  runSlider = run;
+  qbCompletionSlider = comp;
+  rosterSize = size;
 }
 
 export function setFranchiseSliders(gps, ps, swc, confOn, collm, skipNew) {
@@ -2180,7 +2177,9 @@ export class Game {
     let initialYardage = scaleBetween(runner.speed, 0, 4, 40, 99);
     let yardsAfterContact = scaleBetween(runner.rush, 0, 4, 40, 99);
     let randYards = (Math.random() * 4);
-    yardsGained = Math.round(initialYardage - randYards + yardModifier + lineInteraction + yardsAfterContact - defenseRushMod);
+    let runSliderMod = scaleBetween(runSlider,-3,3,0,10);
+      // console.log(`runslidermod: ${runSliderMod}`);
+    yardsGained = Math.round(initialYardage - randYards + yardModifier + lineInteraction + yardsAfterContact - defenseRushMod + runSliderMod);
     // console.log(`lineInteraction:  ${lineInteraction}`);
     // console.log(`initialYdg:  ${initialYardage}`);
     // console.log(`randYards:  ${randYards}`);
@@ -2238,7 +2237,7 @@ export class Game {
     let speedVsSpeed = (target.speed - defender.speed) / 2;
     let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99);
     let scaledDefenderAwareness = scaleBetween(defender.awareness, 0, 10, 40, 99);
-    let completionPercentage = 40 + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction - defensePassPercentageMod;
+    let completionPercentage = qbCompletionSlider + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction - defensePassPercentageMod;
     qb.attempts++;
     if (Math.random() * 100 < completionPercentage) {
       //completion
@@ -2253,7 +2252,9 @@ export class Game {
         yardsAfterCatch = 0;
       }
       let tackler;
-      yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier);
+      let passSliderModifier = scaleBetween(passSlider,-3,3,0,10);
+      // console.log(`passslidermod: ${passSliderModifier}`);
+      yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier + passSliderModifier);
       if (yardsGained > 12) {
         tackler = this.selectDBTackler(def, dbsOnField);
       }
@@ -2726,11 +2727,21 @@ export class Season {
         home.wins++;
         for (let i = 0; i < home.roster.length; i++) {
           home.roster[i].statsHistory.push({
-            goals: 0,
-            saves: 0,
-            goalsAllowed: 0,
-            shots: 0,
-            assists: 0
+            completions:0 ,
+        attempts: 0 ,
+        touchdowns: 0 ,
+        yards: 0 ,
+        rushYards: 0 ,
+        rushAttempts: 0 ,
+        rushTouchdowns: 0 ,
+        kicksAttempted: 0 ,
+        kicksMade: 0 ,
+        receptions: 0 ,
+        tackles: 0,
+        interceptions: 0 ,
+        fumbles: 0 ,
+        fumblesRecovered: 0 ,
+        sacks: 0 
           });
         }
       } else {
@@ -2796,11 +2807,21 @@ export class Season {
           home.wins++;
           for (let i = 0; i < home.roster.length; i++) {
             home.roster[i].statsHistory.push({
-              goals: 0,
-              saves: 0,
-              goalsAllowed: 0,
-              shots: 0,
-              assists: 0
+              completions:0 ,
+        attempts: 0 ,
+        touchdowns: 0 ,
+        yards: 0 ,
+        rushYards: 0 ,
+        rushAttempts: 0 ,
+        rushTouchdowns: 0 ,
+        kicksAttempted: 0 ,
+        kicksMade: 0 ,
+        receptions: 0 ,
+        tackles: 0,
+        interceptions: 0 ,
+        fumbles: 0 ,
+        fumblesRecovered: 0 ,
+        sacks: 0 
             });
           }
         } else {
@@ -4350,8 +4371,9 @@ export class Franchise {
 
     console.log(`H: ${high} L: ${low} AVG: ${total/teams.length}`);
 
-
-    // saveFranchise("Franchise_Autosave");
+    //added specific autosave names
+    let teamName = selectedTeam.name.split(' ').join('');
+    saveFranchise(teamName + "_Autosave");
   }
 
   retirementStage() {
@@ -4363,7 +4385,14 @@ export class Franchise {
         for (let j = 0; j < teams[i].roster.length; j++) {
           let player = teams[i].roster[j];
           let rand = Math.random() * 100;
-          if ((player.rating >= 88 && rand > 35) || player.age >= 22) {
+          //added cant graduate til at least a jr
+          let canGraduateEarly = false;
+          if(player.age>20 || (player.redshirt&&player.age>19)){
+            //junior
+            
+            canGraduateEarly = true;
+          }
+          if ((player.rating >= 88 && rand > 35 && canGraduateEarly) || player.age >= 22) {
             teams[i].scholarshipsAvailable++;
             //made a team specific retirement list
             teams[i].retirements.push(player);
@@ -5067,7 +5096,7 @@ function setSalaryExpectations(rosterpool) {
           scaleBetween(
             tradeValueCalculation(rosterpool.roster[i]),
             VETERANSMINIMUM,
-            20000000,
+            30000000,
             80,
             600
           )
@@ -5295,6 +5324,7 @@ class Playoffs {
 
     //bye week
     if(this.byes.length>0){
+      this.byes=[];
       for(let i=0;  i<this.eastByes.length; i++){
           this.eastTeams.push(this.eastByes[i]);
       }
@@ -5304,16 +5334,21 @@ class Playoffs {
 
 
     }else{
-      if(this.eastTeams.length%2>0){
-        this.eastByes.push(this.eastTeams[0]);
-        this.byes.push(this.eastTeams[0]);
-        this.eastTeams.shift();
+      if(checkIfByeNeeded(this.eastTeams.length)){
+        for(let i=0; i<checkAmountOfByes(this.eastTeams.length); i++){
+        this.eastByes.push(this.eastTeams[i]);
+        this.byes.push(this.eastTeams[i]);
+        this.eastTeams.splice(this.eastTeams.indexOf(this.eastTeams[i]),1);
+        }
       }
-      if(this.westTeams.length%2>0){
-        this.westByes.push(this.westTeams[0]);
-        this.byes.push(this.westTeams[0]);
-        this.westTeams.shift();
+      if(checkIfByeNeeded(this.westTeams.length)){
+        for(let i=0; i<checkAmountOfByes(this.westTeams.length); i++){
+          this.westByes.push(this.westTeams[i]);
+          this.byes.push(this.westTeams[i]);
+        this.westTeams.splice(this.westTeams.indexOf(this.westTeams[i]),1);
+        }
       }
+     
     }
 
     for (let i = 0; i < this.eastTeams.length / 2; i++) {
@@ -5337,7 +5372,7 @@ class Playoffs {
   determineRoundNumber() {
     let num = playoffSeeds;
     //bye week
-    if(num%2>0){
+    while(checkIfByeNeeded(num)){
       num++;
     }
     let count = 1;
@@ -5436,7 +5471,7 @@ export function resetFranchise() {
 }
 
 franchise = new Franchise();
-
+//CHECKED
 export function saveData(slot) {
   let data = {
     teams: [],
@@ -5450,8 +5485,14 @@ export function saveData(slot) {
       name: teams[i].name,
       id: teams[i].id,
       conferenceId: teams[i].conferenceId,
+      division: teams[i].division,
       logoSrc: teams[i].logoSrc,
-      roster: teams[i].roster
+      roster: teams[i].roster,
+      offVsDefFocus: teams[i].offVsDefFocus,
+      offenseType: teams[i].offenseType,
+      defenseType: teams[i].defenseType,
+      runVsPass : teams[i].runVsPass,
+      offTempo: teams[i].offTempo
     };
     data.teams.push(teamDat);
   }
@@ -5466,12 +5507,11 @@ export function saveData(slot) {
     collegeMode: collegeMode,
     difficulty: difficulty,
     tradeThreshold: tradeThreshold,
-    offenseSlider: offenseSlider,
-    defenseSlider: defenseSlider,
-    passSkillFactorSlider: passSkillFactorSlider,
-    shotSkillFactorSlider: shotSkillFactorSlider,
-    goalieAdjustmentSlider: goalieAdjustmentSlider,
-    trainingPointsAvailable: trainingPointsAvailable
+    trainingPointsAvailable: trainingPointsAvailable,
+    passSlider: passSlider,
+    runSlider: runSlider,
+    qbCompletionSlider: qbCompletionSlider,
+    rosterSize: rosterSize
   };
 
   let write = JSON.stringify(data);
@@ -5537,7 +5577,7 @@ export const loadFromFileSystem = async fileName => {
       });
   }
 };
-
+//CHECKED
 export const loadData = data => {
   try {
     let loadedData = JSON.parse(data);
@@ -5590,18 +5630,14 @@ export const loadData = data => {
     setSalaryExpectations(availableFreeAgents);
 
     if (loadedData.sliders != null) {
-      if (loadedData.sliders.tradeThreshold == null) {
-        resetSliders();
-      } else {
         setSliders(
-          loadedData.sliders.defenseSlider,
-          loadedData.sliders.offenseSlider,
-          loadedData.sliders.passSkillFactorSlider,
-          loadedData.sliders.shotSkillFactorSlider,
-          loadedData.sliders.goalieAdjustmentSlider,
           loadedData.sliders.difficulty,
-          loadedData.sliders.tradeThreshold,
-          loadedData.sliders.trainingPointsAvailable
+          loadedData.sliders.tradeDifficulty,
+          loadedData.sliders.trainingPointsAvailable,
+          loadedData.sliders.passSlider,
+          loadedData.sliders.runSlider,
+          loadedData.sliders.qbCompletionSlider,
+          loadedData.sliders.rosterSize
         );
         setFranchiseSliders(
           loadedData.sliders.gamesPerSeason,
@@ -5610,7 +5646,6 @@ export const loadData = data => {
           loadedData.sliders.conferencesOn,
           loadedData.sliders.collegeMode
         );
-      }
     }
 
     generateDraftClass();
@@ -5761,6 +5796,7 @@ function setCustomPlayoffSeeds() {
   }
 }
 
+//CHECKED
 export function exportRosterJson() {
   let data = {
     teams: [],
@@ -5795,6 +5831,7 @@ export function exportRosterJson() {
       name: teams[i].name,
       id: teams[i].id,
       conferenceId: teams[i].conferenceId,
+      division: teams[i].division,
       logoSrc: teams[i].logoSrc,
       roster: ros
     };
@@ -5860,10 +5897,11 @@ export async function getDataFromLink(link, type, sliderType) {
 
 export let communityRosters = [];
 communityRosters = getDataFromLink(
-  "https://raw.githubusercontent.com/cbanfiel/On-Paper-Sports-Hockey-20-Rosters/master/communityfiles.json",
+  "https://raw.githubusercontent.com/cbanfiel/On-Paper-Sports-Football-20-Rosters/master/communityFiles.json",
   "communityroster"
 );
 
+//checked
 export function loadRosterJson(loadedDataIn) {
   try {
     let loadedData = loadedDataIn;
@@ -6029,7 +6067,7 @@ export function importTeamJson(data) {
   sortedRoster(team, "rating");
   setTeamSalaries();
 }
-
+//CHECKED
 export function exportDraftClassJson() {
   let ros = [];
   for (let i = 0; i < draftClass.roster.length; i++) {
@@ -6199,7 +6237,7 @@ export function getDraftPickProjectedPick(pick) {
     }
   }
 }
-
+//checked
 export function saveAsDraftClass(ros, name) {
   draftClass.roster = [];
 
@@ -6340,7 +6378,7 @@ export function returnStatsListView(player) {
 
   return str;
 }
-
+//CHECKED
 export function saveFranchise(slot) {
   let data = {
     teams: [],
@@ -6361,24 +6399,25 @@ export function saveFranchise(slot) {
       name: teams[i].name,
       id: teams[i].id,
       conferenceId: teams[i].conferenceId,
+      division: teams[i].division,
+      seed: teams[i].seed,
       logoSrc: teams[i].logoSrc,
       roster: teams[i].roster,
       history: teams[i].history,
       offVsDefFocus: teams[i].offVsDefFocus,
-      qualityVsQuantity: teams[i].qualityVsQuantity,
-      defenseAggresiveVsConservative: teams[i].defenseAggresiveVsConservative,
-      forwardsVsDefensemen: teams[i].forwardsVsDefensemen,
-      freezeThePuckVsPlayThePuck: teams[i].freezeThePuckVsPlayThePuck,
+      offenseType: teams[i].offenseType,
+      defenseType: teams[i].defenseType,
+      runVsPass : teams[i].runVsPass,
+      offTempo: teams[i].offTempo,
       scheduleString: scheduleString,
       wins: teams[i].wins,
       losses: teams[i].losses,
-      otLosses: teams[i].otLosses,
       played: teams[i].played,
       seasonPoints: teams[i].seasonPoints,
       seasonPointsAllowed: teams[i].seasonPointsAllowed,
-      seasonShots: teams[i].seasonShots,
-      seasonSaves: teams[i].seasonSaves,
-      seasonGoalsAllowed: teams[i].seasonGoalsAllowed
+      seasonPassYards : teams[i].seasonPassYards,
+      seasonRushYards : teams[i].seasonRushYards,
+      seasonPlays : teams[i].seasonPlays
     };
 
     data.teams.push(teamDat);
@@ -6393,12 +6432,11 @@ export function saveFranchise(slot) {
     collegeMode: collegeMode,
     difficulty: difficulty,
     tradeThreshold: tradeThreshold,
-    offenseSlider: offenseSlider,
-    defenseSlider: defenseSlider,
-    passSkillFactorSlider: passSkillFactorSlider,
-    shotSkillFactorSlider: shotSkillFactorSlider,
-    goalieAdjustmentSlider: goalieAdjustmentSlider,
-    trainingPointsAvailable: trainingPointsAvailable
+    trainingPointsAvailable: trainingPointsAvailable,
+    passSlider: passSlider,
+    runSlider: runSlider,
+    qbCompletionSlider: qbCompletionSlider,
+    rosterSize: rosterSize
   };
 
   let dc = [];
@@ -6435,7 +6473,7 @@ export function saveFranchise(slot) {
   }
   saveToFileSystem(write, fileName, "franchise");
 }
-
+//checked
 export const loadFranchise = data => {
   try {
     let loadedData = JSON.parse(data);
@@ -6448,23 +6486,23 @@ export const loadFranchise = data => {
       teams.push(new Team(loadedData.teams[i]));
       teams[i].history = loadedData.teams[i].history;
       teams[i].roster = [];
+      teams[i].division = loadedData.teams[i].division;
+      teams[i].seed = loadedData.teams[i].seed;
       //coach sliders
       teams[i].offVsDefFocus = loadedData.teams[i].offVsDefFocus;
-      teams[i].qualityVsQuantity = loadedData.teams[i].qualityVsQuantity;
-      teams[i].defenseAggresiveVsConservative =
-        loadedData.teams[i].defenseAggresiveVsConservative;
-      teams[i].forwardsVsDefensemen = loadedData.teams[i].forwardsVsDefensemen;
-      teams[i].frontCourtVsBackCourt =
-        loadedData.teams[i].frontCourtVsBackCourt;
-      teams[i].freezeThePuckVsPlayThePuck =
-        loadedData.teams[i].freezeThePuckVsPlayThePuck;
+      teams[i].offenseType = loadedData.teams[i].offenseType;
+      teams[i].defenseType = loadedData.teams[i].defenseType;
+      teams[i].runVsPass = loadedData.teams[i].runVsPass;
+      teams[i].offTempo = loadedData.teams[i].offTempo;
+      
+      
+      
       //stats
       teams[i].seasonPoints = loadedData.teams[i].seasonPoints;
       teams[i].seasonPointsAllowed = loadedData.teams[i].seasonPointsAllowed;
-      teams[i].seasonSaves = loadedData.teams[i].seasonSaves;
-      teams[i].seasonGoalsAllowed = loadedData.teams[i].seasonGoalsAllowed;
-      teams[i].seasonShots = loadedData.teams[i].seasonShots;
-      teams[i].seasonAssists = loadedData.teams[i].seasonAssists;
+      teams[i].seasonPassYards = loadedData.teams[i].seasonPassYards;
+      teams[i].seasonRushYards = loadedData.teams[i].seasonRushYards;
+      teams[i].seasonPlays = loadedData.teams[i].seasonPlays;
 
       for (let j = 0; j < loadedData.teams[i].roster.length; j++) {
         ply = new Player(loadedData.teams[i].roster[j]);
@@ -6472,15 +6510,28 @@ export const loadFranchise = data => {
         teams[i].roster.push(ply);
         ply.teamLogoSrc = teams[i].logoSrc;
         ply.teamName = teams[i].name;
+        ply.redshirted = loadedData.teams[i].roster[j].redshirted;
+        ply.redshirt = loadedData.teams[i].roster[j].redshirt;
         ply.previousSeasonsStats =
           loadedData.teams[i].roster[j].previousSeasonsStats;
         ply.statsHistory = loadedData.teams[i].roster[j].statsHistory;
-        ply.seasonGoals = loadedData.teams[i].roster[j].seasonGoals;
-        ply.seasonShots = loadedData.teams[i].roster[j].seasonShots;
-        ply.seasonSaves = loadedData.teams[i].roster[j].seasonSaves;
-        ply.seasonGoalsAllowed =
-          loadedData.teams[i].roster[j].seasonGoalsAllowed;
-        ply.seasonAssists = loadedData.teams[i].roster[j].seasonAssists;
+        //stats
+        ply.seasonCompletions = loadedData.teams[i].roster[j].seasonCompletions;
+        ply.seasonAttempts = loadedData.teams[i].roster[j].seasonAttempts;
+        ply.seasonTouchdowns = loadedData.teams[i].roster[j].seasonTouchdowns;
+        ply.seasonYards = loadedData.teams[i].roster[j].seasonYards;
+        ply.seasonRushYards = loadedData.teams[i].roster[j].seasonRushYards;
+        ply.seasonRushAttempts = loadedData.teams[i].roster[j].seasonRushAttempts;
+        ply.seasonRushTouchdowns = loadedData.teams[i].roster[j].seasonRushTouchdowns;
+        ply.seasonKicksAttempted = loadedData.teams[i].roster[j].seasonKicksAttempted;
+        ply.seasonKicksMade = loadedData.teams[i].roster[j].seasonKicksMade;
+        ply.seasonReceptions = loadedData.teams[i].roster[j].seasonReceptions;
+        ply.seasonTackles = loadedData.teams[i].roster[j].seasonTackles;
+        ply.seasonInterceptions = loadedData.teams[i].roster[j].seasonInterceptions;
+        ply.seasonFumbles = loadedData.teams[i].roster[j].seasonFumbles;
+        ply.seasonFumblesRecovered = loadedData.teams[i].roster[j].seasonFumblesRecovered;
+        ply.seasonSacks = loadedData.teams[i].roster[j].seasonSacks;
+
       }
 
       for (let k = 0; k < conferences.length; k++) {
@@ -6511,14 +6562,26 @@ export const loadFranchise = data => {
       availableFreeAgents.roster[i].calculateRating();
       availableFreeAgents.roster[i].teamLogoSrc = availableFreeAgents.logoSrc;
       availableFreeAgents.roster[i].teamName = availableFreeAgents.name;
-      for (let j = 0; j < loadedData.day; j++)
+      ///uhhh wtf there wasnt a {} GLITCH HOCKEY BASKETBALL
+      for (let j = 0; j < loadedData.day; j++){
         availableFreeAgents.roster[i].statsHistory.push({
-          goals: 0,
-          saves: 0,
-          shots: 0,
-          goalsAllowed: 0,
-          assists: 0
+          completions:0 ,
+        attempts: 0 ,
+        touchdowns: 0 ,
+        yards: 0 ,
+        rushYards: 0 ,
+        rushAttempts: 0 ,
+        rushTouchdowns: 0 ,
+        kicksAttempted: 0 ,
+        kicksMade: 0 ,
+        receptions: 0 ,
+        tackles: 0,
+        interceptions: 0 ,
+        fumbles: 0 ,
+        fumblesRecovered: 0 ,
+        sacks: 0 
         });
+      }
     }
 
     availableFreeAgents.reorderLineup();
@@ -6527,14 +6590,13 @@ export const loadFranchise = data => {
     //this resets franchise
     if (loadedData.sliders != null) {
       setSliders(
-        loadedData.sliders.defenseSlider,
-        loadedData.sliders.offenseSlider,
-        loadedData.sliders.passSkillFactorSlider,
-        loadedData.sliders.shotSkillFactorSlider,
-        loadedData.sliders.goalieAdjustmentSlider,
-        loadedData.sliders.difficulty,
-        loadedData.sliders.tradeThreshold,
-        loadedData.sliders.trainingPointsAvailable
+          loadedData.sliders.difficulty,
+          loadedData.sliders.tradeDifficulty,
+          loadedData.sliders.trainingPointsAvailable,
+          loadedData.sliders.passSlider,
+          loadedData.sliders.runSlider,
+          loadedData.sliders.qbCompletionSlider,
+          loadedData.sliders.rosterSize
       );
       setFranchiseSliders(
         loadedData.sliders.gamesPerSeason,
@@ -6577,6 +6639,9 @@ export const loadFranchise = data => {
 
     //franchhise filec
     franchise.season.day = loadedData.day;
+    //glitch in hockey and basketball
+    //set the games to team scchedule length
+    franchise.season.games = teams[0].schedule.length;
     franchise.pastChampions = loadedData.pastChampions;
     franchise.season.endOfSeason = false;
     franchise.offSeason = false;
@@ -7329,18 +7394,7 @@ function bowlGameSetup(){
     }
 
 
-    console.log(`
-    QBS: ${qbsRat/qbs}
-    rbS: ${rbsRat/rbs}
-    wrS: ${wrsRat/wrs}
-    tes: ${tesRat/tes}
-    ol: ${olRat/ol}
-    dl: ${dlRat/dl}
-    lbS: ${lbsRat/lbs}
-    dbs: ${dbsRat/dbs}
-    ks: ${ksRat/ks}
-    ps: ${psRat/ps}
-    `)
+
 
   //   while(dbsRat/dbs < wrsRat/wrs){
   //     for(let i=0; i<allplys.length; i++){
@@ -7368,4 +7422,25 @@ function bowlGameSetup(){
 
   }
 
-  balanceRoster();
+
+
+ function checkIfByeNeeded(input){
+  let num = input;
+  while(num > 3){
+    num /= 2;
+  }
+  return num%2 > 0;
+ }
+
+ function checkAmountOfByes(input){
+  let num = input;
+  byeCount = 1;
+  while(num > 3){
+    num /= 2;
+    byeCount++;
+  }
+  if(num%2 > 0){
+    return byeCount;
+  }else{return 0;}
+ }
+

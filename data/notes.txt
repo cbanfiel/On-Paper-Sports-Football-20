@@ -42,6 +42,36 @@ A) pick play (depends on offensive scheme){
 
 
 
+//SAVE FIXES
+
+//needs to b loaded
+
+division
+offvsdeffocus
+offtype
+deftype
+runvpass
+offtemp
+//sliders
+   passSlider: passSlider,
+    runSlider: runSlider,
+    qbCompletionSlider: qbCompletionSlider,
+    rosterSize: rosterSize
+
+**//FIX SET SLIDERS
+
+
+//SAVE FRANCHISE
+division
+seed
+seasonPassYards : teams[i].seasonPassYards,
+      seasonRushYards : teams[i].seasonRushYards,
+      seasonPlays : teams[i].seasonPlays
+
+
+
+
+
 
 
 
