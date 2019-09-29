@@ -1,194 +1,206 @@
 [
   {
-    "name": "Arizona Cardinals",
+    "name": "USA",
     "id": 0,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/ARI.png",
-    "conferenceId": 0
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/united-states-of-america/flag-round-500.png"
   },
   {
-    "name": "Atlanta Falcons",
+    "name": "Norway",
     "id": 1,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/ATL.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/norway/flag-round-500.png"
   },
   {
-    "name": "Baltimore Ravens",
+    "name": "Switzerland",
     "id": 2,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/BAL.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/switzerland/flag-round-500.png"
   },
   {
-    "name": "Buffalo Bills",
+    "name": "Germany",
     "id": 3,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/BUF.png",
-    "conferenceId": 1
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/germany/flag-round-500.png"
   },
   {
-    "name": "Carolina Panthers",
+    "name": "Canada",
     "id": 4,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/CAR.png",
-    "conferenceId": 0
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/canada/flag-round-500.png"
   },
   {
-    "name": "Chicago Bears",
+    "name": "Brazil",
     "id": 5,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/CHI.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/brazil/flag-round-500.png"
   },
   {
-    "name": "Cincinnati Bengals",
+    "name": "Belgium",
     "id": 6,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/CIN.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/belgium/flag-round-500.png"
   },
   {
-    "name": "Cleveland Browns",
+    "name": "Australia",
     "id": 7,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/CLE.png",
-    "conferenceId": 1
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/australia/flag-round-500.png"
   },
   {
-    "name": "Dallas Cowboys",
+    "name": "China",
     "id": 8,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/DAL.png",
-    "conferenceId": 0
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/china/flag-round-500.png"
   },
   {
-    "name": "Denver Broncos",
+    "name": "Columbia",
     "id": 9,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/DEN.png",
-    "conferenceId": 1
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/colombia/flag-round-500.png"
   },
   {
-    "name": "Detroit Lions",
+    "name": "Costa Rica",
     "id": 10,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/DET.png",
-    "conferenceId": 0
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/costa-rica/flag-round-500.png"
   },
   {
-    "name": "Green Bay Packers",
+    "name": "Denmark",
     "id": 11,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/GB.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/denmark/flag-round-500.png"
   },
   {
-    "name": "Houston Texans",
+    "name": "Egypt",
     "id": 12,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/HOU.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/egypt/flag-round-500.png"
   },
   {
-    "name": "Indianapolis Colts",
+    "name": "Ethiopia",
     "id": 13,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/IND.png",
-    "conferenceId": 1
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/ethiopia/flag-round-500.png"
   },
   {
-    "name": "Jacksonville Jaguars",
+    "name": "Finland",
     "id": 14,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/JAX.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/finland/flag-round-500.png"
   },
   {
-    "name": "Kansas City Chiefs",
+    "name": "France",
     "id": 15,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/KC.png",
-    "conferenceId": 1
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/france/flag-round-500.png"
   },
   {
-    "name": "Los Angeles Chargers",
+    "name": "Greece",
     "id": 16,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/LAC.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/greece/flag-round-500.png"
   },
   {
-    "name": "Los Angeles Rams",
+    "name": "India",
     "id": 17,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/LAR.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/india/flag-round-500.png"
   },
   {
-    "name": "Miami Dolphins",
+    "name": "Ireland",
     "id": 18,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/MIA.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/ireland/flag-round-500.png"
   },
   {
-    "name": "Minnesota Vikings",
+    "name": "Italy",
     "id": 19,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/MIN.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/italy/flag-round-500.png"
   },
   {
-    "name": "New England Patriots",
+    "name": "Jamaica",
     "id": 20,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/NE.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/jamaica/flag-round-500.png"
   },
   {
-    "name": "New Orleans Saints",
+    "name": "Japan",
     "id": 21,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/NO.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/japan/flag-round-500.png"
   },
   {
-    "name": "New York Giants",
+    "name": "Mexico",
     "id": 22,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/NYG.png",
-    "conferenceId": 0
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/mexico/flag-round-500.png"
   },
   {
-    "name": "New York Jets",
+    "name": "Russia",
     "id": 23,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/NYJ.png",
-    "conferenceId": 1
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/russia/flag-round-500.png"
   },
   {
-    "name": "Oakland Raiders",
+    "name": "South Korea",
     "id": 24,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/OAK.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/south-korea/flag-round-500.png"
   },
   {
-    "name": "Philadelphia Eagles",
+    "name": "Spain",
     "id": 25,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/PHI.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/spain/flag-round-500.png"
   },
   {
-    "name": "Pittsburgh Steelers",
+    "name": "Argentina",
     "id": 26,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/PIT.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/argentina/flag-round-500.png"
   },
   {
-    "name": "San Francisco 49ers",
+    "name": "Kazakhstan",
     "id": 27,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/SF.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/kazakhstan/flag-round-500.png"
   },
   {
-    "name": "Seattle Seahawks",
+    "name": "Algeria",
     "id": 28,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/SEA.png",
-    "conferenceId": 0
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/algeria/flag-round-500.png"
   },
   {
-    "name": "Tampa Bay Buccaneers",
+    "name": "Turkey",
     "id": 29,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/TB.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/turkey/flag-round-500.png"
   },
   {
-    "name": "Tennessee Titans",
+    "name": "Nigeria",
     "id": 30,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/TEN.png",
-    "conferenceId": 1
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/nigeria/flag-round-500.png"
   },
   {
-    "name": "Washington Redskins",
+    "name": "Iran",
     "id": 31,
-    "logoSrc": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/nfl/500/WAS.png",
-    "conferenceId": 0
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/iran/flag-round-500.png"
+  },
+  {
+    "name": "Pakistan",
+    "id": 32,
+    "conferenceId": 0,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/pakistan/flag-round-500.png"
+  },
+  {
+    "name": "South Africa",
+    "id": 33,
+    "conferenceId": 1,
+    "logoSrc": "https://cdn.countryflags.com/thumbs/south-africa/flag-round-500.png"
   }
 ]

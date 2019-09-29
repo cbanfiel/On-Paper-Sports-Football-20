@@ -1,8 +1,6 @@
 var teamsData = require("./JSON/Teams.json");
-// var teamsData = require("./JSON/NCAA/Teams.json");
 
 var playerData = require("./JSON/Players.json");
-// var playerData = require("./JSON/NCAA/Players.json");
 
 var freeAgents = require("./JSON/FreeAgents.json");
 
@@ -688,7 +686,7 @@ class Team {
     this.expiring = {
       name: "Expiring Contracts",
       roster: [],
-      logoSrc: "https://i.ibb.co/5h2T9Kq/test.png",
+      logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
       reorderLineup: function () {
         availableFreeAgents.roster.sort(function (a, b) {
           if (a.rating > b.rating) return -1;
@@ -1179,14 +1177,14 @@ export let conferences = [];
 let easternConference = {
   name: "Eastern Conference",
   teams: [],
-  logoSrc: "https://i.ibb.co/5h2T9Kq/test.png",
+  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
   id: 0
 };
 
 let westernConference = {
   name: "Western Conference",
   teams: [],
-  logoSrc: "https://i.ibb.co/5h2T9Kq/test.png",
+  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
   id: 1
 };
 
@@ -1195,7 +1193,7 @@ conferences.push(easternConference, westernConference);
 export let availableFreeAgents = {
   name: "Free Agents",
   roster: [],
-  logoSrc: "https://i.ibb.co/5h2T9Kq/test.png",
+  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
   reorderLineup: function () {
     availableFreeAgents.roster.sort(function (a, b) {
       if (a.rating > b.rating) return -1;
@@ -1223,7 +1221,8 @@ export function loadRosters() {
       }
     }
     if (teams[i].roster.length <= 0) {
-      generateCustomRoster(teams[i], 65);
+      //changed init custom rost to 78
+      generateCustomRoster(teams[i], 80);
     }
     for (let k = 0; k < conferences.length; k++) {
       if (teams[i].conferenceId === conferences[k].id) {
@@ -1252,7 +1251,7 @@ export function loadRosters() {
 
 
   //temporary
-  generateFreeAgents(600, 16);
+  generateFreeAgents(600, 25);
   generateDraftClass();
 }
 
@@ -1260,7 +1259,7 @@ export function loadRosters() {
 export let draftClass = {
   name: "Draft Class",
   roster: [],
-  logoSrc: "https://i.ibb.co/5h2T9Kq/test.png",
+  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
   reorderLineup: function () {
     draftClass.roster.sort(function (a, b) {
       if (a.rating > b.rating) return -1;
@@ -2867,7 +2866,7 @@ export class Franchise {
     this.retirements = {
       name: "Retirements",
       roster: [],
-      logoSrc: "https://i.ibb.co/5h2T9Kq/test.png",
+      logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
       reorderLineup: function () {
         draftClass.roster.sort(function (a, b) {
           if (a.rating > b.rating) return -1;
@@ -3897,7 +3896,9 @@ export class Franchise {
                 signing.years = 1;
                 teams[i].roster.push(signing);
                 teams[i].interestedProspects.roster.splice(index, 1);
-            }
+          }else{
+             teams[i].interestedProspects.roster.splice(index, 1);
+          }
 
           } else {
             // console.log(teams[i].interestedProspects.roster.length + ' int pros');
@@ -3917,7 +3918,9 @@ export class Franchise {
               signing.years = 1;
               teams[i].roster.push(signing);
               teams[i].interestedProspects.roster.splice(index, 1);
-            }
+            }else{
+              teams[i].interestedProspects.roster.splice(index, 1);
+           }
           }
         }
       }
@@ -4552,7 +4555,7 @@ export class Franchise {
       drafted: {
         name: "Drafted",
         roster: [],
-        logoSrc: "https://i.ibb.co/5h2T9Kq/test.png",
+        logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
         reorderLineup: function () {
           availableFreeAgents.roster.sort(function (a, b) {
             if (a.rating > b.rating) return -1;
@@ -5065,33 +5068,10 @@ export function signPlayer(team, player, years, salary, playerpool) {
 }
 
 function setSalaryExpectations(rosterpool) {
+  if(collegeMode){
+    return;
+  }
   for (let i = 0; i < rosterpool.roster.length; i++) {
-    if (collegeMode) {
-      if (rosterpool.roster[i].rating >= 75) {
-        rosterpool.roster[i].salary = Math.round(
-          scaleBetween(
-            rosterpool.roster[i].rating,
-            VETERANSMINIMUM,
-            20000000,
-            75,
-            99
-          )
-        );
-        //VARIATION
-        rosterpool.roster[i].salary -= Math.round(Math.random() * 100000);
-      } else {
-        rosterpool.roster[i].salary = Math.round(
-          scaleBetween(
-            rosterpool.roster[i].rating,
-            300000,
-            VETERANSMINIMUM,
-            40,
-            74
-          )
-        );
-        rosterpool.roster[i].salary -= Math.round(Math.random() * 100000);
-      }
-    } else {
         rosterpool.roster[i].salary = Math.round(
           scaleBetween(
             tradeValueCalculation(rosterpool.roster[i]),
@@ -5102,7 +5082,10 @@ function setSalaryExpectations(rosterpool) {
           )
         );
         rosterpool.roster[i].salary -= Math.round(Math.random() * 100000);
-    }
+        //check for less then min
+        if(rosterpool.roster[i].salary < VETERANSMINIMUM){
+          rosterpool.roster[i].salary = VETERANSMINIMUM;
+        }
   }
 }
 

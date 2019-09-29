@@ -12,11 +12,10 @@ export default class InGame extends React.Component {
 
   resetCoachingSliders(){
     selectedTeam.offVsDefFocus = this.state.offVsDefFocus;
-    selectedTeam.qualityVsQuantity = this.state.qualityVsQuantity;
-    selectedTeam.defenseAggresiveVsConservative = this.state.defenseAggresiveVsConservative;
-    selectedTeam.forwardsVsDefensemen = this.state.forwardsVsDefensemen;
-    selectedTeam.frontCourtVsBackCourt = this.state.frontCourtVsBackCourt;
-    selectedTeam.freezeThePuckVsPlayThePuck =  this.state.freezeThePuckVsPlayThePuck;
+    selectedTeam.offenseType = this.state.offenseType;
+    selectedTeam.defenseType = this.state.defenseType;
+    selectedTeam.runVsPass = this.state.runVsPass;
+    selectedTeam.offTempo = this.state.offTempo;
   }
 
 
@@ -30,16 +29,15 @@ export default class InGame extends React.Component {
     speed: 100,
     completed: false,
     offVsDefFocus: selectedTeam.offVsDefFocus,
-    qualityVsQuantity: selectedTeam.qualityVsQuantity,
-    defenseAggresiveVsConservative: selectedTeam.defenseAggresiveVsConservative,
-    forwardsVsDefensemen: selectedTeam.forwardsVsDefensemen,
-    rotationSize: selectedTeam.rotationSize,
-    frontCourtVsBackCourt: selectedTeam.frontCourtVsBackCourt,
-    freezeThePuckVsPlayThePuck: selectedTeam.freezeThePuckVsPlayThePuck,
+    offenseType: selectedTeam.offenseType,
+    defenseType: selectedTeam.defenseType,
+    runVsPass: selectedTeam.runVsPass,
+    offTempo: selectedTeam.offTempo,
     down: 1,
     yardsToGo: 10,
     yardMarker: 20,
-    yardMarkerString: '<20'
+    yardMarkerString: '<20',
+    inPossession: this.props.game.inPossession,
   }
 
   time = () => {
@@ -91,8 +89,10 @@ export default class InGame extends React.Component {
     this.props.game.clearStats();
     if(this.props.game.jumpBall()){
       this.props.game.inPossession = home;
+      this.setState({inPossession: this.props.game.inPossession});
     }else{
       this.props.game.inPossession = away;
+      this.setState({inPossession: this.props.game.inPossession});
     }
         
     }
@@ -184,7 +184,7 @@ export default class InGame extends React.Component {
 
     }
 
-      this.setState({homescore:this.props.game.homescore, awayscore:this.props.game.awayscore, playByPlay:this.props.game.possResult[0], down: this.props.game.down, yardsToGo: this.props.game.yardsToFirst, yardMarker: this.props.game.yardMarker});
+      this.setState({homescore:this.props.game.homescore, awayscore:this.props.game.awayscore, playByPlay:this.props.game.possResult[0], down: this.props.game.down, yardsToGo: this.props.game.yardsToFirst, yardMarker: this.props.game.yardMarker, inPossession: this.props.game.inPossesion});
       this.getYardString();
   }.bind(this),this.state.speed);
     this.setState({timer: timer})
@@ -275,6 +275,7 @@ leavePage(){
                     >
                     <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                   <Text style={{ flex: 1, textAlign: 'center', fontSize: 35, color: 'black', fontFamily: 'advent-pro' }}>{this.state.homescore}</Text>
+                  <Text style={{ textAlign: 'center', fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{this.state.inPossession === home ? 'P':'  '}</Text>
                   {
                                 collegeMode? (
                                   <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro', marginRight:5 }}>{home.seed <= 25? `#${home.seed}` : '  '}</Text>
@@ -287,6 +288,7 @@ leavePage(){
                                   <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro', marginRight:5 }}>{away.seed <= 25? `#${away.seed}` : '  '}</Text>
                                 ):null
                               }
+                  <Text style={{ textAlign: 'center', fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{this.state.inPossession === away ? 'P':'  '}</Text>
                   <Text style={{ flex: 1, textAlign: 'center', fontSize: 35, color: 'black', fontFamily: 'advent-pro' }}>{this.state.awayscore}</Text>
 
                     </View>

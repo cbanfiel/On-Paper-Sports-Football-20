@@ -18,11 +18,11 @@ const updateLog = [
     },
     {
         date: '7/16/2019',
-        updates: "-You can now press and hold players or teams in list views to see a pop up of useful information, this will be useful when trying to quickly view data about a specific team or player \n-Added two new coaching sliders 'Scoring Focus' and 'Rebounding Focus'\n- You can now adjust coaching sliders in game (these are not permanent changes and only affect the current game) this is useful for mid-game adjustments"
+        updates: "-You can now press and hold a player or team in list views to see a pop up of useful information, this will be useful when trying to quickly view data about a specific team or player\n- You can now adjust coaching sliders in game (these are not permanent changes and only affect the current game) this is useful for mid-game adjustments"
     },
     {
         date: '7/14/2019',
-        updates: "-offensive rebound overhaul \n-Over the air update notifications"
+        updates: "-Over the air update notifications"
     },
     {
         date: '7/10/2019',

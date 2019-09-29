@@ -87,7 +87,7 @@ export default class OptionsMenu extends React.Component {
             </Card>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{ width: '100%' }} onPress={() => {generateFreeAgents(150,20), Actions.popTo('mainmenu')}}>
+          <TouchableOpacity style={{ width: '100%' }} onPress={() => {generateFreeAgents(600,20), Actions.popTo('mainmenu')}}>
 
             <Card
               containerStyle={{
