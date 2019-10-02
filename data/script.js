@@ -150,7 +150,7 @@ export function collegeSliderPreset() {
   tradeThreshold = 0.3;
   trainingPointsAvailable = 2;
   passSlider = 4;
-  runSlider = 4;
+  runSlider = 6;
   qbCompletionSlider = 42;
   rosterSize = 65;
 
@@ -2277,8 +2277,9 @@ export class Game {
       //fumble
       fumble = true;
     }
-    let initialYardage = scaleBetween(runner.speed, 0, 4, 40, 99);
-    let yardsAfterContact = scaleBetween(runner.rush, 0, 4, 40, 99);
+    //lowered to 3.5 from 4
+    let initialYardage = scaleBetween(runner.speed, 0, 3.5, 40, 99);
+    let yardsAfterContact = scaleBetween(runner.rush, 0, 3.5, 40, 99);
     let randYards = (Math.random() * 4);
     let runSliderMod = scaleBetween(runSlider,-3,3,0,10);
       // console.log(`runslidermod: ${runSliderMod}`);
