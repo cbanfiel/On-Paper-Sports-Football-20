@@ -232,7 +232,7 @@ export default class SlidersMenu extends React.Component {
 
 
     saveChanges() {
-        setSliders(this.state.difficulty, this.state.tradeDifficulty, this.state.trainingPointsAvailable, this.state.passSlider, this.state.runSlider, this.state.qbCompletionSlider);
+        setSliders(this.state.difficulty, this.state.tradeDifficulty, this.state.trainingPointsAvailable, this.state.passSlider, this.state.runSlider, this.state.qbCompletionSlider, this.state.rosterSize);
         this.setState({ gameSlidersChanged: false });
     }
 

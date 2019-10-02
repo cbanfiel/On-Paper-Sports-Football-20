@@ -79,10 +79,10 @@ export default class CoachSettings extends React.Component {
     }
 
     getRunVsPass(){
-        if(this.state.runVsPass>50){
+        if(this.state.runVsPass>60){
             return "Focus: Pass";
         }
-        if(this.state.runVsPass<50){
+        if(this.state.runVsPass<60){
             return "Focus: Run";
         }
 
@@ -165,8 +165,8 @@ export default class CoachSettings extends React.Component {
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
                             step={1}
-                            minimumValue={40}
-                            maximumValue={60}
+                            minimumValue={45}
+                            maximumValue={70}
                             value={this.state.runVsPass}
                             onValueChange={value => { this.setState({ runVsPass: value }) }}
                         />

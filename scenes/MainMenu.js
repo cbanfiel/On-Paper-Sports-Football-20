@@ -1,12 +1,14 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Text, View, Alert, Image } from 'react-native';
-import { Card, Divider } from 'react-native-elements';
+import { StyleSheet, ScrollView, Text, View, Alert, Image, Modal } from 'react-native';
+import { Card, Divider, Icon } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import { TouchableOpacity } from 'react-native';
 import Background from '../components/background';
 import { home, away, selectedTeam, generated1, generated2, generated3, generated4, teams, menuDisplayTeams} from '../data/script';
 import CachedImage from '../components/CachedImage';
 import {Updates} from 'expo';
+import FranchiseModal from '../components/FranchiseModal';
+
 export default class MainMenu extends React.Component {
 
   // componentDidMount(){
@@ -41,10 +43,13 @@ export default class MainMenu extends React.Component {
   //   menuDisplayTeams();
   // }
 
-
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
+}
 
 
   startFranchise(){
+    // this.setModalVisible(true);
     Actions.teamlist({ home: 4, updateState: this.update })
 
 
@@ -64,7 +69,8 @@ export default class MainMenu extends React.Component {
 
 
   state = {
-    team: selectedTeam
+    team: selectedTeam,
+    modalVisible:false
   }
 
   update = () =>{
@@ -76,6 +82,61 @@ export default class MainMenu extends React.Component {
     return (
 
       <Background>
+
+
+{ //MODAL
+                    this.state.modalVisible === true ? (
+                        <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={this.state.modalVisible}
+                            onRequestClose={() => {
+                                Alert.alert('Modal has been closed.');
+                            }}>
+                            <View style={{
+                                flex: 1,
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <View style={{
+                                    width: '95%',
+                                    height: '75%', backgroundColor: 'rgba(255,255,255,.97)', alignSelf: 'center', borderRadius: 25
+                                }}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            this.setModalVisible(!this.state.modalVisible);
+                                        }}
+                                        style={{ alignSelf: 'flex-end', padding: 15 }}>
+                                        <Icon name="close" ></Icon>
+                                    </TouchableOpacity>
+                                    <FranchiseModal></FranchiseModal>
+                                   </View>
+                            </View>
+                        </Modal>
+                    ) : null
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <ScrollView contentContainerStyle={{paddingBottom: 20}}>
 
           <TouchableOpacity style={{ width: '100%' }} onPress={() => Actions.selectteams()}>

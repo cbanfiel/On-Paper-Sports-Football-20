@@ -1,0 +1,74 @@
+[
+    {
+      "play": "spread pass",
+      "type": "pass",
+      "playbook": 1,
+      "avgYds": 8,
+      "minimumYds": 5,
+      "bigPlayPercentage": 8,
+      "turnoverPercentage": 3
+    },
+    {
+      "play": "spread run",
+      "type": "run",
+      "playbook": 1,
+      "avgYds": 4,
+      "minimumYds": -3,
+      "bigPlayPercentage": 8,
+      "turnoverPercentage": 3
+    },
+    {
+      "play": "option pass",
+      "type": "pass",
+      "playbook": 3,
+      "avgYds": 6,
+      "minimumYds": 3,
+      "bigPlayPercentage": 6,
+      "turnoverPercentage": 2
+    },
+    {
+      "play": "option run",
+      "type": "run",
+      "playbook": 3,
+      "avgYds": 6,
+      "minimumYds": -5,
+      "bigPlayPercentage": 9,
+      "turnoverPercentage": 4
+    },
+    {
+      "play": "pistol pass",
+      "type": "pass",
+      "playbook": 2,
+      "avgYds": 8,
+      "minimumYds": 4,
+      "bigPlayPercentage": 8,
+      "turnoverPercentage": 3
+    },
+    {
+      "play": "pistol run",
+      "type": "run",
+      "playbook": 2,
+      "avgYds": 4,
+      "minimumYds": -2,
+      "bigPlayPercentage": 8,
+      "turnoverPercentage": 3
+    },
+    {
+      "play": "pro pass",
+      "type": "pass",
+      "playbook": 0,
+      "avgYds": 7,
+      "minimumYds": 4,
+      "bigPlayPercentage": 7,
+      "turnoverPercentage": 3
+    },
+    {
+      "play": "pro run",
+      "type": "run",
+      "playbook": 0,
+      "avgYds": 3,
+      "minimumYds": -1,
+      "bigPlayPercentage": 5,
+      "turnoverPercentage": 2
+    }
+  ]

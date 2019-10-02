@@ -6,6 +6,8 @@ var freeAgents = require("./JSON/FreeAgents.json");
 
 var draftData = require("./JSON/DraftData.json");
 
+const playbookData = require("./JSON/PlaybookData.json");
+
 import * as FileSystem from "expo-file-system";
 
 //for draft trades
@@ -86,7 +88,7 @@ export const POS_K_REQUIREMENTS = 1;
 export const POS_P_REQUIREMENTS = 1;
 
 //football sliders
-export let qbCompletionSlider = 40;
+export let qbCompletionSlider = 42;
 export let passSlider = 3;
 export let runSlider = 3;
 
@@ -132,7 +134,7 @@ export function resetSliders() {
   trainingPointsAvailable = 2;
   passSlider = 3;
   runSlider = 3;
-  qbCompletionSlider = 40;
+  qbCompletionSlider = 42;
   gamesPerSeason = 16;
   playoffSeeds = 6;
   seriesWinCount = 1;
@@ -149,7 +151,7 @@ export function collegeSliderPreset() {
   trainingPointsAvailable = 2;
   passSlider = 4;
   runSlider = 4;
-  qbCompletionSlider = 40;
+  qbCompletionSlider = 42;
   rosterSize = 65;
 
   if (teams.length >= 4) {
@@ -282,6 +284,8 @@ class Player {
     this.fumbles = 0;
     this.fumblesRecovered = 0;
     this.sacks = 0;
+    this.punts = 0;
+    this.puntYards = 0;
 
     this.seasonCompletions = 0;
     this.seasonAttempts = 0;
@@ -298,6 +302,8 @@ class Player {
     this.seasonFumbles = 0;
     this.seasonFumblesRecovered = 0;
     this.seasonSacks = 0;
+    this.seasonPunts = 0;
+    this.seasonPuntYards = 0;
 
     //hockey stats
     this.saves = 0;
@@ -700,13 +706,16 @@ class Team {
     this.salary = 0;
 
     //Coach Sliders
-    this.offVsDefFocus = Math.round(Math.random() * 6) - 3;
+    this.offVsDefFocus = Math.round(Math.random() * 4) - 2;
     this.offenseType = Math.floor(Math.random()*4);
+    this.runPlays =[];
+    this.passPlays = [];
     this.defenseType = Math.floor(Math.random()*3);
     //run pref is lower number
     //rand between 40-60
-    this.runVsPass = (Math.round(Math.random()*20))+40;
-    this.offTempo = (Math.round(Math.random()*10))-5;
+    this.runVsPass = (Math.round(Math.random()*10))+55;
+    //limit between -3 and 3
+    this.offTempo = (Math.round(Math.random()*6))-3;
 
     //football
     this.qbs = [];
@@ -1269,6 +1278,8 @@ export let draftClass = {
   }
 };
 
+
+//updated to work with generatePlayer function (Much more control)
 export function generateCustomRoster(team, rating) {
   team.roster = [];
   let qbs = 0;
@@ -1282,130 +1293,79 @@ export function generateCustomRoster(team, rating) {
   let ks=0;
   let ps= 0;
   for (let i = 0; i < rosterSize; i++) {
-    let name =
-      draftData[Math.floor(Math.random() * draftData.length)].firstname +
-      " " +
-      draftData[Math.floor(Math.random() * draftData.length)].lastname;
-    let faceSrc = draftData[0].faceSrc;
-    let age = draftData[Math.floor(Math.random() * draftData.length)].age;
-    let playerComparison = Math.floor(Math.random() * draftData.length);
-
+    let ply;
+    //find good spread
+    let rand = Math.floor(Math.random()*25)-10;
+    let rat = rating + rand;
+    if(rat<61){
+      rat = 61;
+    }
     if (qbs < POS_QB_REQUIREMENTS) {
-      while (draftData[playerComparison].position != POS_QB) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      ply = generatePlayer(POS_QB, rat);
       qbs++;
     } else if (hbs < POS_HB_REQUIREMENTS) {
-      while (draftData[playerComparison].position != POS_HB) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      ply = generatePlayer(POS_HB, rat);
       hbs++;
     } else if (wrs < POS_WR_REQUIREMENTS) {
-      while (draftData[playerComparison].position != POS_WR) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      ply = generatePlayer(POS_WR, rat);
       wrs++;
     }
     else if (tes < POS_TE_REQUIREMENTS) {
-      while (draftData[playerComparison].position != POS_TE) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      ply = generatePlayer(POS_TE, rat);
       tes++;
     }
     else if (ol < POS_OL_REQUIREMENTS) {
-      while (draftData[playerComparison].position < POS_LT || draftData[playerComparison].position > POS_RT) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      let rand = Math.floor(Math.random()*5);
+      let pos = POS_LT+rand;
+      ply = generatePlayer(pos, rat);
       ol++;
     }
     else if (dl < POS_DL_REQUIREMENTS) {
-      while (draftData[playerComparison].position < POS_LE || draftData[playerComparison].position > POS_DT) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      let rand = Math.floor(Math.random()*3);
+      let pos = POS_LE+rand;
+      ply = generatePlayer(pos, rat);
       dl++;
     }
     else if (lbs < POS_LB_REQUIREMENTS) {
-      while (draftData[playerComparison].position < POS_LOLB || draftData[playerComparison].position > POS_ROLB) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      let rand = Math.floor(Math.random()*3);
+      let pos = POS_LOLB+rand;
+      ply = generatePlayer(pos, rat);
       lbs++;
     }
     else if (dbs < POS_DB_REQUIREMENTS) {
-      while (draftData[playerComparison].position < POS_CB || draftData[playerComparison].position > POS_SS) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      let rand = Math.floor(Math.random()*3);
+      let pos = POS_CB+rand;
+      ply = generatePlayer(pos, rat);
       dbs++;
     }
     else if (ks < POS_K_REQUIREMENTS) {
-      while (draftData[playerComparison].position != POS_K) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      ply = generatePlayer(POS_K, rat);
       ks++;
     }
     else if (ps < POS_P_REQUIREMENTS) {
-      while (draftData[playerComparison].position != POS_P) {
-        playerComparison = Math.floor(Math.random() * draftData.length);
-      }
+      ply = generatePlayer(POS_P, rat);
       ps++;
+    }else{
+      ply = generatePlayer(Math.floor(Math.random()*POS_K), rat);
     }
-  
-    let number = draftData[playerComparison].number;
-    let position = draftData[playerComparison].position;
-    let height = draftData[playerComparison].height;
-    let pass =
-    draftData[playerComparison].pass  -
-    Math.floor(Math.random() * 12);
-  let awareness =
-    draftData[playerComparison].awareness  -
-    Math.floor(Math.random() * 12);
-  let rush =
-    draftData[playerComparison].rush  -
-    Math.floor(Math.random() * 12);
-  let speed =
-    draftData[playerComparison].speed  -
-    Math.floor(Math.random() * 12);
-  let catching =
-    draftData[playerComparison].catch  -
-    Math.floor(Math.random() * 12);
-  let block =
-    draftData[playerComparison].block  -
-    Math.floor(Math.random() * 12);
-    let breakBlock =
-    draftData[playerComparison].breakBlock  -
-    Math.floor(Math.random() * 12);
-    let tackle =
-    draftData[playerComparison].tackle  -
-    Math.floor(Math.random() * 12);
-    let kick =
-    draftData[playerComparison].kick  -
-    Math.floor(Math.random() * 12); 
-    //2 years the plus one is because the contract years go down AFTER the draft not before but contract years should be 2 for rookies
-    let years = Math.floor(Math.random() * 3) + 1;
-    let salary = 2400000;
 
     //RATING FORMULA
-
-    
-    let ply = new Player({
-      name: name,
-      faceSrc: faceSrc,
-      number: number,
-      age: age,
-      position: position,
-      height: height,
-      pass: pass,
-      awareness: awareness,
-      rush: rush,
-      speed: speed,
-      catch: catching,
-      block: block,
-      breakBlock: breakBlock,
-      tackle: tackle,
-      kick: kick,
-      years: years,
-      salary: salary
-    });
     ply.calculateRating();
+    ply.years = Math.floor(Math.random() * 3) + 1;
+    ply.salary = Math.round(
+      scaleBetween(
+        tradeValueCalculation(ply),
+        VETERANSMINIMUM,
+        30000000,
+        80,
+        600
+      )
+    ) + Math.round(Math.random()*100000);
+    ply.age = Math.floor(Math.random()*14)+23;
+      if(collegeMode){
+        //set up for college fr - sr
+        ply.age = Math.floor(Math.random()*4)+18;
+      }
     team.roster.push(ply);
   }
 
@@ -1419,12 +1379,40 @@ export function generateCustomRoster(team, rating) {
   if (team.rating > rating) {
     while (team.rating != rating) {
       for (let i = 0; i < team.roster.length; i++) {
-        team.roster[i].awareness--;
-        team.roster[i].pass--;
-        team.roster[i].tackle--;
-        team.roster[i].block--;
-        team.roster[i].breakBlock--;
-        team.roster[i].calculateRating();
+        let ply = team.roster[i];
+        ply.awareness --;
+        if(ply.position === POS_QB){
+          ply.pass --;
+    
+        }
+    
+        if(ply.position >= POS_HB && ply.position <= POS_TE){
+          ply.rush --;
+          // ply.speed --;
+          ply.catch --;
+          ply.block --;
+        }
+    
+        if(ply.position >= POS_LT && ply.position <= POS_RT){
+          ply.block --;
+        }
+    
+        if(ply.position >= POS_LE && ply.position <= POS_RE){
+          ply.breakBlock --;
+          ply.tackle --;
+        }
+    
+        if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+          ply.breakBlock --;
+          ply.tackle --;
+          ply.catch --;
+          // ply.speed --;
+        }
+    
+        if(ply.position >= POS_K && ply.position <= POS_P){
+          ply.kick --;
+        }
+        ply.calculateRating();
         team.calculateRating();
         if (team.rating <= rating) {
           return;
@@ -1436,12 +1424,40 @@ export function generateCustomRoster(team, rating) {
   if (team.rating < rating) {
     while (team.rating != rating) {
       for (let i = 0; i < team.roster.length; i++) {
-        team.roster[i].awareness++;
-        team.roster[i].pass++;
-        team.roster[i].tackle++;
-        team.roster[i].block++;
-        team.roster[i].breakBlock++;
-        team.roster[i].calculateRating();
+        let ply = team.roster[i];
+        ply.awareness ++;
+        if(ply.position === POS_QB){
+          ply.pass ++;
+    
+        }
+    
+        if(ply.position >= POS_HB && ply.position <= POS_TE){
+          ply.rush ++;
+          // ply.speed ++;
+          ply.catch ++;
+          ply.block ++;
+        }
+    
+        if(ply.position >= POS_LT && ply.position <= POS_RT){
+          ply.block ++;
+        }
+    
+        if(ply.position >= POS_LE && ply.position <= POS_RE){
+          ply.breakBlock ++;
+          ply.tackle ++;
+        }
+    
+        if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+          ply.breakBlock ++;
+          ply.tackle ++;
+          ply.catch ++;
+          // ply.speed ++;
+        }
+    
+        if(ply.position >= POS_K && ply.position <= POS_P){
+          ply.kick ++;
+        }
+        ply.calculateRating();
         team.calculateRating();
         if (team.rating >= rating) {
           return;
@@ -1738,16 +1754,31 @@ export class Game {
   }
 
   selectReciever(off) {
+    
     let recievers = [];
-    recievers.push(off.wrs[0]);
-    recievers.push(off.wrs[1]);
-    recievers.push(off.wrs[2]);
-    if(off.tes.length>1){
-      recievers.push(off.tes[0]);
+    if(Math.random()*100 > 15){
+      recievers.push(off.wrs[0]);
+      recievers.push(off.wrs[1]);
+      recievers.push(off.wrs[2]);
+      if(off.tes.length>=1){
+        recievers.push(off.tes[0]);
+      }else{
+      recievers.push(off.wrs[3]);
+      }
+      recievers.push(off.rbs[0]);
+
     }else{
-    recievers.push(off.wrs[3]);
+      recievers.push(off.wrs[3]);
+      recievers.push(off.wrs[4]);
+      recievers.push(off.wrs[5]);
+      if(off.tes.length>=2){
+        recievers.push(off.tes[1]);
+      }
+      recievers.push(off.wrs[0]);
+      recievers.push(off.rbs[1]);
+
     }
-    recievers.push(off.rbs[0]);
+ 
     let reciever;
 
     
@@ -1774,9 +1805,18 @@ export class Game {
 
   selectDBTackler(def, dbsOnField){
     let tacklers = [];
-    for(let i=0; i<dbsOnField; i++){
-      tacklers.push(def.dbs[i]);
-    }
+    if(Math.random()*100> 15){
+      for(let i=0; i<dbsOnField; i++){
+        tacklers.push(def.dbs[i]);
+      }
+    }else{
+      for(let i=dbsOnField; i<def.dbs.length; i++){
+        tacklers.push(def.dbs[i]);
+        if(tacklers.length >= dbsOnField){
+          break;
+        }
+    } 
+  }
 
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
@@ -1795,14 +1835,18 @@ export class Game {
   selectLBTackler(def, lbsOnField){
     let tacklers = [];
 
-   
-
-    for(let i=0; i<lbsOnField; i++){
-      if(i===def.lbs.length){
-        break;
+    if(Math.random()*100> 15){
+      for(let i=0; i<lbsOnField; i++){
+        tacklers.push(def.lbs[i]);
       }
-      tacklers.push(def.lbs[i]);
+    }else{
+      for(let i=lbsOnField; i<def.lbs.length; i++){
+        tacklers.push(def.lbs[i]);
+        if(tacklers.length >= lbsOnField){
+          break;
+        }
     }
+  }
 
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
@@ -1820,9 +1864,20 @@ export class Game {
 
   selectDLTackler(def, dlOnField){
     let tacklers = [];
-    for(let i=0; i<dlOnField; i++){
-      tacklers.push(def.dl[i]);
+
+    if(Math.random()*100> 15){
+      for(let i=0; i<dlOnField; i++){
+        tacklers.push(def.dl[i]);
+      }
+    }else{
+      for(let i=dlOnField; i<def.dl.length; i++){
+        tacklers.push(def.dl[i]);
+        if(tacklers.length >= dlOnField){
+          break;
+        }
     }
+  }
+
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
       tot += tacklers[i].tackle + tacklers[i].awareness;
@@ -1843,9 +1898,12 @@ export class Game {
     // console.log(`qbrunpercentboost: ${qbRunPercentageBoost}`);
 
 
-    if(Math.random()*100 > 85){
+    if(Math.random()*100 > 67){
       //backup rb run
-      return off.rbs[1];
+      if(Math.random()*100 > 30){
+        return off.rbs[1];
+      }
+      return off.rbs[2];
     }
 
     if(off.offenseType === OFF_SPREAD){
@@ -1862,6 +1920,10 @@ export class Game {
       }else{
         return off.rbs[0];
       }
+    }
+
+    if(Math.random()*100 > 100-qbRunPercentageBoost){
+      return off.qbs[0];
     }
 
     return off.rbs[0];
@@ -1931,29 +1993,54 @@ export class Game {
 
     off.seasonPlays++;
 
-    let offvdef = Math.random()*off.offVsDefFocus + Math.random()*def.offVsDefFocus;
+    let offvdef = (Math.random()*off.offVsDefFocus + Math.random()*def.offVsDefFocus)/1.5;
 
     let yardModifier = Math.round(offvdef);
 
 
-
-    //difficulty slider kicks in 50% of the time
-    if(Math.random()*100 <= 50){
       if(off === selectedTeam){
         yardModifier -= Math.round(Math.random()*difficulty);
       }
       if(def === selectedTeam){
         yardModifier += Math.round(Math.random()*difficulty);
       }
+
+    if(Math.random()*100 >= 98){
+      //broken play
+      yardModifier += Math.round(Math.random()*50);
     }
 
 
 
     let { dlOnField, dbsOnField, lbsOnField } = this.defensiveScheme(def);
 
-    if (this.down >= 4) {
+   
+
+    let pointDifference = 0;
+    let inLead;
+    if(this.homescore>this.awayscore){
+      pointDifference = this.homescore - this.awayscore;
+      inLead = this.home;
+    }else{
+      pointDifference = this.awayscore - this.homescore;
+      inLead = this.away
+    }
+    let kickPow = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
+    let canMakeIt = kickPow >= (100 - this.yardMarker)
+    let shouldGoOnFourth = pointDifference > 3 && this.time<= (5*60) && off != inLead;
+    if(pointDifference<=3 && this.time<= (5*60) && off != inLead ){
+      if(!canMakeIt){
+        shouldGoOnFourth = true;
+      }
+    }
+
+
+
+    if (this.down >= 4 && !shouldGoOnFourth) {
       let kickerDistance = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
-      if (kickerDistance >= (100 - this.yardMarker)) {
+
+      //plus 10 because of endzone height
+      if (kickerDistance >= (100 - this.yardMarker)+10) {
         //att fg
         ({ spotlightPlayer, result, timeRemoved } = this.fieldGoal(off, spotlightPlayer, result, def));
         if(timeRemoved<1){
@@ -2026,6 +2113,16 @@ export class Game {
         this.yardsToFirst = 10;
 
       }
+
+      if(this.down >= 5){
+        //turnover on downs
+        this.inPossesion = def;
+        this.yardMarker = 100 - this.yardMarker;
+        this.down = 1;
+        this.yardsToFirst = 10;
+        result = 'Turnover On Downs! ' + result;
+
+      }
     }
 
 
@@ -2050,8 +2147,8 @@ export class Game {
     for (let i = 0; i < dlOnField; i++) {
       dLineModifier += def.dl[i].rating;
     }
-    let scaledOline = scaleBetween(oLineModifier, 0, oLineSlider, (40 * 5), (99 * 5));
-    let scaledDline = scaleBetween(dLineModifier, 0, dLineSlider, (40 * 3), (99 * 5));
+    let scaledOline = scaleBetween(oLineModifier, 2, oLineSlider, (40 * 5), (99 * 5));
+    let scaledDline = scaleBetween(dLineModifier, 2, dLineSlider, (40 * 3), (99 * 5));
     // console.log(`Dlinemen: ${dlOnField} Mod: ${scaledDline}`);
     // console.log(`scaledOline:  ${scaledOline}`);
     // console.log(`scaledDline:  ${scaledDline}`);
@@ -2112,20 +2209,27 @@ export class Game {
     spotlightPlayer = punter;
     //changed low to 25
     let power = scaleBetween(punter.kick, 25, 55, 40, 99);
-    let rand = Math.random() * 10;
-    let kickDistance = Math.round(power + rand);
+    let rand = Math.random() * 8;
+    let kickDistance = Math.round(power - rand);
     let smtn = kickDistance + this.yardMarker;
-    if (smtn <= 0) {
+    // console.log(this.yardMarker);
+    // console.log(`distance ${kickDistance}`);
+    // console.log(smtn);
+    if (smtn >= 100) {
       this.yardMarker = 20;
+      kickDistance = kickDistance + (100-smtn);
     }
     else {
       this.yardMarker = 100 - smtn;
     }
     result = "punts it away for " + kickDistance + " yards!";
+    punter.punts++;
+    punter.puntYards += kickDistance;
     this.inPossesion = def;
-    this.yardMarker = 20;
+    // this.yardMarker = 20;
     this.down = 1;
     this.yardsToFirst = 10;
+    // console.log(`ydmmk ${this.yardMarker}`);
     let timeRemoved = (Math.floor(Math.random()*10))+8;
     return { spotlightPlayer, result, timeRemoved };
   }
@@ -2133,7 +2237,7 @@ export class Game {
   fieldGoal(off, spotlightPlayer, result, def) {
     off.ks[0].kicksAttempted++;
     let kickerPercentage = scaleBetween(off.ks[0].kick, 50, 99, 40, 99);
-    let distanceAdjustment = scaleBetween((100 - this.yardMarker), 0, 30, 0, 60);
+    let distanceAdjustment = scaleBetween((100 - this.yardMarker)+10, 0, 30, 0, 60);
     let percent = kickerPercentage - distanceAdjustment;
     // console.log('kickerpower' + kickerDistance);
     // console.log('distance' + (100- this.yardMarker));
@@ -2192,7 +2296,13 @@ export class Game {
         tackler = this.selectLBTackler(def, lbsOnField);
       }
       else {
-        tackler = this.selectDLTackler(def, dlOnField);
+        if(Math.random()*100 > 40){
+          tackler = this.selectDLTackler(def, dlOnField);
+        }else{
+          tackler = this.selectDBTackler(def, dbsOnField);
+        }
+
+
       }
     }
     if (!fumble) {
@@ -2214,18 +2324,34 @@ export class Game {
       spotlightPlayer = tackler;
       result = " recovers a fumble ";
     }
-    timeRemoved = (Math.floor(Math.random()*15))+30;
+    timeRemoved = (Math.floor(Math.random()*10))+35;
     timeRemoved -= off.offTempo;
     return { yardsGained, spotlightPlayer, result, timeRemoved };
   }
 
 
   pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField) {
+
+    //implementation
+    let play = off.passPlays[Math.floor(Math.random()*off.passPlays.length)];
+
     let qb = off.qbs[0];
+    let pointDifference = 0;
+    if(this.homescore>this.awayscore){
+      pointDifference = this.homescore - this.awayscore;
+    }else{
+      pointDifference = this.awayscore - this.homescore;
+    }
+    if(this.time <= (5*60) && pointDifference> 16){
+      //play the backup qb
+      qb = off.qbs[1];
+    }
+
     let timeRemoved = 0;
     let sacked = false;
 
-    ({ sacked, spotlightPlayer, result, yardsGained, timeRemoved } = this.checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained, off));
+
+    ({ sacked, spotlightPlayer, result, yardsGained, timeRemoved } = this.checkForSack(lineInteraction, sacked, def, dlOnField, lbsOnField, dbsOnField, qb, spotlightPlayer, result, yardsGained, off));
 
     if(!sacked){
     let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
@@ -2258,7 +2384,8 @@ export class Game {
         tackler = this.selectDBTackler(def, dbsOnField);
       }
       else {
-        if (Math.random() * 100 > 50) {
+        //lower lb tackles, raise db tackles
+        if (Math.random() * 100 > 65) {
           tackler = this.selectLBTackler(def, lbsOnField);
         }
         else {
@@ -2275,7 +2402,7 @@ export class Game {
       }
       spotlightPlayer = qb;
       result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
-      timeRemoved = (Math.floor(Math.random()*15))+25;
+      timeRemoved = (Math.floor(Math.random()*10))+30;
     timeRemoved -= off.offTempo;
 
 
@@ -2284,6 +2411,10 @@ export class Game {
       //incomplete check for int
       spotlightPlayer = qb;
       result = " throws an incomplete pass intended for " + target.name;
+      //linebacker ints
+      if(Math.random()*100 > 70){
+        defender = this.selectLBTackler(def, lbsOnField);
+      }
       let defenderInt = scaleBetween(defender.catch, 0, 40, 40, 99);
       let qbDecisionMaking = scaleBetween(qb.awareness, 0, 10, 40, 99);
       //mess with
@@ -2300,27 +2431,40 @@ export class Game {
         this.yardsToFirst = 10;
         spotlightPlayer = defender;
         result = " intercepts  " + qb.name;
-      timeRemoved = (Math.floor(Math.random()*15))+10;
+      timeRemoved = (Math.floor(Math.random()*15))+15;
         
       }
       yardsGained = 0;
-      timeRemoved = (Math.floor(Math.random()*5))+3;
+      timeRemoved = (Math.floor(Math.random()*5))+5;
 
     }
   }
     return { yardsGained, spotlightPlayer, result, timeRemoved };
   }
 
-  checkForSack(lineInteraction, sacked, def, dlOnField, qb, spotlightPlayer, result, yardsGained, off) {
-    let sackPerc = (Math.random() * lineInteraction)+2;
+  checkForSack(lineInteraction, sacked, def, dlOnField, lbsOnField, dbsOnField, qb, spotlightPlayer, result, yardsGained, off) {
+    //increased sack percentage
+    let sackPerc = (Math.random() * lineInteraction)+7;
     let timeRemoved = 0;
     // console.log(sackPerc);
     if (sackPerc >= Math.random() * 100) {
       //sack
       sacked = true;
-      let sacker = this.selectDLTackler(def, dlOnField);
+      let sacker;
+      //80% chance linemen sack
+      if(Math.random()*100 < 80){
+        sacker = this.selectDLTackler(def, dlOnField);
+      }else{
+        //70% chance lb sack
+        if(Math.random()*100 < 70){
+          sacker = this.selectLBTackler(def, lbsOnField);
+        }else{
+          sacker = this.selectDBTackler(def, dbsOnField);
+        }
+      }
       yardsLoss = Math.floor(Math.random() * 10) + 1;
       sacker.sacks++;
+      sacker.tackles++;
       qb.rushYards -= yardsLoss;
       off.seasonRushYards -= yardsLoss;
       spotlightPlayer = sacker;
@@ -2361,6 +2505,9 @@ export class Game {
       home.roster[i].fumbles = 0;
       home.roster[i].fumblesRecovered = 0;
       home.roster[i].sacks = 0;
+      home.roster[i].punts = 0;
+      home.roster[i].puntYards = 0;
+
     }
 
     for (let i = 0; i < away.roster.length; i++) {
@@ -2380,10 +2527,35 @@ export class Game {
       away.roster[i].fumbles = 0;
       away.roster[i].fumblesRecovered = 0;
       away.roster[i].sacks = 0;
+      away.roster[i].punts = 0;
+      away.roster[i].puntYards = 0;
+
     }
   }
 
   jumpBall() {
+
+    //set playbooks
+    home.passPlays=[];
+    away.passPlays=[];
+    home.runPlays=[];
+    away.runPlays=[];
+    for(let i=0; i<playbookData.length; i++){
+      if(home.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass' ){
+        home.passPlays.push(playbookData[i]);
+      }
+      if(home.offenseType === playbookData[i].playbook && playbookData[i].type === 'run' ){
+        home.runPlays.push(playbookData[i]);
+      }
+      if(away.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass' ){
+        away.passPlays.push(playbookData[i]);
+      }
+      if(away.offenseType === playbookData[i].playbook && playbookData[i].type === 'run' ){
+        away.runPlays.push(playbookData[i]);
+      }
+     
+    }
+
     if (Math.floor(Math.random() * 2) > 0) {
       return true;
     } else {
@@ -2513,7 +2685,9 @@ export class Game {
         home.roster[i].seasonInterceptions += home.roster[i].interceptions,
         home.roster[i].seasonFumbles += home.roster[i].fumbles,
         home.roster[i].seasonFumblesRecovered += home.roster[i].fumblesRecovered,
-        home.roster[i].seasonSacks += home.roster[i].sacks
+        home.roster[i].seasonSacks += home.roster[i].sacks,
+        home.roster[i].seasonPunts += home.roster[i].punts,
+        home.roster[i].seasonPuntYards += home.roster[i].puntYards
     }
 
     for (let i = 0; i < away.roster.length; i++) {
@@ -2548,7 +2722,9 @@ export class Game {
         away.roster[i].seasonInterceptions += away.roster[i].interceptions,
         away.roster[i].seasonFumbles += away.roster[i].fumbles,
         away.roster[i].seasonFumblesRecovered += away.roster[i].fumblesRecovered,
-        away.roster[i].seasonSacks += away.roster[i].sacks
+        away.roster[i].seasonSacks += away.roster[i].sacks,
+        away.roster[i].seasonPunts += away.roster[i].punts,
+        away.roster[i].seasonPuntYards += away.roster[i].puntYards
     }
   
   }
@@ -2568,10 +2744,9 @@ export class Season {
       teams[i].played = [];
       teams[i].seasonPoints = 0;
       teams[i].seasonPointsAllowed = 0;
-      teams[i].seasonSaves = 0;
-      teams[i].seasonGoalsAllowed = 0;
-      teams[i].seasonShots = 0;
-      teams[i].seasonAssists = 0;
+      teams[i].seasonPassYards = 0;
+      teams[i].seasonRushYards = 0;
+      teams[i].seasonPlays = 0;
 
       for (let j = 0; j < teams[i].roster.length; j++) {
         teams[i].roster[j].completions = 0;
@@ -2589,6 +2764,9 @@ export class Season {
         teams[i].roster[j].fumbles = 0;
         teams[i].roster[j].fumblesRecovered = 0;
         teams[i].roster[j].sacks = 0;
+        teams[i].roster[j].punts = 0;
+        teams[i].roster[j].puntYards = 0;
+
     
         teams[i].roster[j].seasonCompletions = 0;
         teams[i].roster[j].seasonAttempts = 0;
@@ -2605,6 +2783,9 @@ export class Season {
         teams[i].roster[j].seasonFumbles = 0;
         teams[i].roster[j].seasonFumblesRecovered = 0;
         teams[i].roster[j].seasonSacks = 0;
+        teams[i].roster[j].seasonPunts = 0;
+        teams[i].roster[j].seasonPuntYards = 0;
+
       }
     }
     //for free agents
@@ -2625,6 +2806,9 @@ export class Season {
       availableFreeAgents.roster[i].fumbles = 0;
       availableFreeAgents.roster[i].fumblesRecovered = 0;
       availableFreeAgents.roster[i].sacks = 0;
+      availableFreeAgents.roster[i].punts = 0;
+      availableFreeAgents.roster[i].puntYards = 0;
+
   
       availableFreeAgents.roster[i].seasonCompletions = 0;
       availableFreeAgents.roster[i].seasonAttempts = 0;
@@ -2641,6 +2825,9 @@ export class Season {
       availableFreeAgents.roster[i].seasonFumbles = 0;
       availableFreeAgents.roster[i].seasonFumblesRecovered = 0;
       availableFreeAgents.roster[i].seasonSacks = 0;
+      availableFreeAgents.roster[i].seasonPunts = 0;
+      availableFreeAgents.roster[i].seasonPuntYards = 0;
+
     }
 
     //scheduling
@@ -4013,7 +4200,7 @@ export class Franchise {
       for(let i=0; i<teams.length; i++){
         let seedRat = teams.length - teams[i].seed;
         let teamRating = teams[i].rating;
-        let scaledSeed = scaleBetween((seedRat), 70, 99, 0, teams.length);
+        let scaledSeed = scaleBetween((seedRat), 70, 95, 0, teams.length);
 
 
         let rating = Math.round((teamRating + scaledSeed)/2) - 20;
@@ -4910,6 +5097,9 @@ return true;
   if(ply.seasonSacks > 0){
 return true;
   }
+  if(ply.seasonPunts > 0){
+    return true;
+      }
 
   return false;
 }
@@ -5123,10 +5313,21 @@ function tradeValueCalculation(ply, print) {
   if (ply.isPick === true) {
     isPick = true;
     // console.log(ply.projectedPick);
-    if (ply.round > 1) {
-      ply = draftClass.roster[ply.projectedPick + teams.length * ply.round - 2];
-    } else {
-      ply = draftClass.roster[ply.projectedPick - 1];
+    if(inDraft){
+
+      //should effectively fix in draft trade crash
+      if (ply.round > 1) {
+        ply = draftClass.roster[ply.projectedPick + (teams.length * ply.round) - 2];
+      } else {
+        index = ply.projectedPick + (teams.length * ply.round) - 2 - franchise.currentDraft.drafted.roster.length;
+        ply = draftClass.roster[index];
+      }
+    }else{
+      if (ply.round > 1) {
+        ply = draftClass.roster[ply.projectedPick + (teams.length * ply.round) - 2];
+      } else {
+        ply = draftClass.roster[ply.projectedPick - 1];
+      }
     }
   }
 
@@ -6293,11 +6494,11 @@ export function manageSaveName(value) {
 
 export function returnStatsView(player) {
   let str ="";
-  if(player.attempts > 0){
+  if(player.seasonAttempts > 0){
     str += `PASS: \nATT: ${player.seasonAttempts} \nCMP: ${player.seasonCompletions} \nYDS: ${player.seasonYards} \nTDS: ${player.seasonTouchdowns} \nCMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 100)} `;
   }
 
-  if(player.rushAttempts > 0){
+  if(player.seasonRushAttempts > 0){
     if(str.length>0){
       str += "\n"
     }
@@ -6305,12 +6506,22 @@ export function returnStatsView(player) {
   }
 
   if(player.seasonReceptions > 0){
-    str += `\nREC: ${player.seasonReceptions} \nYDS: ${player.seasonYards} \nTDS: ${player.seasonTouchdowns}`;
+    str += `REC: ${player.seasonReceptions} \nYDS: ${player.seasonYards} \nTDS: ${player.seasonTouchdowns}`;
   }
 
-  if(player.tackles > 0){
-    str += `\nTACKLES: ${player.seasonTackles} \nSACKS: ${player.seasonSacks} \nINTS: ${player.seasonInterceptions}`
+  if(player.seasonTackles > 0){
+    str += `TACKLES: ${player.seasonTackles} \nSACKS: ${player.seasonSacks} \nINTS: ${player.seasonInterceptions}`
   }
+
+  if(player.seasonKicksAttempted > 0){
+    str += `FGM: ${player.seasonKicksMade} \nFGA: ${player.seasonKicksAttempted} \nAVG: ${Math.round((player.seasonKicksMade/player.seasonKicksAttempted)*1000)/10}%`
+  }
+
+  if(player.seasonPunts > 0){
+    str += `PUNTS: ${player.seasonPunts} \nAVG: ${Math.round((player.seasonPuntYards/player.seasonPunts)*10)/10}`
+  }
+
+
   return str;
 }
 export function returnSeasonStatsListView(player) {
@@ -6334,29 +6545,35 @@ export function returnSeasonStatsListView(player) {
   if(player.seasonKicksAttempted > 0){
     str += `FGM: ${player.seasonKicksMade} FGA: ${player.seasonKicksAttempted} AVG: ${Math.round((player.seasonKicksMade/player.seasonKicksAttempted)*1000)/10}%`
   }
+  if(player.seasonPunts > 0){
+    str += `PUNTS: ${player.seasonPunts} AVG: ${Math.round((player.seasonPuntYards/player.seasonPunts)*10)/10}`
+  }
   return str;
 }
 
 export function returnStatsListView(player) {
   let str = "";
   if(player.attempts > 0){
-    str += `PASS: ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} CMP%: ${Math.round((player.completions / player.attempts) * 1000)/10}% `;
+    str += `PASS: ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} INTS: ${player.interceptions} CMP%: ${Math.round((player.completions / player.attempts) * 1000)/10}% `;
   }
 
   if(player.rushAttempts > 0){
-    str += `RUSH: ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.seasonRushAttempts)*10)/10} `;
+    str += `RUSH: ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.rushAttempts)*10)/10} `;
   }
 
-  if(player.seasonReceptions > 0){
+  if(player.receptions > 0){
     str += `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
   }
 
-  if(player.seasonTackles > 0){
+  if(player.tackles > 0){
     str += `TACKLES: ${player.tackles} SACKS: ${player.sacks} INTS: ${player.interceptions}`
   }
 
-  if(player.seasonKicksAttempted > 0){
+  if(player.kicksAttempted > 0){
     str += `FGM: ${player.kicksMade} FGA: ${player.kicksAttempted} AVG: ${Math.round((player.kicksMade/player.kicksAttempted)*1000)/10}%`
+  }
+  if(player.punts > 0){
+    str += `PUNTS: ${player.punts} AVG: ${Math.round((player.puntYards/player.punts)*10)/10}`
   }
 
   return str;
@@ -6514,6 +6731,9 @@ export const loadFranchise = data => {
         ply.seasonFumbles = loadedData.teams[i].roster[j].seasonFumbles;
         ply.seasonFumblesRecovered = loadedData.teams[i].roster[j].seasonFumblesRecovered;
         ply.seasonSacks = loadedData.teams[i].roster[j].seasonSacks;
+        ply.seasonPunts = loadedData.teams[i].roster[j].seasonPunts;
+        ply.seasonPuntYards = loadedData.teams[i].roster[j].seasonPuntYards;
+
 
       }
 
@@ -6743,9 +6963,9 @@ export function generateProspects(team, rating) {
       playerRating += Math.round(Math.random()*20)+2;
     }
 
-    //block over 89
-    if(playerRating>=89){
-      playerRating = 89;
+    //block over 87
+    if(playerRating>=88){
+      playerRating = 88;
     }
 
     //block 60 and under
@@ -7425,5 +7645,46 @@ function bowlGameSetup(){
   if(num%2 > 0){
     return byeCount;
   }else{return 0;}
+ }
+
+
+ export function played(roster){
+   let plyed = [];
+   for(let i=0; i<roster.length; i++){
+     if(roster[i].attempts > 0){
+       plyed.push(roster[i]);
+     }
+    else if(roster[i].kicksAttempted > 0){
+      plyed.push(roster[i]);
+    }
+    else if(roster[i].yards > 0){
+      plyed.push(roster[i]);
+    }
+    else if(roster[i].tackles > 0){
+      plyed.push(roster[i]);
+    }
+    else if(roster[i].interceptions > 0){
+      plyed.push(roster[i]);
+    }
+    else if(roster[i].fumbles > 0){
+      plyed.push(roster[i]);
+    }
+    else if(roster[i].punts > 0){
+      plyed.push(roster[i]);
+    }
+   }
+
+
+   plyed.sort(function(a,b){
+     if(a.position > b.position){
+       return 1;
+     }
+     if(a.position < b.position){
+      return -1;
+    }
+    return 0;
+   })
+
+   return plyed;
  }
 

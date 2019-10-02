@@ -84,7 +84,7 @@ export default class StatFilter extends React.Component {
         if(filter === 'kicking'){
             for(let i=0; i<this.props.selectedTeam.roster.length; i++){
                 let ply = this.props.selectedTeam.roster[i]
-                if(ply.seasonKicksAttempted>0){
+                if(ply.seasonKicksAttempted>0 || ply.seasonPunts >0){
                     filteredArray.push(ply);
                 }
             }
