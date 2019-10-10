@@ -7,7 +7,6 @@ import Background from '../components/background';
 import { home, away, selectedTeam, generated1, generated2, generated3, generated4, teams, menuDisplayTeams} from '../data/script';
 import CachedImage from '../components/CachedImage';
 import {Updates} from 'expo';
-import FranchiseModal from '../components/FranchiseModal';
 
 export default class MainMenu extends React.Component {
 
@@ -50,6 +49,7 @@ export default class MainMenu extends React.Component {
 
   startFranchise(){
     // this.setModalVisible(true);
+    // Actions.franchisesetup({updateState: this.update});
     Actions.teamlist({ home: 4, updateState: this.update })
 
 
@@ -73,66 +73,19 @@ export default class MainMenu extends React.Component {
     modalVisible:false
   }
 
-  update = () =>{
+  update = (_callback) =>{
     menuDisplayTeams();
-    this.setState({team: selectedTeam});
+    this.setState({team: selectedTeam}, () =>{
+      if(_callback != null){
+        _callback();
+      }
+    })
   }
 
   render() {
     return (
 
       <Background>
-
-
-{ //MODAL
-                    this.state.modalVisible === true ? (
-                        <Modal
-                            animationType="slide"
-                            transparent={true}
-                            visible={this.state.modalVisible}
-                            onRequestClose={() => {
-                                Alert.alert('Modal has been closed.');
-                            }}>
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                                <View style={{
-                                    width: '95%',
-                                    height: '75%', backgroundColor: 'rgba(255,255,255,.97)', alignSelf: 'center', borderRadius: 25
-                                }}>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            this.setModalVisible(!this.state.modalVisible);
-                                        }}
-                                        style={{ alignSelf: 'flex-end', padding: 15 }}>
-                                        <Icon name="close" ></Icon>
-                                    </TouchableOpacity>
-                                    <FranchiseModal></FranchiseModal>
-                                   </View>
-                            </View>
-                        </Modal>
-                    ) : null
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

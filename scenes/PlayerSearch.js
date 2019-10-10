@@ -123,7 +123,7 @@ setModalVisible(visible, player) {
     this.state={
       list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
       order: data,
-      arrayForFilter
+      arrayForFilter : arrayForFilter
     };
   
     this.layoutProvider = new LayoutProvider((i) => {

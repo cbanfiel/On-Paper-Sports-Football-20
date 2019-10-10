@@ -114,14 +114,6 @@ manageOffer(ply){
     return;
   }
   if(ply.signed){return;}
-  // let offers = this.state.offered;
-  // if(offers.includes(ply)){
-  //   offers.splice(offers.indexOf(ply),1);
-  // }else{
-  //   if(this.state.scholarships>=1){
-  //     offers.push(ply);
-  //   }
-  // }
 
   sendRecruitOffer(ply, selectedTeam);
   selectedTeam.scholarshipsAvailable --;

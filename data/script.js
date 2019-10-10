@@ -1467,6 +1467,8 @@ export function generateCustomRoster(team, rating) {
   }
 }
 
+
+//NEEDS UPDATE
 export function generateFreeAgents(amount, ratingSubtraction) {
   availableFreeAgents.roster = [];
   for (let i = 0; i < amount; i++) {
@@ -1568,7 +1570,8 @@ function generateDraftClass() {
   let ks=0;
   let ps= 0;
   let ply;
-  for (let i = 0; i < 320; i++) {
+  //swtiched to teams .length * 10
+  for (let i = 0; i < (teams.length*10); i++) {
     let playerRating = 73 - (Math.round(Math.random()*12));
     //10% elite players
     if(Math.random()*100 <= 10){
@@ -5315,17 +5318,20 @@ function tradeValueCalculation(ply, print) {
     isPick = true;
     // console.log(ply.projectedPick);
     if(inDraft){
-
-      //should effectively fix in draft trade crash
+      //FIXED 10-6-19
       if (ply.round > 1) {
-        ply = draftClass.roster[ply.projectedPick + (teams.length * ply.round) - 2];
+          let index = ply.projectedPick + (teams.length * (ply.round-1)) - 1 - franchise.currentDraft.drafted.roster.length;
+          // console.log(`index ${index} proj${ply.projectedPick} round${ply.round} len${franchise.currentDraft.drafted.roster.length}`);
+          ply = draftClass.roster[index];
       } else {
-        index = ply.projectedPick + (teams.length * ply.round) - 2 - franchise.currentDraft.drafted.roster.length;
-        ply = draftClass.roster[index];
+          let index = ply.projectedPick - 1 - franchise.currentDraft.drafted.roster.length;
+          ply = draftClass.roster[index];
       }
     }else{
       if (ply.round > 1) {
-        ply = draftClass.roster[ply.projectedPick + (teams.length * ply.round) - 2];
+          let index = ply.projectedPick + (teams.length * (ply.round-1)) - 1
+          ply = draftClass.roster[index];
+          // console.log(`index ${index} proj${ply.projectedPick} round${ply.round}`);
       } else {
         ply = draftClass.roster[ply.projectedPick - 1];
       }
@@ -5727,7 +5733,7 @@ saveToFileSystem = async (data, saveName, type) => {
     });
 };
 
-export const loadFromFileSystem = async fileName => {
+export const loadFromFileSystem = async (fileName, _callback) => {
   const file = fileName;
   if (file.includes(".draftclass")) {
     const load = FileSystem.readAsStringAsync(
@@ -5736,6 +5742,8 @@ export const loadFromFileSystem = async fileName => {
       .then(value => {
         let data = JSON.parse(value);
         importDraftClassJson(data);
+        _callback();
+
       })
       .catch(err => {
         console.log(err);
@@ -5746,16 +5754,19 @@ export const loadFromFileSystem = async fileName => {
     )
       .then(value => {
         loadFranchise(value);
+        _callback();
       })
       .catch(err => {
         console.log(err);
       });
+
   } else {
     const load = FileSystem.readAsStringAsync(
       FileSystem.documentDirectory + "saves/" + file
     )
       .then(value => {
         loadData(value);
+        _callback();
       })
       .catch(err => {
         console.log(err);
@@ -6056,7 +6067,7 @@ export function exportRosterJson() {
   return write;
 }
 
-export async function getDataFromLink(link, type, sliderType) {
+export async function getDataFromLink(link, type, sliderType, _callback) {
   type = type.toLowerCase();
   try {
     let response = await fetch(link);
@@ -6067,12 +6078,18 @@ export async function getDataFromLink(link, type, sliderType) {
         collegeSliderPreset();
         resetFranchise();
       }
+      _callback();
     } else if (type === "team") {
       importTeamJson(responseJson);
+      _callback();
+
     } else if (type === "draftclass") {
       importDraftClassJson(responseJson);
+      _callback();
+
     } else if (type === "communityroster") {
       communityRosters = responseJson;
+
     }
   } catch (error) {
     console.log(error);
@@ -6839,6 +6856,8 @@ export const loadFranchise = data => {
       }
 
       teams[i].played = played;
+      //might be needed
+      teams[i].generateScheduleRating();
     }
 
     //franchhise filec
