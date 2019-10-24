@@ -9,6 +9,10 @@ import ListItem from '../components/ListItem';
 
 const updateLog = [
     {
+        date: '10/24/2019',
+        updates: "-Simplified offer contract menu\n-Added player signing difficulty slider"
+    },
+    {
         date: '10/23/2019',
         updates: "-Fixed progression/regression bug with some positions\n-Overhauled player interests in signing/resignining stage"
     },
