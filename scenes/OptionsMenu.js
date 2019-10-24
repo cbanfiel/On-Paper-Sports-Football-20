@@ -68,7 +68,7 @@ export default class OptionsMenu extends React.Component {
             </Card>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{ width: '100%' }} onPress={() => {removeTeams(), Actions.popTo('mainmenu')}}>
+          {/* <TouchableOpacity style={{ width: '100%' }} onPress={() => {removeTeams(), Actions.popTo('mainmenu')}}>
 
             <Card
               containerStyle={{
@@ -79,7 +79,7 @@ export default class OptionsMenu extends React.Component {
             >
               <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>Remove All Teams</Text>
             </Card>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity style={{ width: '100%' }} onPress={() => {generateFreeAgents(600,20), Actions.popTo('mainmenu')}}>
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { Button, Card, Divider, Slider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { selectedTeam,  signPlayer,  canSign, calculateCapRoom, displaySalary, collegeMode, offerContract, availableFreeAgents } from '../data/script';
+import { selectedTeam,  signPlayer,  canSign, calculateCapRoom, displaySalary, collegeMode, offerContract, availableFreeAgents, getPlayerSigningInterest } from '../data/script';
 import Background from '../components/background';
 import CachedImage from '../components/CachedImage';
 
@@ -30,8 +30,8 @@ export default class OfferContractMenu extends React.Component {
 
     componentDidMount(){
         this.setState({
-            salary : this.props.selectedPlayer.salary,
-            signable : canSign(selectedTeam, this.props.selectedPlayer.salary)
+            salary : getPlayerSigningInterest(selectedTeam,this.props.selectedPlayer,this.state.years),
+            signable : canSign(selectedTeam, getPlayerSigningInterest(selectedTeam,this.props.selectedPlayer,this.state.years))
         })
     }
 
@@ -44,9 +44,7 @@ export default class OfferContractMenu extends React.Component {
             <Background>
                 <Card
                     containerStyle={{
-                        width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                        borderColor: 'black',
-                        alignSelf:'center'
+                        width:'95%', backgroundColor:'rgba(255,255,255,0)', alignSelf:'center', borderColor:'rgba(0,0,0,0.9)'
                     }} >
 
                     <CachedImage style={{ width: 100, height:100, resizeMode:'contain',flexDirection: 'column', alignSelf: 'center', marginBottom: 5 }} uri= {selectedTeam.logoSrc } />
@@ -69,13 +67,13 @@ export default class OfferContractMenu extends React.Component {
                     minimumValue={1}
                     maximumValue={6}
                     value={this.state.years}
-                    onValueChange={value => this.setState({ years: value, declined:'' })}
+                    onValueChange={value => this.setState({ years: value, declined:'', salary: getPlayerSigningInterest(selectedTeam,this.props.selectedPlayer,value) })}
                 />
                 </View>
     : null
 }
-
-                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{collegeMode? "Recruiting Points: " + displaySalary(this.state.salary) : "SALARY: $" + displaySalary(this.state.salary)}</Text>
+                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro', marginBottom:20 }}>{"SALARY: $" + displaySalary(getPlayerSigningInterest(selectedTeam,this.props.selectedPlayer,this.state.years))}</Text>
+                    {/* <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{collegeMode? "Recruiting Points: " + displaySalary(this.state.salary) : "SALARY: $" + displaySalary(this.state.salary)}</Text>
                     <Slider
                         thumbTintColor={'rgb(180,180,180)'}
                         maximumTrackTintColor={'rgb(180,180,180)'}
@@ -84,24 +82,24 @@ export default class OfferContractMenu extends React.Component {
                         maximumValue={50000000}
                         value={this.state.salary}
                         onValueChange={value => this.setState({ salary: value, signable:canSign(selectedTeam,value), declined:'' })}
-                    />
+                    /> */}
 {
 
     this.state.declined ? 
 
-    <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ borderColor: 'black', backgroundColor: 'rgba(255,0,0,0.75)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, marginBottom:10 }} title={"Offer Declined"} onPress={() => {}}></Button>
+    <Button titleStyle={{ fontFamily: 'advent-pro' , color: 'black'}} buttonStyle={{ borderRadius:25, backgroundColor: 'rgba(255,0,0,0.75)', borderColor: 'black', borderWidth: 1, marginBottom:10 }} title={"Offer Declined"} onPress={() => {}}></Button>
 
 
     :
 
     this.props.forced === false ? ( canSign(selectedTeam, this.state.salary) ? (
 
-        <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ borderColor: 'black', backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, marginBottom:10 }} title={collegeMode? "Offer Scholarship": "Sign Player"} onPress={() => { this.sendContract(false); }}></Button>
+        <Button titleStyle={{ fontFamily: 'advent-pro' , color: 'black'}} buttonStyle={{ borderRadius:25, backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black', borderWidth: 1, marginBottom:10 }} title={collegeMode? "Offer Scholarship": "Sign Player"} onPress={() => { this.sendContract(false); }}></Button>
     ) :
-        <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ borderColor: 'black', backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, marginBottom:10 }} title={collegeMode? "Not Enough Recruiting Points" : "Not Enough Cap Space"} disabled ></Button>
+        <Button titleStyle={{ fontFamily: 'advent-pro' , color: 'black'}} buttonStyle={{ borderRadius:25, backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black', borderWidth: 1, marginBottom:10 }} title={collegeMode? "Not Enough Recruiting Points" : "Not Enough Cap Space"} disabled ></Button>
 
         ) :
-        <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ borderColor: 'black', backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, marginBottom:10 }} title={collegeMode? "Offer Scholarship": "Sign Player"} onPress={() => { this.sendContract(true); }}></Button>
+        <Button titleStyle={{ fontFamily: 'advent-pro' , color: 'black'}} buttonStyle={{ borderRadius:25, backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black', borderWidth: 1, marginBottom:10 }} title={collegeMode? "Offer Scholarship": "Sign Player"} onPress={() => { this.sendContract(true); }}></Button>
     
     }
 

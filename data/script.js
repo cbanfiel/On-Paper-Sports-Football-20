@@ -61,7 +61,7 @@ export const DEF_425 = 3;
 export const DEF_52 = 4;
 
 export const REDSHIRT_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Redshirt.svg/1280px-Redshirt.svg.png';
-
+export const GENERIC_PLAYER_LOGO = 'https://www.2kratings.com/wp-content/uploads/NBA-Player.png';
 
 
 
@@ -104,7 +104,9 @@ export let defenseHigh = 16;
 export let secondsOffClock = 16;
 export let tradeThreshold = 0.3;
 export let reboundSlider = 50;
-export let trainingPointsAvailable = 2;
+export let trainingPointsAvailable = 3;
+export let playerSigningDifficulty = 90;
+
 
 //hockey sliders
 export let defenseSlider = 12;
@@ -120,7 +122,7 @@ export let playoffSeeds = 6;
 export let seriesWinCount = 1;
 export let conferencesOn = true;
 export let collegeMode = false;
-export let difficulty = 0;
+export let difficulty = -1;
 //************************************ */
 
 let autoSign = true;
@@ -131,7 +133,7 @@ export function setAutoSign(bool) {
 
 export function resetSliders() {
   tradeThreshold = 0.3;
-  trainingPointsAvailable = 2;
+  trainingPointsAvailable = 3;
   passSlider = 3;
   runSlider = 3;
   qbCompletionSlider = 42;
@@ -140,15 +142,16 @@ export function resetSliders() {
   seriesWinCount = 1;
   conferencesOn = true;
   collegeMode = false;
-  difficulty = 0;
+  difficulty = -1;
   trainingPointsAvailable = 2;
   rosterSize = 55;
+  playerSigningDifficulty = 90;
 
 }
 
 export function collegeSliderPreset() {
   tradeThreshold = 0.3;
-  trainingPointsAvailable = 2;
+  trainingPointsAvailable = 3;
   passSlider = 4;
   runSlider = 6;
   qbCompletionSlider = 42;
@@ -174,7 +177,8 @@ export function setSliders(
   pass,
   run,
   comp,
-  size
+  size,
+  psd
 ) {
   difficulty = diff;
   tradeThreshold = tradeDiff;
@@ -183,6 +187,11 @@ export function setSliders(
   runSlider = run;
   qbCompletionSlider = comp;
   rosterSize = size;
+  if(psd == null){
+    playerSigningDifficulty = 90;
+}else{
+    playerSigningDifficulty = psd;
+}
 }
 
 export function setFranchiseSliders(gps, ps, swc, confOn, collm, skipNew) {
@@ -212,6 +221,9 @@ class Player {
     this.positionString;
     this.getPositionString();
     this.faceSrc = player.faceSrc;
+    if (player.faceSrc == null || player.faceSrc.length < 1) {
+      this.faceSrc = GENERIC_PLAYER_LOGO;
+    }
     this.teamLogoSrc;
     this.teamName;
     this.usage = 0;
@@ -305,43 +317,25 @@ class Player {
     this.seasonPunts = 0;
     this.seasonPuntYards = 0;
 
-    //hockey stats
-    this.saves = 0;
-    this.goalsAllowed = 0;
-    this.shots = 0;
-    this.goals = 0;
-    this.assists = 0;
-    this.assistUsage = 0;
-    this.gamesStarted = 0;
-
-    this.iceTime = 0;
-    this.shiftLength = 0;
-
-    this.seasonGoals = 0;
-    this.seasonSaves = 0;
-    this.seasonGoalsAllowed = 0;
-    this.seasonShots = 0;
-    this.seasonAssists = 0;
-
     // console.log(this.name + " " + this.years + " " + this.salary);
   }
 
-  getCollegeYearString(){
+  getCollegeYearString() {
     let str = ''
-    if(this.age === 18){
+    if (this.age === 18) {
       str = 'FR'
     }
-    if(this.age === 19){
+    if (this.age === 19) {
       str = 'SO'
     }
-    if(this.age === 20){
+    if (this.age === 20) {
       str = 'JR'
     }
-    if(this.age >= 21){
+    if (this.age >= 21) {
       str = 'SR'
     }
 
-    if(this.redshirt || this.redshirted){
+    if (this.redshirt || this.redshirted) {
       str += ' (RS)';
     }
     return str;
@@ -586,7 +580,7 @@ class Team {
     this.offenseRating = 0;
 
     this.division = team.division;
-   
+
 
     this.scheduleRating = 0;
 
@@ -707,15 +701,15 @@ class Team {
 
     //Coach Sliders
     this.offVsDefFocus = Math.round(Math.random() * 4) - 2;
-    this.offenseType = Math.floor(Math.random()*4);
-    this.runPlays =[];
+    this.offenseType = Math.floor(Math.random() * 4);
+    this.runPlays = [];
     this.passPlays = [];
-    this.defenseType = Math.floor(Math.random()*3);
+    this.defenseType = Math.floor(Math.random() * 3);
     //run pref is lower number
     //rand between 40-60
-    this.runVsPass = (Math.round(Math.random()*10))+55;
+    this.runVsPass = (Math.round(Math.random() * 10)) + 55;
     //limit between -3 and 3
-    this.offTempo = (Math.round(Math.random()*6))-3;
+    this.offTempo = (Math.round(Math.random() * 6)) - 3;
 
     //football
     this.qbs = [];
@@ -732,21 +726,21 @@ class Team {
 
 
 
-    this.interestedProspects = {roster: []};
+    this.interestedProspects = { roster: [] };
     this.offered = [];
 
-    this.offStarters = {passers: [], runners:[], recievers:[], blockers:[]};
-    this.defStarters = {rushers: [], intercepters: []}
+    this.offStarters = { passers: [], runners: [], recievers: [], blockers: [] };
+    this.defStarters = { rushers: [], intercepters: [] }
   }
 
-  generateScheduleRating(){
+  generateScheduleRating() {
     let rat = 0;
-    for(let i=0; i<this.schedule.length; i++){
+    for (let i = 0; i < this.schedule.length; i++) {
       rat += this.schedule[i].rating;
     }
 
-    this.scheduleRating = Math.round(rat/this.schedule.length);
-    
+    this.scheduleRating = Math.round(rat / this.schedule.length);
+
   }
 
   releaseExpiring() {
@@ -762,18 +756,18 @@ class Team {
       let rat = 0;
       let kickers = 0;
       for (let i = 0; i < this.roster.length; i++) {
-        if(this.roster[i].position === POS_K || this.roster[i].position === POS_P){
+        if (this.roster[i].position === POS_K || this.roster[i].position === POS_P) {
           kickers++;
-        }else{
-          total+= this.roster[i].rating;
+        } else {
+          total += this.roster[i].rating;
         }
       }
       rat = Math.round(
-        (total / (this.roster.length-kickers))
+        (total / (this.roster.length - kickers))
       );
 
-      this.rating  = Math.round(scaleBetween(rat,60,99,65,85));
-      if(this.rating>=99){
+      this.rating = Math.round(scaleBetween(rat, 60, 99, 65, 85));
+      if (this.rating >= 99) {
         this.rating = 99;
       }
 
@@ -794,74 +788,74 @@ class Team {
 
 */
 
-  checkRequirements(){
-  let diff = 0;
-  let arr = [];
-  if(this.qbs.length < POS_QB_REQUIREMENTS){
-    diff = POS_QB_REQUIREMENTS - this.qbs.length;
-    arr.push( {
-      position: POS_QB,
-      amount: diff
-    });
+  checkRequirements() {
+    let diff = 0;
+    let arr = [];
+    if (this.qbs.length < POS_QB_REQUIREMENTS) {
+      diff = POS_QB_REQUIREMENTS - this.qbs.length;
+      arr.push({
+        position: POS_QB,
+        amount: diff
+      });
+    }
+    if (this.rbs.length < POS_HB_REQUIREMENTS) {
+      diff = POS_HB_REQUIREMENTS - this.rbs.length;
+      arr.push({
+        position: POS_HB,
+        amount: diff
+      })
+    }
+    if (this.wrs.length < POS_WR_REQUIREMENTS) {
+      diff = POS_WR_REQUIREMENTS - this.wrs.length;
+      arr.push({
+        position: POS_WR,
+        amount: diff
+      })
+    }
+    // if(this.tes.length < POS_TE_REQUIREMENTS){
+    //   diff = POS_TE_REQUIREMENTS - this.tes.length;
+    //   arr.push( {
+    //     position: POS_TE,
+    //     amount: diff
+    //   }
+    // }
+    if (this.ol.length < POS_OL_REQUIREMENTS) {
+      diff = POS_OL_REQUIREMENTS - this.ol.length;
+      arr.push({
+        position: POS_LT,
+        amount: diff
+      })
+    }
+    if (this.dl.length < POS_DL_REQUIREMENTS) {
+      diff = POS_DL_REQUIREMENTS - this.dl.length;
+      arr.push({
+        position: POS_LE,
+        amount: diff
+      })
+    }
+    if (this.dbs.length < POS_DB_REQUIREMENTS) {
+      diff = POS_DB_REQUIREMENTS - this.dbs.length;
+      arr.push({
+        position: POS_CB,
+        amount: diff
+      })
+    }
+    if (this.ks.length < POS_K_REQUIREMENTS) {
+      diff = POS_K_REQUIREMENTS - this.ks.length;
+      arr.push({
+        position: POS_K,
+        amount: diff
+      })
+    }
+    if (this.ps.length < POS_P_REQUIREMENTS) {
+      diff = POS_P_REQUIREMENTS - this.ps.length;
+      arr.push({
+        position: POS_P,
+        amount: diff
+      })
+    }
+    return arr;
   }
-  if(this.rbs.length < POS_HB_REQUIREMENTS){
-    diff = POS_HB_REQUIREMENTS - this.rbs.length;
-    arr.push( {
-      position: POS_HB,
-      amount: diff
-    })
-  }
-  if(this.wrs.length < POS_WR_REQUIREMENTS){
-    diff = POS_WR_REQUIREMENTS - this.wrs.length;
-    arr.push( {
-      position: POS_WR,
-      amount: diff
-    })
-  }
-  // if(this.tes.length < POS_TE_REQUIREMENTS){
-  //   diff = POS_TE_REQUIREMENTS - this.tes.length;
-  //   arr.push( {
-  //     position: POS_TE,
-  //     amount: diff
-  //   }
-  // }
-  if(this.ol.length < POS_OL_REQUIREMENTS){
-    diff = POS_OL_REQUIREMENTS - this.ol.length;
-    arr.push( {
-      position: POS_LT,
-      amount: diff
-    })
-  }
-  if(this.dl.length < POS_DL_REQUIREMENTS){
-    diff = POS_DL_REQUIREMENTS - this.dl.length;
-    arr.push( {
-      position: POS_LE,
-      amount: diff
-    })
-  }
-  if(this.dbs.length < POS_DB_REQUIREMENTS){
-    diff = POS_DB_REQUIREMENTS - this.dbs.length;
-    arr.push( {
-      position: POS_CB,
-      amount: diff
-    })
-  }
-  if(this.ks.length < POS_K_REQUIREMENTS){
-    diff = POS_K_REQUIREMENTS - this.ks.length;
-    arr.push( {
-      position: POS_K,
-      amount: diff
-    })
-  }
-  if(this.ps.length < POS_P_REQUIREMENTS){
-    diff = POS_P_REQUIREMENTS - this.ps.length;
-    arr.push( {
-      position: POS_P,
-      amount: diff
-    })
-  }
-  return arr;
-}
 
   manageFootballLineup() {
     this.roster.sort(function (a, b) {
@@ -891,7 +885,7 @@ class Team {
 
     for (let i = 0; i < this.roster.length; i++) {
       let player = this.roster[i];
-      if(!player.redshirted){
+      if (!player.redshirted) {
         if (player.position === 0) {
           this.qbs.push(player);
         } else if (player.position === 1) {
@@ -906,7 +900,7 @@ class Team {
         else if (player.position > 4 && player.position < 10) {
           this.ol.push(player);
         }
-        else if (player.position >=POS_LE && player.position <= POS_DT) {
+        else if (player.position >= POS_LE && player.position <= POS_DT) {
           this.dl.push(player);
         }
         else if (player.position >= 13 && player.position <= 15) {
@@ -924,39 +918,39 @@ class Team {
 
       }
 
-    //   for (let i = 0; i < this.offered.length; i++) {
-    //     let player = this.offered[i];
-    //     if (player.position === 0) {
-    //       this.qbs.push(player);
-    //     } else if (player.position === 1) {
-    //       this.rbs.push(player);
-    //     } else if (player.position === 2) {
-    //       this.fbs.push(player);
-    //     } else if (player.position === 3) {
-    //       this.wrs.push(player);
-    //     } else if (player.position === 4) {
-    //       this.tes.push(player);
-    //     }
-    //     else if (player.position > 4 && player.position < 10) {
-    //       this.ol.push(player);
-    //     }
-    //     else if (player.position >=POS_LE && player.position <= POS_DT) {
-    //       this.dl.push(player);
-    //     }
-    //     else if (player.position >= 13 && player.position <= 15) {
-    //       this.lbs.push(player);
-    //     }
-    //     else if (player.position > 15 && player.position < 19) {
-    //       this.dbs.push(player);
-    //     }
-    //     else if (player.position === 19) {
-    //       this.ks.push(player);
-    //     }
-    //     else if (player.position === 20) {
-    //       this.ps.push(player);
-    //     }
-    // }
-  }
+      //   for (let i = 0; i < this.offered.length; i++) {
+      //     let player = this.offered[i];
+      //     if (player.position === 0) {
+      //       this.qbs.push(player);
+      //     } else if (player.position === 1) {
+      //       this.rbs.push(player);
+      //     } else if (player.position === 2) {
+      //       this.fbs.push(player);
+      //     } else if (player.position === 3) {
+      //       this.wrs.push(player);
+      //     } else if (player.position === 4) {
+      //       this.tes.push(player);
+      //     }
+      //     else if (player.position > 4 && player.position < 10) {
+      //       this.ol.push(player);
+      //     }
+      //     else if (player.position >=POS_LE && player.position <= POS_DT) {
+      //       this.dl.push(player);
+      //     }
+      //     else if (player.position >= 13 && player.position <= 15) {
+      //       this.lbs.push(player);
+      //     }
+      //     else if (player.position > 15 && player.position < 19) {
+      //       this.dbs.push(player);
+      //     }
+      //     else if (player.position === 19) {
+      //       this.ks.push(player);
+      //     }
+      //     else if (player.position === 20) {
+      //       this.ps.push(player);
+      //     }
+      // }
+    }
 
     // let missingRequirements = this.checkRequirements()
     // for(let i=0; i<missingRequirements.length; i++){
@@ -1290,14 +1284,14 @@ export function generateCustomRoster(team, rating) {
   let dl = 0;
   let lbs = 0;
   let dbs = 0;
-  let ks=0;
-  let ps= 0;
+  let ks = 0;
+  let ps = 0;
   for (let i = 0; i < rosterSize; i++) {
     let ply;
     //find good spread
-    let rand = Math.floor(Math.random()*25)-10;
+    let rand = Math.floor(Math.random() * 25) - 10;
     let rat = rating + rand;
-    if(rat<61){
+    if (rat < 61) {
       rat = 61;
     }
     if (qbs < POS_QB_REQUIREMENTS) {
@@ -1315,26 +1309,26 @@ export function generateCustomRoster(team, rating) {
       tes++;
     }
     else if (ol < POS_OL_REQUIREMENTS) {
-      let rand = Math.floor(Math.random()*5);
-      let pos = POS_LT+rand;
+      let rand = Math.floor(Math.random() * 5);
+      let pos = POS_LT + rand;
       ply = generatePlayer(pos, rat);
       ol++;
     }
     else if (dl < POS_DL_REQUIREMENTS) {
-      let rand = Math.floor(Math.random()*3);
-      let pos = POS_LE+rand;
+      let rand = Math.floor(Math.random() * 3);
+      let pos = POS_LE + rand;
       ply = generatePlayer(pos, rat);
       dl++;
     }
     else if (lbs < POS_LB_REQUIREMENTS) {
-      let rand = Math.floor(Math.random()*3);
-      let pos = POS_LOLB+rand;
+      let rand = Math.floor(Math.random() * 3);
+      let pos = POS_LOLB + rand;
       ply = generatePlayer(pos, rat);
       lbs++;
     }
     else if (dbs < POS_DB_REQUIREMENTS) {
-      let rand = Math.floor(Math.random()*3);
-      let pos = POS_CB+rand;
+      let rand = Math.floor(Math.random() * 3);
+      let pos = POS_CB + rand;
       ply = generatePlayer(pos, rat);
       dbs++;
     }
@@ -1345,8 +1339,8 @@ export function generateCustomRoster(team, rating) {
     else if (ps < POS_P_REQUIREMENTS) {
       ply = generatePlayer(POS_P, rat);
       ps++;
-    }else{
-      ply = generatePlayer(Math.floor(Math.random()*POS_K), rat);
+    } else {
+      ply = generatePlayer(Math.floor(Math.random() * POS_K), rat);
     }
 
     //RATING FORMULA
@@ -1360,12 +1354,12 @@ export function generateCustomRoster(team, rating) {
         80,
         600
       )
-    ) + Math.round(Math.random()*100000);
-    ply.age = Math.floor(Math.random()*14)+23;
-      if(collegeMode){
-        //set up for college fr - sr
-        ply.age = Math.floor(Math.random()*4)+18;
-      }
+    ) + Math.round(Math.random() * 100000);
+    ply.age = Math.floor(Math.random() * 14) + 23;
+    if (collegeMode) {
+      //set up for college fr - sr
+      ply.age = Math.floor(Math.random() * 4) + 18;
+    }
     team.roster.push(ply);
   }
 
@@ -1380,37 +1374,37 @@ export function generateCustomRoster(team, rating) {
     while (team.rating != rating) {
       for (let i = 0; i < team.roster.length; i++) {
         let ply = team.roster[i];
-        ply.awareness --;
-        if(ply.position === POS_QB){
-          ply.pass --;
-    
+        ply.awareness--;
+        if (ply.position === POS_QB) {
+          ply.pass--;
+
         }
-    
-        if(ply.position >= POS_HB && ply.position <= POS_TE){
-          ply.rush --;
+
+        if (ply.position >= POS_HB && ply.position <= POS_TE) {
+          ply.rush--;
           // ply.speed --;
-          ply.catch --;
-          ply.block --;
+          ply.catch--;
+          ply.block--;
         }
-    
-        if(ply.position >= POS_LT && ply.position <= POS_RT){
-          ply.block --;
+
+        if (ply.position >= POS_LT && ply.position <= POS_RT) {
+          ply.block--;
         }
-    
-        if(ply.position >= POS_LE && ply.position <= POS_RE){
-          ply.breakBlock --;
-          ply.tackle --;
+
+        if (ply.position >= POS_LE && ply.position <= POS_DT) {
+          ply.breakBlock--;
+          ply.tackle--;
         }
-    
-        if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-          ply.breakBlock --;
-          ply.tackle --;
-          ply.catch --;
+
+        if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+          ply.breakBlock--;
+          ply.tackle--;
+          ply.catch--;
           // ply.speed --;
         }
-    
-        if(ply.position >= POS_K && ply.position <= POS_P){
-          ply.kick --;
+
+        if (ply.position >= POS_K && ply.position <= POS_P) {
+          ply.kick--;
         }
         ply.calculateRating();
         team.calculateRating();
@@ -1425,37 +1419,37 @@ export function generateCustomRoster(team, rating) {
     while (team.rating != rating) {
       for (let i = 0; i < team.roster.length; i++) {
         let ply = team.roster[i];
-        ply.awareness ++;
-        if(ply.position === POS_QB){
-          ply.pass ++;
-    
+        ply.awareness++;
+        if (ply.position === POS_QB) {
+          ply.pass++;
+
         }
-    
-        if(ply.position >= POS_HB && ply.position <= POS_TE){
-          ply.rush ++;
+
+        if (ply.position >= POS_HB && ply.position <= POS_TE) {
+          ply.rush++;
           // ply.speed ++;
-          ply.catch ++;
-          ply.block ++;
+          ply.catch++;
+          ply.block++;
         }
-    
-        if(ply.position >= POS_LT && ply.position <= POS_RT){
-          ply.block ++;
+
+        if (ply.position >= POS_LT && ply.position <= POS_RT) {
+          ply.block++;
         }
-    
-        if(ply.position >= POS_LE && ply.position <= POS_RE){
-          ply.breakBlock ++;
-          ply.tackle ++;
+
+        if (ply.position >= POS_LE && ply.position <= POS_DT) {
+          ply.breakBlock++;
+          ply.tackle++;
         }
-    
-        if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-          ply.breakBlock ++;
-          ply.tackle ++;
-          ply.catch ++;
+
+        if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+          ply.breakBlock++;
+          ply.tackle++;
+          ply.catch++;
           // ply.speed ++;
         }
-    
-        if(ply.position >= POS_K && ply.position <= POS_P){
-          ply.kick ++;
+
+        if (ply.position >= POS_K && ply.position <= POS_P) {
+          ply.kick++;
         }
         ply.calculateRating();
         team.calculateRating();
@@ -1481,7 +1475,7 @@ export function generateFreeAgents(amount, ratingSubtraction) {
     if (collegeMode) {
       age = 18;
     }
-    
+
     let playerComparison = Math.floor(Math.random() * draftData.length);
     let number = draftData[playerComparison].number;
     let position = draftData[playerComparison].position;
@@ -1510,18 +1504,18 @@ export function generateFreeAgents(amount, ratingSubtraction) {
       draftData[playerComparison].block -
       ratingSubtraction +
       Math.floor(Math.random() * 5);
-      let breakBlock =
+    let breakBlock =
       draftData[playerComparison].breakBlock -
       ratingSubtraction +
       Math.floor(Math.random() * 5);
-      let tackle =
+    let tackle =
       draftData[playerComparison].tackle -
       ratingSubtraction +
       Math.floor(Math.random() * 5);
-      let kick =
+    let kick =
       draftData[playerComparison].kick -
       ratingSubtraction +
-      Math.floor(Math.random() * 5);  
+      Math.floor(Math.random() * 5);
     //2 years the plus one is because the contract years go down AFTER the draft not before but contract years should be 2 for rookies
     let years = 2 + 1;
     let salary = 1200000;
@@ -1559,7 +1553,7 @@ export function generateFreeAgents(amount, ratingSubtraction) {
 
 function generateDraftClass() {
   draftClass.roster = [];
-    let qbs = 0;
+  let qbs = 0;
   let hbs = 0;
   let wrs = 0;
   let tes = 0;
@@ -1567,89 +1561,89 @@ function generateDraftClass() {
   let dl = 0;
   let lbs = 0;
   let dbs = 0;
-  let ks=0;
-  let ps= 0;
+  let ks = 0;
+  let ps = 0;
   let ply;
   //swtiched to teams .length * 10
-  for (let i = 0; i < (teams.length*10); i++) {
-    let playerRating = 73 - (Math.round(Math.random()*12));
+  for (let i = 0; i < (teams.length * 10); i++) {
+    let playerRating = 73 - (Math.round(Math.random() * 12));
     //10% elite players
-    if(Math.random()*100 <= 10){
-      playerRating += Math.round(Math.random()*15)+2;
+    if (Math.random() * 100 <= 10) {
+      playerRating += Math.round(Math.random() * 15) + 2;
     }
 
     //block over 89
-    if(playerRating>=85){
+    if (playerRating >= 85) {
       playerRating = 85;
     }
 
     //block 60 and under
-    if(playerRating<=61){
-      playerRating = Math.round(Math.random()*4)+61;
+    if (playerRating <= 61) {
+      playerRating = Math.round(Math.random() * 4) + 61;
     }
-    
-    if (qbs < POS_QB_REQUIREMENTS*3) {
+
+    if (qbs < POS_QB_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_QB, playerRating);
       qbs++;
-    } else if (hbs < POS_HB_REQUIREMENTS*3) {
+    } else if (hbs < POS_HB_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_HB, playerRating);
 
       hbs++;
-    } else if (wrs < POS_WR_REQUIREMENTS*3) {
+    } else if (wrs < POS_WR_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_WR, playerRating);
 
       wrs++;
     }
-    else if (tes < POS_TE_REQUIREMENTS*3) {
+    else if (tes < POS_TE_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_TE, playerRating);
 
       tes++;
     }
-    else if (ol < POS_OL_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*5) + POS_LT;
+    else if (ol < POS_OL_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 5) + POS_LT;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
 
       ol++;
     }
-    else if (dl < POS_DL_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*3) + POS_LE;
+    else if (dl < POS_DL_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 3) + POS_LE;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
       dl++;
     }
-    else if (lbs < POS_LB_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*3) + POS_LOLB;
+    else if (lbs < POS_LB_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 3) + POS_LOLB;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
       lbs++;
     }
-    else if (dbs < POS_DB_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*3) + POS_CB;
+    else if (dbs < POS_DB_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 3) + POS_CB;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
       dbs++;
     }
-    else if (ks < POS_K_REQUIREMENTS*3) {
+    else if (ks < POS_K_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_K, playerRating);
       ks++;
     }
-    else if (ps < POS_P_REQUIREMENTS*3) {
+    else if (ps < POS_P_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_P, playerRating);
 
       ps++;
-    }else{
-      let chosenPosition = Math.floor(Math.random()*(POS_P+1));
+    } else {
+      let chosenPosition = Math.floor(Math.random() * (POS_P + 1));
       ply = generatePlayer(chosenPosition, playerRating);
     }
     //2 years the plus one is because the contract years go down AFTER the draft not before but contract years should be 2 for rookies
     ply.years = 2 + 1;
     ply.salary = 1200000;
-    ply.age = 20 + Math.floor(Math.random()*4);
+    ply.age = 20 + Math.floor(Math.random() * 4);
 
 
     draftClass.roster.push(ply);
@@ -1757,43 +1751,43 @@ export class Game {
   }
 
   selectReciever(off) {
-    
+
     let recievers = [];
-    if(Math.random()*100 > 15){
+    if (Math.random() * 100 > 15) {
       recievers.push(off.wrs[0]);
       recievers.push(off.wrs[1]);
       recievers.push(off.wrs[2]);
-      if(off.tes.length>=1){
+      if (off.tes.length >= 1) {
         recievers.push(off.tes[0]);
-      }else{
-      recievers.push(off.wrs[3]);
+      } else {
+        recievers.push(off.wrs[3]);
       }
       recievers.push(off.rbs[0]);
 
-    }else{
+    } else {
       recievers.push(off.wrs[3]);
       recievers.push(off.wrs[4]);
       recievers.push(off.wrs[5]);
-      if(off.tes.length>=2){
+      if (off.tes.length >= 2) {
         recievers.push(off.tes[1]);
       }
       recievers.push(off.wrs[0]);
       recievers.push(off.rbs[1]);
 
     }
- 
+
     let reciever;
 
-    
+
 
     let tot = 0;
-    try{
-    for (let i = 0; i < recievers.length; i++) {
-      tot += recievers[i].catch + recievers[i].speed;
+    try {
+      for (let i = 0; i < recievers.length; i++) {
+        tot += recievers[i].catch + recievers[i].speed;
+      }
+    } catch (e) {
+      console.log(off.name);
     }
-  }catch(e){
-    console.log(off.name);
-  }
     let rand = Math.random() * 100;
     let selection = 0;
     for (let i = 0; i < recievers.length; i++) {
@@ -1806,20 +1800,20 @@ export class Game {
 
   }
 
-  selectDBTackler(def, dbsOnField){
+  selectDBTackler(def, dbsOnField) {
     let tacklers = [];
-    if(Math.random()*100> 15){
-      for(let i=0; i<dbsOnField; i++){
+    if (Math.random() * 100 > 15) {
+      for (let i = 0; i < dbsOnField; i++) {
         tacklers.push(def.dbs[i]);
       }
-    }else{
-      for(let i=dbsOnField; i<def.dbs.length; i++){
+    } else {
+      for (let i = dbsOnField; i < def.dbs.length; i++) {
         tacklers.push(def.dbs[i]);
-        if(tacklers.length >= dbsOnField){
+        if (tacklers.length >= dbsOnField) {
           break;
         }
-    } 
-  }
+      }
+    }
 
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
@@ -1835,21 +1829,21 @@ export class Game {
     }
   }
 
-  selectLBTackler(def, lbsOnField){
+  selectLBTackler(def, lbsOnField) {
     let tacklers = [];
 
-    if(Math.random()*100> 15){
-      for(let i=0; i<lbsOnField; i++){
+    if (Math.random() * 100 > 15) {
+      for (let i = 0; i < lbsOnField; i++) {
         tacklers.push(def.lbs[i]);
       }
-    }else{
-      for(let i=lbsOnField; i<def.lbs.length; i++){
+    } else {
+      for (let i = lbsOnField; i < def.lbs.length; i++) {
         tacklers.push(def.lbs[i]);
-        if(tacklers.length >= lbsOnField){
+        if (tacklers.length >= lbsOnField) {
           break;
         }
+      }
     }
-  }
 
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
@@ -1865,21 +1859,21 @@ export class Game {
     }
   }
 
-  selectDLTackler(def, dlOnField){
+  selectDLTackler(def, dlOnField) {
     let tacklers = [];
 
-    if(Math.random()*100> 15){
-      for(let i=0; i<dlOnField; i++){
+    if (Math.random() * 100 > 15) {
+      for (let i = 0; i < dlOnField; i++) {
         tacklers.push(def.dl[i]);
       }
-    }else{
-      for(let i=dlOnField; i<def.dl.length; i++){
+    } else {
+      for (let i = dlOnField; i < def.dl.length; i++) {
         tacklers.push(def.dl[i]);
-        if(tacklers.length >= dlOnField){
+        if (tacklers.length >= dlOnField) {
           break;
         }
+      }
     }
-  }
 
     let tot = 0;
     for (let i = 0; i < tacklers.length; i++) {
@@ -1895,53 +1889,53 @@ export class Game {
     }
   }
 
-  selectRunner(off){
+  selectRunner(off) {
 
-    let qbRunPercentageBoost = scaleBetween(off.qbs[0].speed, -10,10,40,99);
+    let qbRunPercentageBoost = scaleBetween(off.qbs[0].speed, -10, 10, 40, 99);
     // console.log(`qbrunpercentboost: ${qbRunPercentageBoost}`);
 
 
-    if(Math.random()*100 > 67){
+    if (Math.random() * 100 > 67) {
       //backup rb run
-      if(Math.random()*100 > 30){
+      if (Math.random() * 100 > 30) {
         return off.rbs[1];
       }
       return off.rbs[2];
     }
 
-    if(off.offenseType === OFF_SPREAD){
-      if(Math.random()*100 > (80-qbRunPercentageBoost)){
+    if (off.offenseType === OFF_SPREAD) {
+      if (Math.random() * 100 > (80 - qbRunPercentageBoost)) {
         return off.qbs[0];
-      }else{
+      } else {
         return off.rbs[0];
       }
     }
 
-    if(off.offenseType === OFF_OPTION){
-      if(Math.random()*100 > (65-qbRunPercentageBoost)){
+    if (off.offenseType === OFF_OPTION) {
+      if (Math.random() * 100 > (65 - qbRunPercentageBoost)) {
         return off.qbs[0];
-      }else{
+      } else {
         return off.rbs[0];
       }
     }
 
-    if(Math.random()*100 > 100-qbRunPercentageBoost){
+    if (Math.random() * 100 > 100 - qbRunPercentageBoost) {
       return off.qbs[0];
     }
 
     return off.rbs[0];
   }
 
-  setOffRating(team){
+  setOffRating(team) {
     let sum = 0;
-    sum+=(team.qbs[0].rating);
-    sum+=(team.rbs[0].rating);
-    
+    sum += (team.qbs[0].rating);
+    sum += (team.rbs[0].rating);
+
     let recievers = [];
-    for(let i=0; i<team.tes.length; i++){
+    for (let i = 0; i < team.tes.length; i++) {
       recievers.push(team.tes[i]);
     }
-    for(let i=0; i<team.wrs.length; i++){
+    for (let i = 0; i < team.wrs.length; i++) {
       recievers.push(team.wrs[i]);
     }
 
@@ -1951,32 +1945,32 @@ export class Game {
       return 0;
     });
 
-    for(let i=0; i<5; i++){
+    for (let i = 0; i < 5; i++) {
       sum += recievers[i].rating;
     }
-    
-    sum+=(team.ol[0].rating);
-    sum+=(team.ol[1].rating);
-    sum+=(team.ol[2].rating);
-    sum+=(team.ol[3].rating);
-    sum+=(team.ol[4].rating);
 
-    team.offenseRating = Math.round(sum/11);
+    sum += (team.ol[0].rating);
+    sum += (team.ol[1].rating);
+    sum += (team.ol[2].rating);
+    sum += (team.ol[3].rating);
+    sum += (team.ol[4].rating);
+
+    team.offenseRating = Math.round(sum / 11);
   }
-  setDefRating(team){
+  setDefRating(team) {
     let sum = 0;
-    sum+=(team.dl[0].rating);
-    sum+=(team.dl[1].rating);
-    sum+=(team.dl[2].rating);
-    sum+=(team.dl[3].rating);
-    sum+=(team.lbs[0].rating);
-    sum+=(team.lbs[1].rating);
-    sum+=(team.lbs[2].rating);
-    sum+=(team.dbs[0].rating);
-    sum+=(team.dbs[1].rating);
-    sum+=(team.dbs[2].rating);
-    sum+=(team.dbs[3].rating);
-    team.defenseRating = Math.round(sum/11);
+    sum += (team.dl[0].rating);
+    sum += (team.dl[1].rating);
+    sum += (team.dl[2].rating);
+    sum += (team.dl[3].rating);
+    sum += (team.lbs[0].rating);
+    sum += (team.lbs[1].rating);
+    sum += (team.lbs[2].rating);
+    sum += (team.dbs[0].rating);
+    sum += (team.dbs[1].rating);
+    sum += (team.dbs[2].rating);
+    sum += (team.dbs[3].rating);
+    team.defenseRating = Math.round(sum / 11);
 
   }
 
@@ -1994,45 +1988,60 @@ export class Game {
       def = home;
     }
 
+
     off.seasonPlays++;
 
-    let offvdef = (Math.random()*off.offVsDefFocus + Math.random()*def.offVsDefFocus)/1.5;
+    let offvdef = (Math.random() * off.offVsDefFocus + Math.random() * def.offVsDefFocus) / 1.5;
 
     let yardModifier = Math.round(offvdef);
 
 
-      if(off === selectedTeam){
-        yardModifier -= Math.round(Math.random()*difficulty);
-      }
-      if(def === selectedTeam){
-        yardModifier += Math.round(Math.random()*difficulty);
-      }
+    if (off === selectedTeam) {
+      yardModifier -= Math.round(Math.random() * difficulty);
+    }
+    if (def === selectedTeam) {
+      yardModifier += Math.round(Math.random() * difficulty);
+    }
 
-    if(Math.random()*100 >= 98){
+    if (Math.random() * 100 >= 98) {
       //broken play
-      yardModifier += Math.round(Math.random()*50);
+      yardModifier += Math.round(Math.random() * 50);
     }
 
 
 
     let { dlOnField, dbsOnField, lbsOnField } = this.defensiveScheme(def);
 
-   
+
 
     let pointDifference = 0;
     let inLead;
-    if(this.homescore>this.awayscore){
+    if (this.homescore > this.awayscore) {
       pointDifference = this.homescore - this.awayscore;
-      inLead = this.home;
-    }else{
+      inLead = home;
+    } else {
       pointDifference = this.awayscore - this.homescore;
-      inLead = this.away
+      inLead = away;
     }
     let kickPow = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
     let canMakeIt = kickPow >= (100 - this.yardMarker)
-    let shouldGoOnFourth = pointDifference > 3 && this.time<= (5*60) && off != inLead;
-    if(pointDifference<=3 && this.time<= (5*60) && off != inLead ){
-      if(!canMakeIt){
+    let shouldGoOnFourth = pointDifference > 3 && this.time <= (5 * 60) && off != inLead && !canMakeIt;
+    let twoMinuteDrill = pointDifference <= 16 && this.time <= (5 * 60) && off != inLead;
+    let killTheClock = pointDifference >= 1 && this.time <= (5 * 60) && off === inLead;
+
+    // if(this.time <= (5*60)){
+    //   console.log(`pd: ${pointDifference}, IL;${inLead.name}`);
+    // }
+
+
+    // if(twoMinuteDrill){
+    //   console.log(`twomindrill`);
+    // }
+    // if(killTheClock){
+    //   console.log(`killtheclock`);
+    // }
+    if (pointDifference <= 3 && this.time <= (5 * 60) && off != inLead) {
+      if (!canMakeIt) {
         shouldGoOnFourth = true;
       }
     }
@@ -2043,16 +2052,16 @@ export class Game {
       let kickerDistance = scaleBetween(off.ks[0].kick, 25, 60, 40, 99);
 
       //plus 10 because of endzone height
-      if (kickerDistance >= (100 - this.yardMarker)+10) {
+      if (kickerDistance >= (100 - this.yardMarker) + 10) {
         //att fg
         ({ spotlightPlayer, result, timeRemoved } = this.fieldGoal(off, spotlightPlayer, result, def));
-        if(timeRemoved<1){
+        if (timeRemoved < 1) {
           console.log('kick');
         }
       } else {
         //punt
         ({ spotlightPlayer, result, timeRemoved } = this.punt(off, spotlightPlayer, result, def));
-        if(timeRemoved<1){
+        if (timeRemoved < 1) {
           console.log('punt');
         }
       }
@@ -2061,23 +2070,33 @@ export class Game {
       //slider setup move out of function when complete
       let lineInteraction = this.playerModifiers(off, dlOnField, def, dbsOnField, lbsOnField);
 
+      //H:RUN L:PASS
       let playSelection = Math.random() * 100;
-      
-      if(this.down >= 3 && this.yardsToFirst >= 5){
-        playSelection += 20;
+
+      if (this.down >= 3 && this.yardsToFirst >= 5) {
+        playSelection -= 25;
       }
+
+      if (twoMinuteDrill) {
+        playSelection -= 32;
+      }
+
+      if (killTheClock) {
+        playSelection += 32;
+      }
+
 
       if (playSelection < off.runVsPass) {
         //pass
         ({ yardsGained, spotlightPlayer, result, timeRemoved } = this.pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField));
 
-        if(timeRemoved<1){
+        if (timeRemoved < 1) {
           console.log('pass');
         }
       } else {
         //run
         ({ yardsGained, spotlightPlayer, result, timeRemoved } = this.run(off, yardsGained, yardModifier, lineInteraction, def, dbsOnField, lbsOnField, dlOnField, spotlightPlayer, result));
-        if(timeRemoved<1){
+        if (timeRemoved < 1) {
           console.log('run');
         }
       }
@@ -2091,7 +2110,7 @@ export class Game {
       // console.log('uhhhhhhhhhh');
 
 
-      
+
       this.time -= timeRemoved;
       this.down++;
       this.yardsToFirst -= yardsGained;
@@ -2117,7 +2136,7 @@ export class Game {
 
       }
 
-      if(this.down >= 5){
+      if (this.down >= 5) {
         //turnover on downs
         this.inPossesion = def;
         this.yardMarker = 100 - this.yardMarker;
@@ -2220,7 +2239,7 @@ export class Game {
     // console.log(smtn);
     if (smtn >= 100) {
       this.yardMarker = 20;
-      kickDistance = kickDistance + (100-smtn);
+      kickDistance = kickDistance + (100 - smtn);
     }
     else {
       this.yardMarker = 100 - smtn;
@@ -2233,14 +2252,14 @@ export class Game {
     this.down = 1;
     this.yardsToFirst = 10;
     // console.log(`ydmmk ${this.yardMarker}`);
-    let timeRemoved = (Math.floor(Math.random()*10))+8;
+    let timeRemoved = (Math.floor(Math.random() * 10)) + 8;
     return { spotlightPlayer, result, timeRemoved };
   }
 
   fieldGoal(off, spotlightPlayer, result, def) {
     off.ks[0].kicksAttempted++;
     let kickerPercentage = scaleBetween(off.ks[0].kick, 50, 99, 40, 99);
-    let distanceAdjustment = scaleBetween((100 - this.yardMarker)+10, 0, 30, 0, 60);
+    let distanceAdjustment = scaleBetween((100 - this.yardMarker) + 10, 0, 30, 0, 60);
     let percent = kickerPercentage - distanceAdjustment;
     // console.log('kickerpower' + kickerDistance);
     // console.log('distance' + (100- this.yardMarker));
@@ -2266,7 +2285,7 @@ export class Game {
     this.yardMarker = 20;
     this.down = 1;
     this.yardsToFirst = 10;
-    let timeRemoved = (Math.floor(Math.random()*8))+5;
+    let timeRemoved = (Math.floor(Math.random() * 8)) + 5;
     return { spotlightPlayer, result, timeRemoved };
   }
 
@@ -2284,8 +2303,8 @@ export class Game {
     let initialYardage = scaleBetween(runner.speed, 0, 3.5, 40, 99);
     let yardsAfterContact = scaleBetween(runner.rush, 0, 3.5, 40, 99);
     let randYards = (Math.random() * 4);
-    let runSliderMod = scaleBetween(runSlider,-3,3,0,10);
-      // console.log(`runslidermod: ${runSliderMod}`);
+    let runSliderMod = scaleBetween(runSlider, -3, 3, 0, 10);
+    // console.log(`runslidermod: ${runSliderMod}`);
     yardsGained = Math.round(initialYardage - randYards + yardModifier + lineInteraction + yardsAfterContact - defenseRushMod + runSliderMod);
     // console.log(`lineInteraction:  ${lineInteraction}`);
     // console.log(`initialYdg:  ${initialYardage}`);
@@ -2300,9 +2319,9 @@ export class Game {
         tackler = this.selectLBTackler(def, lbsOnField);
       }
       else {
-        if(Math.random()*100 > 40){
+        if (Math.random() * 100 > 40) {
           tackler = this.selectDLTackler(def, dlOnField);
-        }else{
+        } else {
           tackler = this.selectDBTackler(def, dbsOnField);
         }
 
@@ -2328,7 +2347,7 @@ export class Game {
       spotlightPlayer = tackler;
       result = " recovers a fumble ";
     }
-    timeRemoved = (Math.floor(Math.random()*10))+35;
+    timeRemoved = (Math.floor(Math.random() * 10)) + 35;
     timeRemoved -= off.offTempo;
     return { yardsGained, spotlightPlayer, result, timeRemoved };
   }
@@ -2337,16 +2356,16 @@ export class Game {
   pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField) {
 
     //implementation
-    let play = off.passPlays[Math.floor(Math.random()*off.passPlays.length)];
+    let play = off.passPlays[Math.floor(Math.random() * off.passPlays.length)];
 
     let qb = off.qbs[0];
     let pointDifference = 0;
-    if(this.homescore>this.awayscore){
+    if (this.homescore > this.awayscore) {
       pointDifference = this.homescore - this.awayscore;
-    }else{
+    } else {
       pointDifference = this.awayscore - this.homescore;
     }
-    if(this.time <= (5*60) && pointDifference> 16){
+    if (this.time <= (5 * 60) && pointDifference > 16) {
       //play the backup qb
       qb = off.qbs[1];
     }
@@ -2357,98 +2376,98 @@ export class Game {
 
     ({ sacked, spotlightPlayer, result, yardsGained, timeRemoved } = this.checkForSack(lineInteraction, sacked, def, dlOnField, lbsOnField, dbsOnField, qb, spotlightPlayer, result, yardsGained, off));
 
-    if(!sacked){
-    let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
-    let scaledQbPass = scaleBetween(qb.pass, 0, 15, 40, 99);
-    //check for sack
-    let target = this.selectReciever(off);
-    let defender = this.selectDBTackler(def, dbsOnField);
-    let speedVsSpeed = (target.speed - defender.speed) / 2;
-    let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99);
-    let scaledDefenderAwareness = scaleBetween(defender.awareness, 0, 10, 40, 99);
-    let completionPercentage = qbCompletionSlider + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction - defensePassPercentageMod;
-    qb.attempts++;
-    if (Math.random() * 100 < completionPercentage) {
-      //completion
-      qb.completions++;
-      target.receptions++;
-      let wrSkill = scaleBetween(target.rating, 0, 9, 40, 99);
-      let random = (Math.random() *8) + 2;
-      let randomWrSkill = Math.random() * wrSkill;
-      let wrYardage = wrSkill + (Math.random() * scaledQbPass) - random + randomWrSkill;
-      let yardsAfterCatch = scaleBetween(target.speed, 0, 5, 60, 99);
-      if (yardsAfterCatch < 0) {
-        yardsAfterCatch = 0;
-      }
-      let tackler;
-      let passSliderModifier = scaleBetween(passSlider,-3,3,0,10);
-      // console.log(`passslidermod: ${passSliderModifier}`);
-      yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier + passSliderModifier);
-      if (yardsGained > 12) {
-        tackler = this.selectDBTackler(def, dbsOnField);
-      }
-      else {
-        //lower lb tackles, raise db tackles
-        if (Math.random() * 100 > 65) {
-          tackler = this.selectLBTackler(def, lbsOnField);
+    if (!sacked) {
+      let scaledQbAwareness = scaleBetween(qb.awareness, 0, 15, 40, 99);
+      let scaledQbPass = scaleBetween(qb.pass, 0, 15, 40, 99);
+      //check for sack
+      let target = this.selectReciever(off);
+      let defender = this.selectDBTackler(def, dbsOnField);
+      let speedVsSpeed = (target.speed - defender.speed) / 2;
+      let scaledCatch = scaleBetween(target.catch, 0, 10, 40, 99);
+      let scaledDefenderAwareness = scaleBetween(defender.awareness, 0, 10, 40, 99);
+      let completionPercentage = qbCompletionSlider + scaledQbAwareness + scaledQbPass + speedVsSpeed + scaledCatch - scaledDefenderAwareness + lineInteraction - defensePassPercentageMod;
+      qb.attempts++;
+      if (Math.random() * 100 < completionPercentage) {
+        //completion
+        qb.completions++;
+        target.receptions++;
+        let wrSkill = scaleBetween(target.rating, 0, 9, 40, 99);
+        let random = (Math.random() * 8) + 2;
+        let randomWrSkill = Math.random() * wrSkill;
+        let wrYardage = wrSkill + (Math.random() * scaledQbPass) - random + randomWrSkill;
+        let yardsAfterCatch = scaleBetween(target.speed, 0, 5, 60, 99);
+        if (yardsAfterCatch < 0) {
+          yardsAfterCatch = 0;
         }
-        else {
+        let tackler;
+        let passSliderModifier = scaleBetween(passSlider, -3, 3, 0, 10);
+        // console.log(`passslidermod: ${passSliderModifier}`);
+        yardsGained = Math.round(wrYardage + yardsAfterCatch + yardModifier + passSliderModifier);
+        if (yardsGained > 12) {
           tackler = this.selectDBTackler(def, dbsOnField);
         }
-      }
-      qb.yards += yardsGained;
-      off.seasonPassYards += yardsGained;
-      target.yards += yardsGained;
-      tackler.tackles++;
-      if (this.checkForTouchDown(yardsGained)) {
-        qb.touchdowns++;
-        target.touchdowns++;
-      }
-      spotlightPlayer = qb;
-      result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
-      timeRemoved = (Math.floor(Math.random()*10))+30;
-    timeRemoved -= off.offTempo;
+        else {
+          //lower lb tackles, raise db tackles
+          if (Math.random() * 100 > 65) {
+            tackler = this.selectLBTackler(def, lbsOnField);
+          }
+          else {
+            tackler = this.selectDBTackler(def, dbsOnField);
+          }
+        }
+        qb.yards += yardsGained;
+        off.seasonPassYards += yardsGained;
+        target.yards += yardsGained;
+        tackler.tackles++;
+        if (this.checkForTouchDown(yardsGained)) {
+          qb.touchdowns++;
+          target.touchdowns++;
+        }
+        spotlightPlayer = qb;
+        result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
+        timeRemoved = (Math.floor(Math.random() * 10)) + 30;
+        timeRemoved -= off.offTempo;
 
 
+      }
+      else {
+        //incomplete check for int
+        spotlightPlayer = qb;
+        result = " throws an incomplete pass intended for " + target.name;
+        //linebacker ints
+        if (Math.random() * 100 > 70) {
+          defender = this.selectLBTackler(def, lbsOnField);
+        }
+        let defenderInt = scaleBetween(defender.catch, 0, 40, 40, 99);
+        let qbDecisionMaking = scaleBetween(qb.awareness, 0, 10, 40, 99);
+        //mess with
+        let intPercentage = (Math.random() * defenderInt) - (Math.random() * qbDecisionMaking);
+        // console.log(intPercentage);
+        if (intPercentage > Math.random() * 100) {
+          //int
+          defender.interceptions++;
+          qb.interceptions++;
+          let yardsReturned = Math.round(Math.random() * 15);
+          this.inPossesion = def;
+          this.yardMarker = (100 - this.yardMarker) + yardsReturned;
+          this.down = 1;
+          this.yardsToFirst = 10;
+          spotlightPlayer = defender;
+          result = " intercepts  " + qb.name;
+          timeRemoved = (Math.floor(Math.random() * 15)) + 15;
+
+        }
+        yardsGained = 0;
+        timeRemoved = (Math.floor(Math.random() * 5)) + 5;
+
+      }
     }
-    else {
-      //incomplete check for int
-      spotlightPlayer = qb;
-      result = " throws an incomplete pass intended for " + target.name;
-      //linebacker ints
-      if(Math.random()*100 > 70){
-        defender = this.selectLBTackler(def, lbsOnField);
-      }
-      let defenderInt = scaleBetween(defender.catch, 0, 40, 40, 99);
-      let qbDecisionMaking = scaleBetween(qb.awareness, 0, 10, 40, 99);
-      //mess with
-      let intPercentage = (Math.random() * defenderInt) - (Math.random() * qbDecisionMaking);
-      // console.log(intPercentage);
-      if (intPercentage > Math.random() * 100) {
-        //int
-        defender.interceptions++;
-        qb.interceptions++;
-        let yardsReturned = Math.round(Math.random() * 15);
-        this.inPossesion = def;
-        this.yardMarker = (100 - this.yardMarker) + yardsReturned;
-        this.down = 1;
-        this.yardsToFirst = 10;
-        spotlightPlayer = defender;
-        result = " intercepts  " + qb.name;
-      timeRemoved = (Math.floor(Math.random()*15))+15;
-        
-      }
-      yardsGained = 0;
-      timeRemoved = (Math.floor(Math.random()*5))+5;
-
-    }
-  }
     return { yardsGained, spotlightPlayer, result, timeRemoved };
   }
 
   checkForSack(lineInteraction, sacked, def, dlOnField, lbsOnField, dbsOnField, qb, spotlightPlayer, result, yardsGained, off) {
     //increased sack percentage
-    let sackPerc = (Math.random() * lineInteraction)+7;
+    let sackPerc = (Math.random() * lineInteraction) + 7;
     let timeRemoved = 0;
     // console.log(sackPerc);
     if (sackPerc >= Math.random() * 100) {
@@ -2456,13 +2475,13 @@ export class Game {
       sacked = true;
       let sacker;
       //80% chance linemen sack
-      if(Math.random()*100 < 80){
+      if (Math.random() * 100 < 80) {
         sacker = this.selectDLTackler(def, dlOnField);
-      }else{
+      } else {
         //70% chance lb sack
-        if(Math.random()*100 < 70){
+        if (Math.random() * 100 < 70) {
           sacker = this.selectLBTackler(def, lbsOnField);
-        }else{
+        } else {
           sacker = this.selectDBTackler(def, dbsOnField);
         }
       }
@@ -2474,8 +2493,8 @@ export class Game {
       spotlightPlayer = sacker;
       result = ` sacks ${qb.name} for a loss of ${yardsLoss} yards`;
       yardsGained = yardsLoss * -1;
-      timeRemoved = (Math.floor(Math.random()*15))+30;
-    timeRemoved -= off.offTempo;
+      timeRemoved = (Math.floor(Math.random() * 15)) + 30;
+      timeRemoved -= off.offTempo;
 
 
     }
@@ -2540,24 +2559,24 @@ export class Game {
   jumpBall() {
 
     //set playbooks
-    home.passPlays=[];
-    away.passPlays=[];
-    home.runPlays=[];
-    away.runPlays=[];
-    for(let i=0; i<playbookData.length; i++){
-      if(home.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass' ){
+    home.passPlays = [];
+    away.passPlays = [];
+    home.runPlays = [];
+    away.runPlays = [];
+    for (let i = 0; i < playbookData.length; i++) {
+      if (home.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass') {
         home.passPlays.push(playbookData[i]);
       }
-      if(home.offenseType === playbookData[i].playbook && playbookData[i].type === 'run' ){
+      if (home.offenseType === playbookData[i].playbook && playbookData[i].type === 'run') {
         home.runPlays.push(playbookData[i]);
       }
-      if(away.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass' ){
+      if (away.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass') {
         away.passPlays.push(playbookData[i]);
       }
-      if(away.offenseType === playbookData[i].playbook && playbookData[i].type === 'run' ){
+      if (away.offenseType === playbookData[i].playbook && playbookData[i].type === 'run') {
         away.runPlays.push(playbookData[i]);
       }
-     
+
     }
 
     if (Math.floor(Math.random() * 2) > 0) {
@@ -2659,21 +2678,21 @@ export class Game {
 
     for (let i = 0; i < home.roster.length; i++) {
       home.roster[i].statsHistory.push({
-        completions: home.roster[i].completions ,
-        attempts: home.roster[i].attempts ,
-        touchdowns: home.roster[i].touchdowns ,
-        yards: home.roster[i].yards ,
-        rushYards: home.roster[i].rushYards ,
-        rushAttempts: home.roster[i].rushAttempts ,
-        rushTouchdowns: home.roster[i].rushTouchdowns ,
-        kicksAttempted: home.roster[i].kicksAttempted ,
-        kicksMade: home.roster[i].kicksMade ,
-        receptions: home.roster[i].receptions ,
-        tackles: home.roster[i].tackles ,
-        interceptions: home.roster[i].interceptions ,
-        fumbles: home.roster[i].fumbles ,
-        fumblesRecovered: home.roster[i].fumblesRecovered ,
-        sacks: home.roster[i].sacks 
+        completions: home.roster[i].completions,
+        attempts: home.roster[i].attempts,
+        touchdowns: home.roster[i].touchdowns,
+        yards: home.roster[i].yards,
+        rushYards: home.roster[i].rushYards,
+        rushAttempts: home.roster[i].rushAttempts,
+        rushTouchdowns: home.roster[i].rushTouchdowns,
+        kicksAttempted: home.roster[i].kicksAttempted,
+        kicksMade: home.roster[i].kicksMade,
+        receptions: home.roster[i].receptions,
+        tackles: home.roster[i].tackles,
+        interceptions: home.roster[i].interceptions,
+        fumbles: home.roster[i].fumbles,
+        fumblesRecovered: home.roster[i].fumblesRecovered,
+        sacks: home.roster[i].sacks
       });
       home.roster[i].seasonCompletions += home.roster[i].completions,
         home.roster[i].seasonAttempts += home.roster[i].attempts,
@@ -2730,7 +2749,7 @@ export class Game {
         away.roster[i].seasonPunts += away.roster[i].punts,
         away.roster[i].seasonPuntYards += away.roster[i].puntYards
     }
-  
+
   }
 }
 
@@ -2771,7 +2790,7 @@ export class Season {
         teams[i].roster[j].punts = 0;
         teams[i].roster[j].puntYards = 0;
 
-    
+
         teams[i].roster[j].seasonCompletions = 0;
         teams[i].roster[j].seasonAttempts = 0;
         teams[i].roster[j].seasonTouchdowns = 0;
@@ -2813,7 +2832,7 @@ export class Season {
       availableFreeAgents.roster[i].punts = 0;
       availableFreeAgents.roster[i].puntYards = 0;
 
-  
+
       availableFreeAgents.roster[i].seasonCompletions = 0;
       availableFreeAgents.roster[i].seasonAttempts = 0;
       availableFreeAgents.roster[i].seasonTouchdowns = 0;
@@ -2848,16 +2867,16 @@ export class Season {
 
       for (let j = 0; j < teams.length; j++) {
         if (teams[j].schedule[i] == null) {
-            if(j+1 > teams.length-1){
-              //push to nonconf
-              nonConfGames.push(teams[j]);
-            }else{
+          if (j + 1 > teams.length - 1) {
+            //push to nonconf
+            nonConfGames.push(teams[j]);
+          } else {
 
-            if(teams[j].division != teams[j+1].division || (teams[j].schedule.includes(teams[j+1]))){
+            if (teams[j].division != teams[j + 1].division || (teams[j].schedule.includes(teams[j + 1]))) {
               nonConfGames.push(teams[j]);
-              nonConfGames.push(teams[j+1]);
+              nonConfGames.push(teams[j + 1]);
               j++;
-            }else{
+            } else {
               teams[j].schedule[i] = teams[j + 1];
               teams[j + 1].schedule[i] = teams[j];
             }
@@ -2869,24 +2888,26 @@ export class Season {
 
       for (let j = 0; j < nonConfGames.length; j++) {
         if (nonConfGames[j].schedule[i] == null) {
-          if(j+1 > nonConfGames.length-1){
+          if (j + 1 > nonConfGames.length - 1) {
             //bye week
             nonConfGames[j].schedule[i] = nonConfGames[j];
-          }else{
+          } else {
             nonConfGames[j].schedule[i] = nonConfGames[j + 1];
             nonConfGames[j + 1].schedule[i] = nonConfGames[j];
           }
-          }
         }
       }
+    }
 
-    for(let i=0; i<teams.length; i++){
+    for (let i = 0; i < teams.length; i++) {
       teams[i].generateScheduleRating();
     }
 
 
     //setup rankings
     sortStandings();
+    //set power rankings
+    setPowerRankings();
   }
 
   manualDay() {
@@ -2917,21 +2938,21 @@ export class Season {
         home.wins++;
         for (let i = 0; i < home.roster.length; i++) {
           home.roster[i].statsHistory.push({
-            completions:0 ,
-        attempts: 0 ,
-        touchdowns: 0 ,
-        yards: 0 ,
-        rushYards: 0 ,
-        rushAttempts: 0 ,
-        rushTouchdowns: 0 ,
-        kicksAttempted: 0 ,
-        kicksMade: 0 ,
-        receptions: 0 ,
-        tackles: 0,
-        interceptions: 0 ,
-        fumbles: 0 ,
-        fumblesRecovered: 0 ,
-        sacks: 0 
+            completions: 0,
+            attempts: 0,
+            touchdowns: 0,
+            yards: 0,
+            rushYards: 0,
+            rushAttempts: 0,
+            rushTouchdowns: 0,
+            kicksAttempted: 0,
+            kicksMade: 0,
+            receptions: 0,
+            tackles: 0,
+            interceptions: 0,
+            fumbles: 0,
+            fumblesRecovered: 0,
+            sacks: 0
           });
         }
       } else {
@@ -2997,21 +3018,21 @@ export class Season {
           home.wins++;
           for (let i = 0; i < home.roster.length; i++) {
             home.roster[i].statsHistory.push({
-              completions:0 ,
-        attempts: 0 ,
-        touchdowns: 0 ,
-        yards: 0 ,
-        rushYards: 0 ,
-        rushAttempts: 0 ,
-        rushTouchdowns: 0 ,
-        kicksAttempted: 0 ,
-        kicksMade: 0 ,
-        receptions: 0 ,
-        tackles: 0,
-        interceptions: 0 ,
-        fumbles: 0 ,
-        fumblesRecovered: 0 ,
-        sacks: 0 
+              completions: 0,
+              attempts: 0,
+              touchdowns: 0,
+              yards: 0,
+              rushYards: 0,
+              rushAttempts: 0,
+              rushTouchdowns: 0,
+              kicksAttempted: 0,
+              kicksMade: 0,
+              receptions: 0,
+              tackles: 0,
+              interceptions: 0,
+              fumbles: 0,
+              fumblesRecovered: 0,
+              sacks: 0
             });
           }
         } else {
@@ -3069,7 +3090,7 @@ export class Franchise {
   }
 
   startPlayoffs() {
-    if(collegeMode){
+    if (collegeMode) {
       this.bowlGames = bowlGameSetup();
     }
     //check glitch in hockey/basketball
@@ -3121,7 +3142,7 @@ export class Franchise {
   }
 
   sim20() {
-    for (let i = 0; i <= 5; i++) {
+    for (let i = 0; i <= 20; i++) {
       this.season.simToEnd();
       sortStandings();
       this.offSeason = true;
@@ -3140,13 +3161,21 @@ export class Franchise {
       }
 
       this.freeAgencySetup();
-      this.freeAgency();
+      if(!collegeMode){
+        this.freeAgency();
+      }
       setSalaryExpectations(availableFreeAgents);
       this.signing();
       //roster size limit
       //temporary
 
       this.releasePlayers();
+
+      this.trainingPoints();
+      
+      if (collegeMode) {
+        this.collegeBustOrStar();
+      }
 
       //new season
       this.advanceToNextYear();
@@ -3218,11 +3247,104 @@ export class Franchise {
       this.releasePlayers();
 
       this.trainingPoints();
+
+      if (collegeMode) {
+        this.collegeBustOrStar();
+      }
     }
 
     if (this.stage === "advance") {
       //new season
       this.advanceToNextYear();
+    }
+  }
+
+  collegeBustOrStar() {
+    for (let i = 0; i < teams.length; i++) {
+      for (let j = 0; j < teams[i].roster.length; j++) {
+        let ply = teams[i].roster[j];
+        if (ply.age === 18 && !ply.redshirt) {
+
+          let bust = scaleBetween(ply.rating, 0, 10, 60, 87) >= Math.random() * 100;
+          let star = scaleBetween(ply.rating, 10, 0, 60, 87) >= Math.random() * 100;
+          let diff = 0;
+          if (bust) {
+            diff = Math.round(Math.random() * 10) - 10;
+            // console.log(`BUST ${teams[i].name} + ${ply.rating} +${ply.positionString} ${ply.name} ${diff}`);
+          }
+          if (star) {
+            diff = Math.round(Math.random() * 10) +2 ;
+            // console.log(`STAR ${teams[i].name} + ${ply.rating} +${ply.positionString} ${ply.name} ${diff}`);
+          }
+
+          while (diff != 0) {
+            if (ply.rating >=87) {
+              break;
+            }
+            if (ply.rating <=61) {
+              break;
+            }
+            if (ply.awareness <= 40) {
+              break;
+            }
+            let growth = 0;
+            if(diff > 0){
+              growth = 1;
+            }else{
+              growth = -1;
+            }
+
+
+            
+            ply.awareness+= growth;
+            if (ply.position === POS_QB) {
+              ply.pass+= growth;
+        
+            }
+        
+            if (ply.position >= POS_HB && ply.position <= POS_TE) {
+              ply.rush+= growth;
+              // ply.speed += growth;
+              ply.catch+= growth;
+              ply.block+= growth;
+            }
+        
+            if (ply.position >= POS_LT && ply.position <= POS_RT) {
+              ply.block+= growth;
+            }
+        
+            if (ply.position >= POS_LE && ply.position <= POS_DT) {
+              ply.breakBlock+= growth;
+              ply.tackle+= growth;
+            }
+        
+            if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+              ply.breakBlock+= growth;
+              ply.tackle+= growth;
+              ply.catch+= growth;
+              // ply.speed += growth;
+            }
+        
+            if (ply.position >= POS_K && ply.position <= POS_P) {
+              ply.kick+= growth;
+            }
+            ply.calculateRating();
+            
+            if(diff > 0){
+              diff --;
+            }else{
+              diff ++;
+            }
+
+          }
+        
+        }
+
+      }
+
+
+
+
     }
   }
 
@@ -3239,10 +3361,10 @@ export class Franchise {
     for (let i = 0; i < teams.length; i++) {
       for (let j = 0; j < teams[i].roster.length; j++) {
         let ply = teams[i].roster[j];
-        if(ply.redshirted){
+        if (ply.redshirted) {
           ply.redshirted = false;
           ply.redshirt = true;
-        }else{
+        } else {
           ply.age++;
         }
 
@@ -3257,230 +3379,235 @@ export class Franchise {
 
         //to show growth
         ply.passOld = ply.pass;
-    ply.awarenessOld = ply.awareness;
-    ply.rushOld = ply.rush;
-    ply.speedOld = ply.speed;
-    ply.catchOld = ply.catch;
-    ply.blockOld = ply.block;
-    ply.breakBlockOld = ply.breakBlock;
-    ply.tackleOld = ply.tackle;
-    ply.kickOld = ply.kick;
-    
+        ply.awarenessOld = ply.awareness;
+        ply.rushOld = ply.rush;
+        ply.speedOld = ply.speed;
+        ply.catchOld = ply.catch;
+        ply.blockOld = ply.block;
+        ply.breakBlockOld = ply.breakBlock;
+        ply.tackleOld = ply.tackle;
+        ply.kickOld = ply.kick;
 
-          //slight boost for really young players
-          if (ply.age <= 23) {
 
-            //testing scaled growth
-            ply.awareness += Math.round(Math.random() * 3)+1;
-            if(ply.position === POS_QB){
-              ply.pass += Math.round(Math.random() * 1);
+        //slight boost for really young players
+        if (ply.age <= 23) {
 
-            }
+          //testing scaled growth
+          ply.awareness += Math.round(Math.random()*((scaleBetween(ply.awareness, 1,6, 99, 40))));
+          if (ply.position === POS_QB) {
+            ply.pass += Math.round(Math.random() * 1);
 
-            if(ply.position >= POS_HB && ply.position <= POS_TE){
-              ply.rush += Math.round(Math.random() * 1);
-              ply.speed += Math.round(Math.random() * 1);
-              ply.catch += Math.round(Math.random() * 1);
-              ply.block += Math.round(Math.random() * 1);
-            }
-
-            if(ply.position >= POS_LT && ply.position <= POS_RT){
-              ply.block += Math.round(Math.random() * 1);
-            }
-
-            if(ply.position >= POS_LE && ply.position <= POS_RE){
-              ply.breakBlock += Math.round(Math.random() * 1);
-              ply.tackle += Math.round(Math.random() * 1);
-            }
-
-            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-              ply.breakBlock += Math.round(Math.random() * 1);
-              ply.tackle += Math.round(Math.random() * 1);
-              ply.catch += Math.round(Math.random() * 1);
-              ply.speed += Math.round(Math.random() * 1);
-            }
-
-            if(ply.position >= POS_K && ply.position <= POS_P){
-              ply.kick += Math.round(Math.random() * 1);
-            }
           }
 
-          if (ply.age <= 26) {
-            ply.awareness += Math.round(Math.random() * 4) -1;
-            if(ply.position === POS_QB){
-              ply.pass += Math.round(Math.random() * 4) -1;
-
-            }
-
-            if(ply.position >= POS_HB && ply.position <= POS_TE){
-              ply.rush += Math.round(Math.random() * 4) -1;
-              ply.speed += Math.round(Math.random() * 4) -1;
-              ply.catch += Math.round(Math.random() * 4) -1;
-              ply.block += Math.round(Math.random() * 4) -1;
-            }
-
-            if(ply.position >= POS_LT && ply.position <= POS_RT){
-              ply.block += Math.round(Math.random() * 4) -1;
-            }
-
-            if(ply.position >= POS_LE && ply.position <= POS_RE){
-              ply.breakBlock += Math.round(Math.random() * 4) -1;
-              ply.tackle += Math.round(Math.random() * 4) -1;
-            }
-
-            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-              ply.breakBlock += Math.round(Math.random() * 4) -1;
-              ply.tackle += Math.round(Math.random() * 4) -1;
-              ply.catch += Math.round(Math.random() * 4) -1;
-              ply.speed += Math.round(Math.random() * 4) -1;
-            }
-
-            if(ply.position >= POS_K && ply.position <= POS_P){
-              ply.kick += Math.round(Math.random() * 4) -1;
-            }
-          } else if (ply.age < 30) {
-            ply.awareness += Math.round(Math.random()  *2);
-            if(ply.position === POS_QB){
-              ply.pass += Math.round(Math.random()  *2)-2;
-
-            }
-
-            if(ply.position >= POS_HB && ply.position <= POS_TE){
-              ply.rush += Math.round(Math.random() * 2)-2;
-              ply.speed += Math.round(Math.random() * 2)-2;
-              ply.catch += Math.round(Math.random() * 2)-2;
-              ply.block += Math.round(Math.random() * 2)-2;
-            }
-
-            if(ply.position >= POS_LT && ply.position <= POS_RT){
-              ply.block += Math.round(Math.random() * 2)-2;
-            }
-
-            if(ply.position >= POS_LE && ply.position <= POS_RE){
-              ply.breakBlock += Math.round(Math.random() * 2)-2;
-              ply.tackle += Math.round(Math.random() * 2)-2;
-            }
-
-            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-              ply.breakBlock += Math.round(Math.random() * 2)-2;
-              ply.tackle += Math.round(Math.random() * 2)-2;
-              ply.catch += Math.round(Math.random() * 2)-2;
-              ply.speed += Math.round(Math.random() * 2)-2;
-            }
-
-            if(ply.position >= POS_K && ply.position <= POS_P){
-              ply.kick += Math.round(Math.random() * 2)-2;
-            }
-          } else if (ply.age < 35) {
-            ply.awareness += Math.round(Math.random()  *3);
-            if(ply.position === POS_QB){
-              ply.pass += Math.round(Math.random() * 3) -3;
-
-            }
-
-            if(ply.position >= POS_HB && ply.position <= POS_TE){
-              ply.rush += Math.round(Math.random() * 3) -3;
-              ply.speed += Math.round(Math.random() * 3) -3;
-              ply.catch += Math.round(Math.random() * 3) -3;
-              ply.block += Math.round(Math.random() * 3) -3;
-            }
-
-            if(ply.position >= POS_LT && ply.position <= POS_RT){
-              ply.block += Math.round(Math.random() * 3) -3;
-            }
-
-            if(ply.position >= POS_LE && ply.position <= POS_RE){
-              ply.breakBlock += Math.round(Math.random() * 3) -3;
-              ply.tackle += Math.round(Math.random() * 3) -3;
-            }
-
-            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-              ply.breakBlock += Math.round(Math.random() * 3) -3;
-              ply.tackle += Math.round(Math.random() * 3) -3;
-              ply.catch += Math.round(Math.random() * 3) -3;
-              ply.speed += Math.round(Math.random() * 3) -3;
-            }
-
-            if(ply.position >= POS_K && ply.position <= POS_P){
-              ply.kick += Math.round(Math.random() * 3) -3;
-            }
-          } else {
-            ply.awareness -= Math.round(Math.random()  *5);
-            if(ply.position === POS_QB){
-              ply.pass -= Math.round(Math.random() *5);
-
-            }
-
-            if(ply.position >= POS_HB && ply.position <= POS_TE){
-              ply.rush -= Math.round(Math.random() *5);
-              ply.speed -= Math.round(Math.random() *5);
-              ply.catch -= Math.round(Math.random() *5);
-              ply.block -= Math.round(Math.random() *5);
-            }
-
-            if(ply.position >= POS_LT && ply.position <= POS_RT){
-              ply.block -= Math.round(Math.random() *5);
-            }
-
-            if(ply.position >= POS_LE && ply.position <= POS_RE){
-              ply.breakBlock -= Math.round(Math.random() *5);
-              ply.tackle -= Math.round(Math.random() *5);
-            }
-
-            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-              ply.breakBlock -= Math.round(Math.random() *5);
-              ply.tackle -= Math.round(Math.random() *5);
-              ply.catch -= Math.round(Math.random() *5);
-              ply.speed -= Math.round(Math.random() *5);
-            }
-
-            if(ply.position >= POS_K && ply.position <= POS_P){
-              ply.kick -= Math.round(Math.random() *5);
-            }
+          if (ply.position >= POS_HB && ply.position <= POS_TE) {
+            ply.rush += Math.round(Math.random() * 1);
+            ply.speed += Math.round(Math.random() * 1);
+            ply.catch += Math.round(Math.random() * 1);
+            ply.block += Math.round(Math.random() * 1);
           }
 
-          if (Math.random() * 500 >= 499) {
-            //BREAKOUT PLYER
-            // console.log(ply.name);
-            // console.log(ply.rating);
-            // console.log(ply.teamName);
-            ply.awareness += Math.round(Math.random() * 10);
-            if(ply.position === POS_QB){
-              ply.pass += Math.round(Math.random() * 10);
-
-            }
-
-            if(ply.position >= POS_HB && ply.position <= POS_TE){
-              ply.rush += Math.round(Math.random() * 10);
-              ply.speed += Math.round(Math.random() * 10);
-              ply.catch += Math.round(Math.random() * 10);
-              ply.block += Math.round(Math.random() * 10);
-            }
-
-            if(ply.position >= POS_LT && ply.position <= POS_RT){
-              ply.block += Math.round(Math.random() * 10);
-            }
-
-            if(ply.position >= POS_LE && ply.position <= POS_RE){
-              ply.breakBlock += Math.round(Math.random() * 10);
-              ply.tackle += Math.round(Math.random() * 10);
-            }
-
-            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-              ply.breakBlock += Math.round(Math.random() * 10);
-              ply.tackle += Math.round(Math.random() * 10);
-              ply.catch += Math.round(Math.random() * 10);
-              ply.speed += Math.round(Math.random() * 10);
-            }
-
-            if(ply.position >= POS_K && ply.position <= POS_P){
-              ply.kick += Math.round(Math.random() * 10);
-            }
+          if (ply.position >= POS_LT && ply.position <= POS_RT) {
+            ply.block += Math.round(Math.random() * 1);
           }
-          ply.calculateRating();
+
+          if (ply.position >= POS_LE && ply.position <= POS_DT) {
+            ply.breakBlock += Math.round(Math.random() * 1);
+            ply.tackle += Math.round(Math.random() * 1);
+          }
+
+          if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+            ply.breakBlock += Math.round(Math.random() * 1);
+            ply.tackle += Math.round(Math.random() * 1);
+            ply.catch += Math.round(Math.random() * 1);
+            ply.speed += Math.round(Math.random() * 1);
+          }
+
+          if (ply.position >= POS_K && ply.position <= POS_P) {
+            ply.kick += Math.round(Math.random() * 1);
+          }
         }
 
+        if (ply.age <= 26) {
+          ply.awareness += Math.round(Math.random() * 4) - 1;
+          if (ply.position === POS_QB) {
+            ply.pass += Math.round(Math.random() * 4) - 1;
+
+          }
+
+          if (ply.position >= POS_HB && ply.position <= POS_TE) {
+            ply.rush += Math.round(Math.random() * 4) - 1;
+            ply.speed += Math.round(Math.random() * 4) - 1;
+            ply.catch += Math.round(Math.random() * 4) - 1;
+            ply.block += Math.round(Math.random() * 4) - 1;
+          }
+
+          if (ply.position >= POS_LT && ply.position <= POS_RT) {
+            ply.block += Math.round(Math.random() * 4) - 1;
+          }
+
+          if (ply.position >= POS_LE && ply.position <= POS_DT) {
+            ply.breakBlock += Math.round(Math.random() * 4) - 1;
+            ply.tackle += Math.round(Math.random() * 4) - 1;
+          }
+
+          if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+            ply.breakBlock += Math.round(Math.random() * 4) - 1;
+            ply.tackle += Math.round(Math.random() * 4) - 1;
+            ply.catch += Math.round(Math.random() * 4) - 1;
+            ply.speed += Math.round(Math.random() * 4) - 1;
+          }
+
+          if (ply.position >= POS_K && ply.position <= POS_P) {
+            ply.kick += Math.round(Math.random() * 4) - 1;
+          }
+        } else if (ply.age < 30) {
+          ply.awareness += Math.round(Math.random() * 2);
+          if (ply.position === POS_QB) {
+            ply.pass += Math.round(Math.random() * 2) - 2;
+
+          }
+
+          if (ply.position >= POS_HB && ply.position <= POS_TE) {
+            ply.rush += Math.round(Math.random() * 2) - 2;
+            ply.speed += Math.round(Math.random() * 2) - 2;
+            ply.catch += Math.round(Math.random() * 2) - 2;
+            ply.block += Math.round(Math.random() * 2) - 2;
+          }
+
+          if (ply.position >= POS_LT && ply.position <= POS_RT) {
+            ply.block += Math.round(Math.random() * 2) - 2;
+          }
+
+          if (ply.position >= POS_LE && ply.position <= POS_DT) {
+            ply.breakBlock += Math.round(Math.random() * 2) - 2;
+            ply.tackle += Math.round(Math.random() * 2) - 2;
+          }
+
+          if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+            ply.breakBlock += Math.round(Math.random() * 2) - 2;
+            ply.tackle += Math.round(Math.random() * 2) - 2;
+            ply.catch += Math.round(Math.random() * 2) - 2;
+            ply.speed += Math.round(Math.random() * 2) - 2;
+          }
+
+          if (ply.position >= POS_K && ply.position <= POS_P) {
+            ply.kick += Math.round(Math.random() * 2) - 2;
+          }
+        } else if (ply.age < 35) {
+          ply.awareness += Math.round(Math.random() * 3);
+          if (ply.position === POS_QB) {
+            ply.pass += Math.round(Math.random() * 3) - 3;
+
+          }
+
+          if (ply.position >= POS_HB && ply.position <= POS_TE) {
+            ply.rush += Math.round(Math.random() * 3) - 3;
+            ply.speed += Math.round(Math.random() * 3) - 3;
+            ply.catch += Math.round(Math.random() * 3) - 3;
+            ply.block += Math.round(Math.random() * 3) - 3;
+          }
+
+          if (ply.position >= POS_LT && ply.position <= POS_RT) {
+            ply.block += Math.round(Math.random() * 3) - 3;
+          }
+
+          if (ply.position >= POS_LE && ply.position <= POS_DT) {
+            ply.breakBlock += Math.round(Math.random() * 3) - 3;
+            ply.tackle += Math.round(Math.random() * 3) - 3;
+          }
+
+          if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+            ply.breakBlock += Math.round(Math.random() * 3) - 3;
+            ply.tackle += Math.round(Math.random() * 3) - 3;
+            ply.catch += Math.round(Math.random() * 3) - 3;
+            ply.speed += Math.round(Math.random() * 3) - 3;
+          }
+
+          if (ply.position >= POS_K && ply.position <= POS_P) {
+            ply.kick += Math.round(Math.random() * 3) - 3;
+          }
+        } else {
+          ply.awareness -= Math.round(Math.random() * 5);
+          if (ply.position === POS_QB) {
+            ply.pass -= Math.round(Math.random() * 5);
+
+          }
+
+          if (ply.position >= POS_HB && ply.position <= POS_TE) {
+            ply.rush -= Math.round(Math.random() * 5);
+            ply.speed -= Math.round(Math.random() * 5);
+            ply.catch -= Math.round(Math.random() * 5);
+            ply.block -= Math.round(Math.random() * 5);
+          }
+
+          if (ply.position >= POS_LT && ply.position <= POS_RT) {
+            ply.block -= Math.round(Math.random() * 5);
+          }
+
+          if (ply.position >= POS_LE && ply.position <= POS_DT) {
+            ply.breakBlock -= Math.round(Math.random() * 5);
+            ply.tackle -= Math.round(Math.random() * 5);
+          }
+
+          if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+            ply.breakBlock -= Math.round(Math.random() * 5);
+            ply.tackle -= Math.round(Math.random() * 5);
+            ply.catch -= Math.round(Math.random() * 5);
+            ply.speed -= Math.round(Math.random() * 5);
+          }
+
+          if (ply.position >= POS_K && ply.position <= POS_P) {
+            ply.kick -= Math.round(Math.random() * 5);
+          }
+        }
+
+        let breakout = scaleBetween(ply.rating,5,0,60,99) >= Math.random()*100;
+        
+        if (breakout) {
+          //BREAKOUT PLYER
+          // console.log(ply.name);
+          // console.log(ply.rating);
+          // console.log(ply.teamName);
+
+          // console.log(`${ply.name} ${ply.teamName}`);
+          let breakoutPts = scaleBetween(ply.rating,5,1,60,99) >= Math.random()*100;
+
+          ply.awareness += Math.round(Math.random() * 5) + breakoutPts;
+          if (ply.position === POS_QB) {
+            ply.pass += Math.round(Math.random() * 5) + breakoutPts;
+
+          }
+
+          if (ply.position >= POS_HB && ply.position <= POS_TE) {
+            ply.rush += Math.round(Math.random() * 5) + breakoutPts;
+            ply.catch += Math.round(Math.random() * 5) + breakoutPts;
+            ply.block += Math.round(Math.random() * 5) + breakoutPts;
+          }
+
+          if (ply.position >= POS_LT && ply.position <= POS_RT) {
+            ply.block += Math.round(Math.random() * 5) + breakoutPts;
+          }
+
+          if (ply.position >= POS_LE && ply.position <= POS_DT) {
+            ply.breakBlock += Math.round(Math.random() * 5) + breakoutPts;
+            ply.tackle += Math.round(Math.random() * 5) + breakoutPts;
+          }
+
+          if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+            ply.breakBlock += Math.round(Math.random() * 5) + breakoutPts;
+            ply.tackle += Math.round(Math.random() * 5) + breakoutPts;
+            ply.catch += Math.round(Math.random() * 5) + breakoutPts;
+          }
+
+          if (ply.position >= POS_K && ply.position <= POS_P) {
+            ply.kick += Math.round(Math.random() * 5) + breakoutPts;
+          }
+        }
+        ply.calculateRating();
+
       }
+
+    }
 
     for (let i = 0; i < availableFreeAgents.roster.length; i++) {
       let ply = availableFreeAgents.roster[i];
@@ -3498,38 +3625,38 @@ export class Franchise {
         data: history
       });
 
-      ply.awareness -= Math.round(Math.random()  *6);
-            if(ply.position === POS_QB){
-              ply.pass -= Math.round(Math.random() *6);
+      ply.awareness -= Math.round(Math.random() * 4)+3;
+      if (ply.position === POS_QB) {
+        ply.pass -= Math.round(Math.random() * 4)+3;
 
-            }
+      }
 
-            if(ply.position >= POS_HB && ply.position <= POS_TE){
-              ply.rush -= Math.round(Math.random() *6);
-              ply.speed -= Math.round(Math.random() *6);
-              ply.catch -= Math.round(Math.random() *6);
-              ply.block -= Math.round(Math.random() *6);
-            }
+      if (ply.position >= POS_HB && ply.position <= POS_TE) {
+        ply.rush -= Math.round(Math.random() * 4)+3;
+        ply.speed -= Math.round(Math.random() * 4)+3;
+        ply.catch -= Math.round(Math.random() * 4)+3;
+        ply.block -= Math.round(Math.random() * 4)+3;
+      }
 
-            if(ply.position >= POS_LT && ply.position <= POS_RT){
-              ply.block -= Math.round(Math.random() *6);
-            }
+      if (ply.position >= POS_LT && ply.position <= POS_RT) {
+        ply.block -= Math.round(Math.random() * 4)+3;
+      }
 
-            if(ply.position >= POS_LE && ply.position <= POS_RE){
-              ply.breakBlock -= Math.round(Math.random() *6);
-              ply.tackle -= Math.round(Math.random() *6);
-            }
+      if (ply.position >= POS_LE && ply.position <= POS_DT) {
+        ply.breakBlock -= Math.round(Math.random() * 4)+3;
+        ply.tackle -= Math.round(Math.random() * 4)+3;
+      }
 
-            if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-              ply.breakBlock -= Math.round(Math.random() *6);
-              ply.tackle -= Math.round(Math.random() *6);
-              ply.catch -= Math.round(Math.random() *6);
-              ply.speed -= Math.round(Math.random() *6);
-            }
+      if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+        ply.breakBlock -= Math.round(Math.random() * 4)+3;
+        ply.tackle -= Math.round(Math.random() * 4)+3;
+        ply.catch -= Math.round(Math.random() * 4)+3;
+        ply.speed -= Math.round(Math.random() * 4)+3;
+      }
 
-            if(ply.position >= POS_K && ply.position <= POS_P){
-              ply.kick -= Math.round(Math.random() *6);
-            }
+      if (ply.position >= POS_K && ply.position <= POS_P) {
+        ply.kick -= Math.round(Math.random() * 4)+3;
+      }
 
       ply.calculateRating();
     }
@@ -3563,282 +3690,297 @@ export class Franchise {
 
   signing() {
 
-    if(collegeMode){
-        this.recruiting()
+    if (collegeMode) {
+      this.recruiting()
 
-    }else{
-
-
+    } else {
 
 
-    for (let i = 0; i < teams.length; i++) {
-      teams[i].reorderLineup();
 
-      teams[i].salary = 0;
-    }
 
-    teams.sort(function (a, b) {
-      if (a.wins < b.wins) {
-        return 1;
+      for (let i = 0; i < teams.length; i++) {
+        teams[i].reorderLineup();
+
+        teams[i].salary = 0;
       }
-      if (a.wins > b.wins) {
-        return -1;
-      }
-      return 0;
-    });
 
-    availableFreeAgents.roster.sort(function (a, b) {
-      if (a.rating < b.rating) {
-        return 1;
-      }
-      if (a.rating > b.rating) {
-        return -1;
-      }
-      return 0;
-    });
-
-    let demKickas=0;
-    for(let i=0; i<availableFreeAgents.roster.length; i++){
-      if(availableFreeAgents.roster[i].position === POS_K){
-        demKickas++;
-      }
-    }
-
-    console.log(demKickas);
-
-
-    for (let i = 0; i < teams.length; i++) {
-      if (teams[i] === selectedTeam && !autoSign) {
-        console.log("autosign off");
-      } else {
-        for (let j = 0; j < availableFreeAgents.roster.length; j++) {
-          if (
-            teams[i].qbs.length < POS_QB_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_QB
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].rbs.length < POS_HB_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_HB
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].fbs.length < POS_FB_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_FB
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].wrs.length < POS_WR_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_WR
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].tes.length < POS_TE_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_TE
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].ol.length < POS_OL_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position >= POS_LT && availableFreeAgents.roster[j].position <= POS_RT
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].dl.length < POS_DL_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position >= POS_LE && availableFreeAgents.roster[j].position <= POS_RE
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-          
-          if (
-            teams[i].lbs.length < POS_LB_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position >= POS_LOLB && availableFreeAgents.roster[j].position <= POS_ROLB
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].dbs.length < POS_DB_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position >= POS_CB && availableFreeAgents.roster[j].position <= POS_SS
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
-
-          if (
-            teams[i].ks.length < POS_K_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_K
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-            }
-          }
-
-          if (
-            teams[i].ps.length < POS_P_REQUIREMENTS &&
-            availableFreeAgents.roster[j].position === POS_P
-          ) {
-            if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-              availableFreeAgents.roster[j].teamName = teams[i].name;
-              availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-              availableFreeAgents.roster[j].years =
-                Math.floor(Math.random() * 4) + 1;
-              teams[i].roster.push(availableFreeAgents.roster[j]);
-              teams[i].salary += availableFreeAgents.roster[j].salary;
-              availableFreeAgents.roster.splice(j, 1);
-              teams[i].manageFootballLineup();
-
-            }
-          }
+      teams.sort(function (a, b) {
+        if (a.wins < b.wins) {
+          return 1;
         }
+        if (a.wins > b.wins) {
+          return -1;
+        }
+        return 0;
+      });
 
-        while (teams[i].roster.length < rosterSize) {
-          if (teams[i] != selectedTeam) {
-            let index = Math.floor(Math.random() * 20);
-            if (index >= availableFreeAgents.roster.length) {
-              index = 0;
+      availableFreeAgents.roster.sort(function (a, b) {
+        if (a.rating < b.rating) {
+          return 1;
+        }
+        if (a.rating > b.rating) {
+          return -1;
+        }
+        return 0;
+      });
+
+      // let demKickas = 0;
+      // for (let i = 0; i < availableFreeAgents.roster.length; i++) {
+      //   if (availableFreeAgents.roster[i].position === POS_K) {
+      //     demKickas++;
+      //   }
+      // }
+
+      // console.log(demKickas);
+
+
+      for (let i = 0; i < teams.length; i++) {
+        if (teams[i] === selectedTeam && !autoSign) {
+          console.log("autosign off");
+        } else {
+          for (let j = 0; j < availableFreeAgents.roster.length; j++) {
+            if (
+              teams[i].qbs.length < POS_QB_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position === POS_QB
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
             }
-            let signing = availableFreeAgents.roster[index];
-            let interested = true;
-            if(signing.rating>=84){
-              interested = playerWouldStart(signing, teams[i]);
+
+            if (
+              teams[i].rbs.length < POS_HB_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position === POS_HB
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
             }
 
-     
-            if(signing.position === POS_K && teams[i].ks.length >= POS_K_MAX){
+            if (
+              teams[i].fbs.length < POS_FB_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position === POS_FB
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
 
-            }else if(signing.position === POS_P && teams[i].ps.length >= POS_P_MAX){
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
 
+              }
             }
-            else if(signing.position === POS_QB && teams[i].qbs.length >= POS_QB_MAX){
-              
-            }else{
 
-              while(!interested){
-                index++;
-                signing = availableFreeAgents.roster[index];
-                if(index === availableFreeAgents.roster.length-1){
-                  interested = true;
+            if (
+              teams[i].wrs.length < POS_WR_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position === POS_WR
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
+            }
+
+            if (
+              teams[i].tes.length < POS_TE_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position === POS_TE
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
+            }
+
+            if (
+              teams[i].ol.length < POS_OL_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position >= POS_LT && availableFreeAgents.roster[j].position <= POS_RT
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
+            }
+
+            if (
+              teams[i].dl.length < POS_DL_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position >= POS_LE && availableFreeAgents.roster[j].position <= POS_DT
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
+            }
+
+            if (
+              teams[i].lbs.length < POS_LB_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position >= POS_LOLB && availableFreeAgents.roster[j].position <= POS_ROLB
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
+            }
+
+            if (
+              teams[i].dbs.length < POS_DB_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position >= POS_CB && availableFreeAgents.roster[j].position <= POS_SS
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
+            }
+
+            if (
+              teams[i].ks.length < POS_K_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position === POS_K
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+              }
+            }
+
+            if (
+              teams[i].ps.length < POS_P_REQUIREMENTS &&
+              availableFreeAgents.roster[j].position === POS_P
+            ) {
+              if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                availableFreeAgents.roster[j].teamName = teams[i].name;
+                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
+                availableFreeAgents.roster[j].years =
+                  Math.floor(Math.random() * 4) + 1;
+                teams[i].roster.push(availableFreeAgents.roster[j]);
+                teams[i].salary += availableFreeAgents.roster[j].salary;
+                availableFreeAgents.roster.splice(j, 1);
+                teams[i].manageFootballLineup();
+
+              }
+            }
+          }
+
+          while (teams[i].roster.length < rosterSize) {
+            if (teams[i] != selectedTeam) {
+              let index = Math.floor(Math.random() * 20);
+              if (index >= availableFreeAgents.roster.length) {
+                index = 0;
+              }
+              let signing = availableFreeAgents.roster[index];
+              let interested = true;
+              if (signing.rating >= 84) {
+                interested = playerWouldStart(signing, teams[i]);
+              }
+
+
+              if (signing.position === POS_K && teams[i].ks.length >= POS_K_MAX) {
+
+              } else if (signing.position === POS_P && teams[i].ps.length >= POS_P_MAX) {
+
+              }
+              else if (signing.position === POS_QB && teams[i].qbs.length >= POS_QB_MAX) {
+
+              } else {
+
+                while (!interested) {
+                  index++;
+                  signing = availableFreeAgents.roster[index];
+                  if (index === availableFreeAgents.roster.length - 1) {
+                    interested = true;
+                  }
+                  if (signing.rating >= 84) {
+                    interested = playerWouldStart(signing, teams[i]);
+                  } else {
+                    interested = true;
+                  }
                 }
-                if(signing.rating>=84){
-                  interested = playerWouldStart(signing, teams[i]);
-                }else{
-                  interested = true;
+
+                signing.salary = VETERANSMINIMUM;
+                if (canSign(teams[i], signing.salary)) {
+                  signing.teamName = teams[i].name;
+                  signing.teamLogoSrc = teams[i].logoSrc;
+                  signing.years = 1;
+                  teams[i].roster.push(signing);
+                  teams[i].salary += signing.salary;
+                  availableFreeAgents.roster.splice(index, 1);
                 }
               }
 
-              signing.salary = VETERANSMINIMUM;
+            } else {
+              let index = Math.floor(
+                Math.random() * availableFreeAgents.roster.length
+              );
+              let signing = availableFreeAgents.roster[index];
               if (canSign(teams[i], signing.salary)) {
                 signing.teamName = teams[i].name;
                 signing.teamLogoSrc = teams[i].logoSrc;
@@ -3848,26 +3990,11 @@ export class Franchise {
                 availableFreeAgents.roster.splice(index, 1);
               }
             }
-
-          } else {
-            let index = Math.floor(
-              Math.random() * availableFreeAgents.roster.length
-            );
-            let signing = availableFreeAgents.roster[index];
-            if (canSign(teams[i], signing.salary)) {
-              signing.teamName = teams[i].name;
-              signing.teamLogoSrc = teams[i].logoSrc;
-              signing.years = 1;
-              teams[i].roster.push(signing);
-              teams[i].salary += signing.salary;
-              availableFreeAgents.roster.splice(index, 1);
-            }
           }
         }
       }
+      this.manageWalkOns();
     }
-    this.manageWalkOns();
-  }
   }
 
   recruiting() {
@@ -3897,15 +4024,15 @@ export class Franchise {
 
         //manage user recruits
         let spliced = [];
-        for(let j=0; j<teams[i].interestedProspects.roster.length; j++){
-          if(teams[i].interestedProspects.roster[j].signed === true){
+        for (let j = 0; j < teams[i].interestedProspects.roster.length; j++) {
+          if (teams[i].interestedProspects.roster[j].signed === true) {
             spliced.push(teams[i].interestedProspects.roster[j]);
           }
         }
 
-        for(let j=0; j<spliced.length; j++){
-            let index = teams[i].interestedProspects.roster.indexOf(spliced[j]);
-            teams[i].interestedProspects.roster.splice(index, 1);
+        for (let j = 0; j < spliced.length; j++) {
+          let index = teams[i].interestedProspects.roster.indexOf(spliced[j]);
+          teams[i].interestedProspects.roster.splice(index, 1);
         }
 
         spliced = [];
@@ -3918,29 +4045,29 @@ export class Franchise {
             teams[i].qbs.length < POS_QB_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position === POS_QB
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years = 4;
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
-              // teams[i].salary += teams[i].interestedProspects.roster[j].salary;
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4;
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].salary += teams[i].interestedProspects.roster[j].salary;
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
           }
 
           if (
             teams[i].rbs.length < POS_HB_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position === POS_HB
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
 
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
-              // teams[i].salary += teams[i].interestedProspects.roster[j].salary;
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].salary += teams[i].interestedProspects.roster[j].salary;
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
@@ -3948,14 +4075,14 @@ export class Franchise {
             teams[i].fbs.length < POS_FB_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position === POS_FB
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
 
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
@@ -3963,14 +4090,14 @@ export class Franchise {
             teams[i].wrs.length < POS_WR_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position === POS_WR
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
 
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
@@ -3978,14 +4105,14 @@ export class Franchise {
             teams[i].tes.length < POS_TE_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position === POS_TE
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
 
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
@@ -3993,29 +4120,29 @@ export class Franchise {
             teams[i].ol.length < POS_OL_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position >= POS_LT && teams[i].interestedProspects.roster[j].position <= POS_RT
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
 
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
           if (
             teams[i].dl.length < POS_DL_REQUIREMENTS &&
-            teams[i].interestedProspects.roster[j].position >= POS_LE && teams[i].interestedProspects.roster[j].position <= POS_RE
+            teams[i].interestedProspects.roster[j].position >= POS_LE && teams[i].interestedProspects.roster[j].position <= POS_DT
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
 
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
@@ -4023,13 +4150,13 @@ export class Franchise {
             teams[i].dbs.length < POS_DB_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position >= POS_CB && teams[i].interestedProspects.roster[j].position <= POS_SS
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
@@ -4037,14 +4164,14 @@ export class Franchise {
             teams[i].ks.length < POS_K_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position === POS_K
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
 
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
 
@@ -4052,66 +4179,66 @@ export class Franchise {
             teams[i].ps.length < POS_P_REQUIREMENTS &&
             teams[i].interestedProspects.roster[j].position === POS_P
           ) {
-              teams[i].interestedProspects.roster[j].teamName = teams[i].name;
-              teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
-              teams[i].interestedProspects.roster[j].years =4
-              teams[i].roster.push(teams[i].interestedProspects.roster[j]);
+            teams[i].interestedProspects.roster[j].teamName = teams[i].name;
+            teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
+            teams[i].interestedProspects.roster[j].years = 4
+            teams[i].roster.push(teams[i].interestedProspects.roster[j]);
 
-              // teams[i].interestedProspects.roster.splice(j, 1);
-              teams[i].scholarshipsAvailable--;
-              spliced.push(teams[i].interestedProspects.roster[j]);
+            // teams[i].interestedProspects.roster.splice(j, 1);
+            teams[i].scholarshipsAvailable--;
+            spliced.push(teams[i].interestedProspects.roster[j]);
 
           }
         }
 
 
-        for(let j=0; j<spliced.length; j++){
+        for (let j = 0; j < spliced.length; j++) {
           let index = teams[i].interestedProspects.roster.indexOf(spliced[j]);
           teams[i].interestedProspects.roster.splice(index, 1);
-      }
+        }
 
 
 
-        while (teams[i].scholarshipsAvailable > 0 ) {
+        while (teams[i].scholarshipsAvailable > 0) {
           if (teams[i] != selectedTeam) {
-            let index = Math.floor(Math.random()*5);
+            let index = Math.floor(Math.random() * 5);
             if (index >= teams[i].interestedProspects.roster.length) {
               index = 0;
             }
             let signing = teams[i].interestedProspects.roster[index];
-            teams[i].scholarshipsAvailable --;
-            if(Math.random()*100 <= signing.interest){
+            teams[i].scholarshipsAvailable--;
+            if (Math.random() * 100 <= signing.interest) {
               signing.salary = VETERANSMINIMUM;
-                signing.teamName = teams[i].name;
-                signing.teamLogoSrc = teams[i].logoSrc;
-                signing.years = 1;
-                teams[i].roster.push(signing);
-                teams[i].interestedProspects.roster.splice(index, 1);
-          }else{
-             teams[i].interestedProspects.roster.splice(index, 1);
-          }
-
-          } else {
-            // console.log(teams[i].interestedProspects.roster.length + ' int pros');
-            if(teams[i].interestedProspects.roster.length < 1){
-              // console.log(teams[i].name + ' has no interested prospects')
-              break;
-            }
-            let index = Math.floor(Math.random()*5);
-            if (index >= teams[i].interestedProspects.roster.length) {
-              index = 0;
-            }
-            let signing = teams[i].interestedProspects.roster[index];
-            teams[i].scholarshipsAvailable --;
-            if(Math.random()*100 <= signing.interest){
               signing.teamName = teams[i].name;
               signing.teamLogoSrc = teams[i].logoSrc;
               signing.years = 1;
               teams[i].roster.push(signing);
               teams[i].interestedProspects.roster.splice(index, 1);
-            }else{
+            } else {
               teams[i].interestedProspects.roster.splice(index, 1);
-           }
+            }
+
+          } else {
+            // console.log(teams[i].interestedProspects.roster.length + ' int pros');
+            if (teams[i].interestedProspects.roster.length < 1) {
+              // console.log(teams[i].name + ' has no interested prospects')
+              break;
+            }
+            let index = Math.floor(Math.random() * 5);
+            if (index >= teams[i].interestedProspects.roster.length) {
+              index = 0;
+            }
+            let signing = teams[i].interestedProspects.roster[index];
+            teams[i].scholarshipsAvailable--;
+            if (Math.random() * 100 <= signing.interest) {
+              signing.teamName = teams[i].name;
+              signing.teamLogoSrc = teams[i].logoSrc;
+              signing.years = 1;
+              teams[i].roster.push(signing);
+              teams[i].interestedProspects.roster.splice(index, 1);
+            } else {
+              teams[i].interestedProspects.roster.splice(index, 1);
+            }
           }
         }
       }
@@ -4125,56 +4252,56 @@ export class Franchise {
 
   }
 
-  manageWalkOns(){
+  manageWalkOns() {
     let ply;
-    for(let i=0; i<teams.length; i++){
-      while(teams[i].qbs.length < POS_QB_REQUIREMENTS){
-        ply = generatePlayer(POS_QB,60);
+    for (let i = 0; i < teams.length; i++) {
+      while (teams[i].qbs.length < POS_QB_REQUIREMENTS) {
+        ply = generatePlayer(POS_QB, 60);
         teams[i].roster.push(ply);
         teams[i].qbs.push(ply);
       }
-      while(teams[i].rbs.length < POS_HB_REQUIREMENTS){
-        ply = generatePlayer(POS_HB,60);
+      while (teams[i].rbs.length < POS_HB_REQUIREMENTS) {
+        ply = generatePlayer(POS_HB, 60);
         teams[i].roster.push(ply);
         teams[i].rbs.push(ply);
       }
-      while(teams[i].wrs.length < POS_WR_REQUIREMENTS){
-        ply = generatePlayer(POS_WR,60);
+      while (teams[i].wrs.length < POS_WR_REQUIREMENTS) {
+        ply = generatePlayer(POS_WR, 60);
         teams[i].roster.push(ply);
         teams[i].wrs.push(ply);
       }
-      while(teams[i].tes.length < POS_TE_REQUIREMENTS){
-        ply = generatePlayer(POS_TE,60);
+      while (teams[i].tes.length < POS_TE_REQUIREMENTS) {
+        ply = generatePlayer(POS_TE, 60);
         teams[i].roster.push(ply);
         teams[i].tes.push(ply);
       }
-      while(teams[i].ol.length < POS_OL_REQUIREMENTS){
-        ply = generatePlayer(POS_LT,60);
+      while (teams[i].ol.length < POS_OL_REQUIREMENTS) {
+        ply = generatePlayer(POS_LT, 60);
         teams[i].roster.push(ply);
         teams[i].ol.push(ply);
       }
-      while(teams[i].dl.length < POS_DL_REQUIREMENTS){
-        ply = generatePlayer(POS_LE,60);
+      while (teams[i].dl.length < POS_DL_REQUIREMENTS) {
+        ply = generatePlayer(POS_LE, 60);
         teams[i].roster.push(ply);
         teams[i].dl.push(ply);
       }
-      while(teams[i].lbs.length < POS_LB_REQUIREMENTS){
-        ply = generatePlayer(POS_LOLB,60);
+      while (teams[i].lbs.length < POS_LB_REQUIREMENTS) {
+        ply = generatePlayer(POS_LOLB, 60);
         teams[i].roster.push(ply);
         teams[i].lbs.push(ply);
       }
-      while(teams[i].dbs.length < POS_DB_REQUIREMENTS){
-        ply = generatePlayer(POS_CB,60);
+      while (teams[i].dbs.length < POS_DB_REQUIREMENTS) {
+        ply = generatePlayer(POS_CB, 60);
         teams[i].roster.push(ply);
         teams[i].dbs.push(ply);
       }
-      while(teams[i].ks.length < POS_K_REQUIREMENTS){
-        ply = generatePlayer(POS_K,60);
+      while (teams[i].ks.length < POS_K_REQUIREMENTS) {
+        ply = generatePlayer(POS_K, 60);
         teams[i].roster.push(ply);
         teams[i].ks.push(ply);
       }
-      while(teams[i].ps.length < POS_P_REQUIREMENTS){
-        ply = generatePlayer(POS_P,60);
+      while (teams[i].ps.length < POS_P_REQUIREMENTS) {
+        ply = generatePlayer(POS_P, 60);
         teams[i].roster.push(ply);
         teams[i].ps.push(ply);
       }
@@ -4183,7 +4310,7 @@ export class Franchise {
 
   }
 
-  
+
 
 
   freeAgencySetup() {
@@ -4201,23 +4328,25 @@ export class Franchise {
       // }
 
       //NEW WAY
-      for(let i=0; i<teams.length; i++){
+      for (let i = 0; i < teams.length; i++) {
         let seedRat = teams.length - teams[i].seed;
         let teamRating = teams[i].rating;
         let scaledSeed = scaleBetween((seedRat), 70, 95, 0, teams.length);
 
 
-        let rating = Math.round((teamRating + scaledSeed)/2) - 20;
+        let rating = Math.round((teamRating + scaledSeed) / 2) - 20;
         // console.log(`${teams[i].name} ${rating}`);
 
-        if(teams[i] === selectedTeam){
+        if (teams[i] === selectedTeam) {
           console.log(`generateprospect rating: ${rating}`);
         }
 
-        if(rating<=60){
+        if (rating <= 60) {
           rating = 60;
         }
         
+        
+
         generateProspects(teams[i], rating);
       }
 
@@ -4334,87 +4463,87 @@ export class Franchise {
     for (let i = 0; i < teams.length; i++) {
       let team = teams[i];
       if (teams[i].roster.length > rosterSize) {
-       
+
 
 
         // while (teams[i].roster.length > rosterSize) {
-          
-          //     availableFreeAgents.roster.push(teams[i].roster[0]);
-          //     teams[i].roster.splice(0, 1);
-          // }
-          
-          team.manageFootballLineup();
-        
+
+        //     availableFreeAgents.roster.push(teams[i].roster[0]);
+        //     teams[i].roster.splice(0, 1);
+        // }
+
+        team.manageFootballLineup();
+
         let released = [];
-        for (let j = team.roster.length-1; j >= 0; j--) {
+        for (let j = team.roster.length - 1; j >= 0; j--) {
           if ((team.roster.length - released.length) <= rosterSize) {
             break;
           }
           let ply = team.roster[j];
-         
-          if(ply.position === POS_QB && team.qbs.length > POS_QB_REQUIREMENTS){
+
+          if (ply.position === POS_QB && team.qbs.length > POS_QB_REQUIREMENTS) {
             //cut player
-           
+
             released.push(ply);
             team.qbs.splice(team.qbs.indexOf(ply), 1);
-            
+
           }
-          if(ply.position === POS_HB && team.rbs.length > POS_HB_REQUIREMENTS){
+          if (ply.position === POS_HB && team.rbs.length > POS_HB_REQUIREMENTS) {
             //cut player
             released.push(ply);
             team.rbs.splice(team.rbs.indexOf(ply), 1);
-            
+
           }
-          if(ply.position === POS_WR && team.wrs.length > POS_WR_REQUIREMENTS){
+          if (ply.position === POS_WR && team.wrs.length > POS_WR_REQUIREMENTS) {
             //cut player
             released.push(ply);
             team.wrs.splice(team.wrs.indexOf(ply), 1);
-            
-          } if(ply.position === POS_TE && team.tes.length > POS_TE_REQUIREMENTS){
+
+          } if (ply.position === POS_TE && team.tes.length > POS_TE_REQUIREMENTS) {
             //cut player
             released.push(ply);
             team.tes.splice(team.tes.indexOf(ply), 1);
-            
+
           }
-          if(ply.position >= POS_LT && ply.position<= POS_RT && team.ol.length > POS_OL_REQUIREMENTS){
+          if (ply.position >= POS_LT && ply.position <= POS_RT && team.ol.length > POS_OL_REQUIREMENTS) {
             //cut player
-            
-            
+
+
             released.push(ply);
             team.ol.splice(team.ol.indexOf(ply), 1);
-            
+
           }
-          if(ply.position >= POS_LE && ply.position<= POS_DT && team.dl.length > POS_DL_REQUIREMENTS){
+          if (ply.position >= POS_LE && ply.position <= POS_DT && team.dl.length > POS_DL_REQUIREMENTS) {
             //cut player
             released.push(ply);
             team.dl.splice(team.dl.indexOf(ply), 1);
-            
+
           }
-          if(ply.position >= POS_LOLB && ply.position<= POS_ROLB && team.lbs.length > POS_LB_REQUIREMENTS){
+          if (ply.position >= POS_LOLB && ply.position <= POS_ROLB && team.lbs.length > POS_LB_REQUIREMENTS) {
             //cut player
             released.push(ply);
             team.lbs.splice(team.lbs.indexOf(ply), 1);
-            
+
           }
-          if(ply.position >= POS_CB && ply.position<= POS_SS && team.dbs.length > POS_DB_REQUIREMENTS){
+          if (ply.position >= POS_CB && ply.position <= POS_SS && team.dbs.length > POS_DB_REQUIREMENTS) {
             //cut player
-            
+
             released.push(ply);
             team.dbs.splice(team.dbs.indexOf(ply), 1);
-            
+
           }
-          if(ply.position === POS_K && team.ks.length > POS_K_REQUIREMENTS){
+          if (ply.position === POS_K && team.ks.length > POS_K_REQUIREMENTS) {
             //cut player
-            
+
             released.push(ply);
             team.ks.splice(team.ks.indexOf(ply), 1);
-            
+
           }
-          if(ply.position === POS_P && team.ps.length > POS_P_REQUIREMENTS){
+          if (ply.position === POS_P && team.ps.length > POS_P_REQUIREMENTS) {
             //cut player
             released.push(ply);
             team.ps.splice(team.ps.indexOf(ply), 1);
-            
+
           }
         }
 
@@ -4425,7 +4554,7 @@ export class Franchise {
         }
 
         team.manageFootballLineup();
-        
+
 
       }
     }
@@ -4517,7 +4646,7 @@ export class Franchise {
     }
 
 
-    if(collegeMode){
+    if (collegeMode) {
       cpuRedshirting();
     }
 
@@ -4546,24 +4675,24 @@ export class Franchise {
 
     //AUTOSAVE THE FRANCHISE ROSTER
 
-    
+
 
     let low = 200;
     let high = 0;
     let total = 0;
-    for(let i=0; i<teams.length; i++){
-      if(teams[i]!= selectedTeam){
-      if(teams[i].rating>high){
-        high = teams[i].rating;
+    for (let i = 0; i < teams.length; i++) {
+      if (teams[i] != selectedTeam) {
+        if (teams[i].rating > high) {
+          high = teams[i].rating;
+        }
+        if (teams[i].rating < low) {
+          low = teams[i].rating;
+        }
       }
-      if(teams[i].rating<low){
-        low = teams[i].rating;
-      }
-    }
-      total+= teams[i].rating;
+      total += teams[i].rating;
     }
 
-    console.log(`H: ${high} L: ${low} AVG: ${total/teams.length}`);
+    console.log(`H: ${high} L: ${low} AVG: ${total / teams.length}`);
 
     //added specific autosave names
     let teamName = selectedTeam.name.split(' ').join('');
@@ -4575,15 +4704,15 @@ export class Franchise {
 
     if (collegeMode) {
       for (let i = 0; i < teams.length; i++) {
-          teams[i].scholarshipsAvailable = 0;
+        teams[i].scholarshipsAvailable = 0;
         for (let j = 0; j < teams[i].roster.length; j++) {
           let player = teams[i].roster[j];
           let rand = Math.random() * 100;
           //added cant graduate til at least a jr
           let canGraduateEarly = false;
-          if(player.age>20 || (player.redshirt&&player.age>19)){
+          if (player.age > 20 || (player.redshirt && player.age > 19)) {
             //junior
-            
+
             canGraduateEarly = true;
           }
           if ((player.rating >= 88 && rand > 35 && canGraduateEarly) || player.age >= 22) {
@@ -4600,10 +4729,10 @@ export class Franchise {
         }
 
         //new loop through team retirements
-        for(let j=0; j<teams[i].retirements.length; j++){
-            let player = teams[i].retirements[j];
-            let index = teams[i].roster.indexOf(player);
-            teams[i].roster.splice(index, 1);
+        for (let j = 0; j < teams[i].retirements.length; j++) {
+          let player = teams[i].retirements[j];
+          let index = teams[i].roster.indexOf(player);
+          teams[i].roster.splice(index, 1);
         }
 
         //set retirements to empty array
@@ -4612,7 +4741,7 @@ export class Franchise {
 
 
 
-        if(teams[i].scholarshipsAvailable < 20){
+        if (teams[i].scholarshipsAvailable < 20) {
           teams[i].scholarshipsAvailable = 20;
         }
       }
@@ -4624,7 +4753,7 @@ export class Franchise {
         if (a.rating > b.rating) {
           return -1;
         }
-  
+
         if (a.rating < b.rating) {
           return 1;
         }
@@ -4632,7 +4761,7 @@ export class Franchise {
       });
 
       //limit to 320
-      while(this.retirements.roster.length > 320){
+      while (this.retirements.roster.length > 320) {
         this.retirements.roster.pop();
       }
 
@@ -4642,7 +4771,7 @@ export class Franchise {
       for (let i = 0; i < teams.length; i++) {
         for (let j = 0; j < teams[i].roster.length; j++) {
           let player = teams[i].roster[j];
-          if (player.age >= 35 && player.rating < 83 || player.age>41) {
+          if (player.age >= 35 && player.rating < 83 || player.age > 41) {
             let rand = Math.random() * 2;
             if (rand <= 1) {
               this.retirements.roster.push(player);
@@ -4657,14 +4786,14 @@ export class Franchise {
 
         }
 
-        for(let j=0; j<teams[i].retirements.length; j++){
+        for (let j = 0; j < teams[i].retirements.length; j++) {
           let player = teams[i].retirements[j];
           let index = teams[i].roster.indexOf(player);
           teams[i].roster.splice(index, 1);
-      }
+        }
 
-      //set retirements to empty array
-      teams[i].retirements = [];
+        //set retirements to empty array
+        teams[i].retirements = [];
       }
     }
 
@@ -4738,8 +4867,8 @@ export class Franchise {
       return 0;
     });
 
-    for(let i=0; i<draftClass.roster.length; i++){
-      draftClass.roster[i].projectedPick = i+1;
+    for (let i = 0; i < draftClass.roster.length; i++) {
+      draftClass.roster[i].projectedPick = i + 1;
     }
 
     return (draft = {
@@ -4777,8 +4906,8 @@ export class Franchise {
 
         this.pick++;
         //added more randomization to picks
-        let index = Math.floor(Math.random()*5);
-        if(index>= this.drafted.roster.length){
+        let index = Math.floor(Math.random() * 5);
+        if (index >= this.drafted.roster.length) {
           index = 0;
         }
         this.drafted.roster.unshift(draftClass.roster[index]);
@@ -4811,8 +4940,8 @@ export class Franchise {
           return 0;
         });
         //added more randomization to picks
-        let index = Math.floor(Math.random()*5);
-        if(index>= this.drafted.roster.length){
+        let index = Math.floor(Math.random() * 5);
+        if (index >= this.drafted.roster.length) {
           index = 0;
         }
         for (let i = this.pick; i < draftOrder.length; i++) {
@@ -4935,10 +5064,10 @@ function sortStandings() {
   } else {
     //rating first then wins
     //ranking formula
-    for(let i=0; i<teams.length; i++){
-      scheduleRating = teams[i].scheduleRating * 1.5;
-      teamRating = teams[i].rating * 2;
-      winPercentage = ((teams[i].wins/teams[i].schedule.length)*100) *1.5 ;
+    for (let i = 0; i < teams.length; i++) {
+      scheduleRating = teams[i].scheduleRating * 1.75;
+      teamRating = teams[i].rating * 1.75;
+      winPercentage = ((teams[i].wins / teams[i].schedule.length) * 100) * 1.5;
 
 
 
@@ -4946,7 +5075,7 @@ function sortStandings() {
       teams[i].totalRankingRating = (scheduleRating + teamRating + winPercentage) / 5;
       // console.log(`Team: ${teams[i].name} schedRat:${teams[i].scheduleRating} wins:${((teams[i].wins/teams[i].schedule.length)*100)} total:${(teams[i].scheduleRating + teams[i].rating + ((teams[i].wins/teams[i].schedule.length)*100)) / 3}`)
 
-      
+
     }
 
 
@@ -4993,8 +5122,8 @@ export function standings(conferenceId) {
     return 0;
   });
 
-  if(collegeMode){
-    while(sorted.length>25){
+  if (collegeMode) {
+    while (sorted.length > 25) {
       sorted.pop();
     }
   }
@@ -5055,55 +5184,55 @@ export function sortedRoster(team, sortAttribute) {
   return sortedRoster;
 }
 
-function hasPlayed(ply){
-  if(ply.seasonCompletions > 0){
-return true;
-  }
-  if(ply.seasonAttempts > 0){
-return true;
-  }
-  if(ply.seasonTouchdowns > 0){
-return true;
-  }
-  if(ply.seasonYards > 0){
-return true;
-  }
-  if(ply.seasonRushYards > 0){
-return true;
-  }
-  if(ply.seasonRushAttempts > 0){
-return true;
-  }
-  if(ply.seasonRushTouchdowns > 0){
-return true;
-  }
-  if(ply.seasonKicksAttempted > 0){
-return true;
-  }
-  if(ply.seasonKicksMade > 0){
-return true;
-  }
-  if(ply.seasonReceptions > 0){
-return true;
-  }
-  if(ply.seasonTackles > 0){
-return true;
-  }
-  if(ply.seasonInterceptions > 0){
-return true;
-  }
-  if(ply.seasonFumbles > 0){
-return true;
-  }
-  if(ply.seasonFumblesRecovered > 0){
-return true;
-  }
-  if(ply.seasonSacks > 0){
-return true;
-  }
-  if(ply.seasonPunts > 0){
+function hasPlayed(ply) {
+  if (ply.seasonCompletions > 0) {
     return true;
-      }
+  }
+  if (ply.seasonAttempts > 0) {
+    return true;
+  }
+  if (ply.seasonTouchdowns > 0) {
+    return true;
+  }
+  if (ply.seasonYards > 0) {
+    return true;
+  }
+  if (ply.seasonRushYards > 0) {
+    return true;
+  }
+  if (ply.seasonRushAttempts > 0) {
+    return true;
+  }
+  if (ply.seasonRushTouchdowns > 0) {
+    return true;
+  }
+  if (ply.seasonKicksAttempted > 0) {
+    return true;
+  }
+  if (ply.seasonKicksMade > 0) {
+    return true;
+  }
+  if (ply.seasonReceptions > 0) {
+    return true;
+  }
+  if (ply.seasonTackles > 0) {
+    return true;
+  }
+  if (ply.seasonInterceptions > 0) {
+    return true;
+  }
+  if (ply.seasonFumbles > 0) {
+    return true;
+  }
+  if (ply.seasonFumblesRecovered > 0) {
+    return true;
+  }
+  if (ply.seasonSacks > 0) {
+    return true;
+  }
+  if (ply.seasonPunts > 0) {
+    return true;
+  }
 
   return false;
 }
@@ -5122,7 +5251,7 @@ export function leaugeLeaders() {
       return 0;
     });
     for (let j = 0; j < teams[i].roster.length; j++) {
-      if(hasPlayed(teams[i].roster[j]) || j<3){
+      if (hasPlayed(teams[i].roster[j]) || j < 3) {
         leaugeLeaders.roster.push(teams[i].roster[j]);
       }
     }
@@ -5262,24 +5391,24 @@ export function signPlayer(team, player, years, salary, playerpool) {
 }
 
 function setSalaryExpectations(rosterpool) {
-  if(collegeMode){
+  if (collegeMode) {
     return;
   }
   for (let i = 0; i < rosterpool.roster.length; i++) {
-        rosterpool.roster[i].salary = Math.round(
-          scaleBetween(
-            tradeValueCalculation(rosterpool.roster[i]),
-            VETERANSMINIMUM,
-            30000000,
-            80,
-            600
-          )
-        );
-        rosterpool.roster[i].salary -= Math.round(Math.random() * 100000);
-        //check for less then min
-        if(rosterpool.roster[i].salary < VETERANSMINIMUM){
-          rosterpool.roster[i].salary = VETERANSMINIMUM;
-        }
+    rosterpool.roster[i].salary = Math.round(
+      scaleBetween(
+        tradeValueCalculation(rosterpool.roster[i]),
+        VETERANSMINIMUM,
+        30000000,
+        80,
+        600
+      )
+    );
+    rosterpool.roster[i].salary -= Math.round(Math.random() * 100000);
+    //check for less then min
+    if (rosterpool.roster[i].salary < VETERANSMINIMUM) {
+      rosterpool.roster[i].salary = VETERANSMINIMUM;
+    }
   }
 }
 
@@ -5317,21 +5446,21 @@ function tradeValueCalculation(ply, print) {
   if (ply.isPick === true) {
     isPick = true;
     // console.log(ply.projectedPick);
-    if(inDraft){
+    if (inDraft) {
       //FIXED 10-6-19
       if (ply.round > 1) {
-          let index = ply.projectedPick + (teams.length * (ply.round-1)) - 1 - franchise.currentDraft.drafted.roster.length;
-          // console.log(`index ${index} proj${ply.projectedPick} round${ply.round} len${franchise.currentDraft.drafted.roster.length}`);
-          ply = draftClass.roster[index];
+        let index = ply.projectedPick + (teams.length * (ply.round - 1)) - 1 - franchise.currentDraft.drafted.roster.length;
+        // console.log(`index ${index} proj${ply.projectedPick} round${ply.round} len${franchise.currentDraft.drafted.roster.length}`);
+        ply = draftClass.roster[index];
       } else {
-          let index = ply.projectedPick - 1 - franchise.currentDraft.drafted.roster.length;
-          ply = draftClass.roster[index];
+        let index = ply.projectedPick - 1 - franchise.currentDraft.drafted.roster.length;
+        ply = draftClass.roster[index];
       }
-    }else{
+    } else {
       if (ply.round > 1) {
-          let index = ply.projectedPick + (teams.length * (ply.round-1)) - 1
-          ply = draftClass.roster[index];
-          // console.log(`index ${index} proj${ply.projectedPick} round${ply.round}`);
+        let index = ply.projectedPick + (teams.length * (ply.round - 1)) - 1
+        ply = draftClass.roster[index];
+        // console.log(`index ${index} proj${ply.projectedPick} round${ply.round}`);
       } else {
         ply = draftClass.roster[ply.projectedPick - 1];
       }
@@ -5360,17 +5489,17 @@ function tradeValueCalculation(ply, print) {
   }
 
   //positional value
-  if(ply.position === POS_QB){
-    totalVal *= 1.25;
+  if (ply.position === POS_QB) {
+    totalVal *= 1.35;
   }
-  if(ply.position === POS_K){
-    totalVal *= 0.7;
+  if (ply.position === POS_K) {
+    totalVal *= 0.6;
   }
-  if(ply.position === POS_P){
-    totalVal *= 0.7;
+  if (ply.position === POS_P) {
+    totalVal *= 0.6;
   }
 
-  if(print == true){
+  if (print == true) {
 
     console.log(
       ply.name +
@@ -5514,32 +5643,32 @@ class Playoffs {
   playoffMatchupGen() {
 
     //bye week
-    if(this.byes.length>0){
-      this.byes=[];
-      for(let i=0;  i<this.eastByes.length; i++){
-          this.eastTeams.push(this.eastByes[i]);
+    if (this.byes.length > 0) {
+      this.byes = [];
+      for (let i = 0; i < this.eastByes.length; i++) {
+        this.eastTeams.push(this.eastByes[i]);
       }
-      for(let i=0;  i<this.westByes.length; i++){
+      for (let i = 0; i < this.westByes.length; i++) {
         this.westTeams.push(this.westByes[i]);
       }
 
 
-    }else{
-      if(checkIfByeNeeded(this.eastTeams.length)){
-        for(let i=0; i<checkAmountOfByes(this.eastTeams.length); i++){
-        this.eastByes.push(this.eastTeams[i]);
-        this.byes.push(this.eastTeams[i]);
-        this.eastTeams.splice(this.eastTeams.indexOf(this.eastTeams[i]),1);
+    } else {
+      if (checkIfByeNeeded(this.eastTeams.length)) {
+        for (let i = 0; i < checkAmountOfByes(this.eastTeams.length); i++) {
+          this.eastByes.push(this.eastTeams[i]);
+          this.byes.push(this.eastTeams[i]);
+          this.eastTeams.splice(this.eastTeams.indexOf(this.eastTeams[i]), 1);
         }
       }
-      if(checkIfByeNeeded(this.westTeams.length)){
-        for(let i=0; i<checkAmountOfByes(this.westTeams.length); i++){
+      if (checkIfByeNeeded(this.westTeams.length)) {
+        for (let i = 0; i < checkAmountOfByes(this.westTeams.length); i++) {
           this.westByes.push(this.westTeams[i]);
           this.byes.push(this.westTeams[i]);
-        this.westTeams.splice(this.westTeams.indexOf(this.westTeams[i]),1);
+          this.westTeams.splice(this.westTeams.indexOf(this.westTeams[i]), 1);
         }
       }
-     
+
     }
 
     for (let i = 0; i < this.eastTeams.length / 2; i++) {
@@ -5563,7 +5692,7 @@ class Playoffs {
   determineRoundNumber() {
     let num = playoffSeeds;
     //bye week
-    while(checkIfByeNeeded(num)){
+    while (checkIfByeNeeded(num)) {
       num++;
     }
     let count = 1;
@@ -5620,14 +5749,14 @@ class Playoffs {
           //bye week
           let eastChamp;
           let westChamp;
-          if(this.eastTeams.length<1){
+          if (this.eastTeams.length < 1) {
             eastChamp = this.byes[0];
-          }else{
+          } else {
             eastChamp = this.eastTeams[0]
           }
-          if(this.westTeams.length<1){
+          if (this.westTeams.length < 1) {
             westChamp = this.byes[0];
-          }else{
+          } else {
             westChamp = this.westTeams[0]
           }
           this.matchups[0].team1 = eastChamp
@@ -5682,7 +5811,7 @@ export function saveData(slot) {
       offVsDefFocus: teams[i].offVsDefFocus,
       offenseType: teams[i].offenseType,
       defenseType: teams[i].defenseType,
-      runVsPass : teams[i].runVsPass,
+      runVsPass: teams[i].runVsPass,
       offTempo: teams[i].offTempo
     };
     data.teams.push(teamDat);
@@ -5702,7 +5831,8 @@ export function saveData(slot) {
     passSlider: passSlider,
     runSlider: runSlider,
     qbCompletionSlider: qbCompletionSlider,
-    rosterSize: rosterSize
+    rosterSize: rosterSize,
+    playerSigningDifficulty: playerSigningDifficulty
   };
 
   let write = JSON.stringify(data);
@@ -5826,22 +5956,23 @@ export const loadData = data => {
     setSalaryExpectations(availableFreeAgents);
 
     if (loadedData.sliders != null) {
-        setSliders(
-          loadedData.sliders.difficulty,
-          loadedData.sliders.tradeDifficulty,
-          loadedData.sliders.trainingPointsAvailable,
-          loadedData.sliders.passSlider,
-          loadedData.sliders.runSlider,
-          loadedData.sliders.qbCompletionSlider,
-          loadedData.sliders.rosterSize
-        );
-        setFranchiseSliders(
-          loadedData.sliders.gamesPerSeason,
-          loadedData.sliders.playoffSeeds,
-          loadedData.sliders.seriesWinCount,
-          loadedData.sliders.conferencesOn,
-          loadedData.sliders.collegeMode
-        );
+      setSliders(
+        loadedData.sliders.difficulty,
+        loadedData.sliders.tradeThreshold,
+        loadedData.sliders.trainingPointsAvailable,
+        loadedData.sliders.passSlider,
+        loadedData.sliders.runSlider,
+        loadedData.sliders.qbCompletionSlider,
+        loadedData.sliders.rosterSize,
+        loadedData.sliders.playerSigningDifficulty
+      );
+      setFranchiseSliders(
+        loadedData.sliders.gamesPerSeason,
+        loadedData.sliders.playoffSeeds,
+        loadedData.sliders.seriesWinCount,
+        loadedData.sliders.conferencesOn,
+        loadedData.sliders.collegeMode
+      );
     }
 
     generateDraftClass();
@@ -6360,34 +6491,56 @@ export function offerContract(team, ply, years, salary, playerpool, isForced) {
     return true;
   }
 
-  if (ply.salary <= VETERANSMINIMUM) {
-    signPlayer(team, ply, years, salary, playerpool);
-    return true;
-  }
+  // if (ply.salary <= VETERANSMINIMUM) {
+  //   signPlayer(team, ply, years, salary, playerpool);
+  //   return true;
+  // }
 
-  if (ply.rating < 78) {
-    signPlayer(team, ply, years, salary, playerpool);
-    return true;
-  }
+  // if (ply.rating < 78) {
+  //   signPlayer(team, ply, years, salary, playerpool);
+  //   return true;
+  // }
 
-  sortTeamsByRating();
+  // sortTeamsByRating();
 
-  let salaryAddition = scaleBetween(
-    team.ratingRank,
-    -(ply.salary * 0.1),
-    ply.salary * 0.3,
-    1,
-    teams.length
-  );
-  salaryAddition = salaryAddition - salaryAddition * 0.32 * years;
+  let salaryRequested = getPlayerSigningInterest(team, ply, years);
   // console.log(salaryAddition);
 
-  if (ply.salary + salaryAddition < salary) {
+  if (salaryRequested <= salary) {
     signPlayer(team, ply, years, salary, playerpool);
     return true;
   } else {
     return false;
   }
+}
+
+
+
+export function getPlayerSigningInterest(team, ply, years) {
+
+
+  let playForWinner = scaleBetween(ply.age, 0.1, -0.25, 19,40 );
+  let playForLoser = scaleBetween(ply.age, 0.3,0.4,19,40);
+
+  let manyYears = scaleBetween(ply.age, 0.15,0.05,19,40);
+  let fewYears = scaleBetween(ply.age, -0.4,-0.1,19,40);
+
+
+  let salaryAddition = scaleBetween(team.powerRanking, ply.salary*playForWinner , ply.salary * playForLoser, 1, teams.length);
+
+  let yearFactor = scaleBetween(years, ply.salary * fewYears, ply.salary * manyYears, 1,6);
+
+  let salaryRequested = Math.floor((ply.salary + salaryAddition - yearFactor)*(playerSigningDifficulty/100));
+
+
+
+  if(ply.salary<= VETERANSMINIMUM){
+      return VETERANSMINIMUM;
+  }
+
+  // console.log(`SAL: ${ply.salary} TMSD ${team.powerRanking}, SALADD ${salaryAddition}, yearfactor ${yearFactor} ageyr ${ageYrFactor} FIN ${salaryRequested}`);
+  
+  return salaryRequested;
 }
 
 export function setPowerRankings() {
@@ -6443,9 +6596,9 @@ export function getDraftPickProjectedPick(pick) {
 export function saveAsDraftClass(ros, name) {
   draftClass.roster = [];
 
-  if (ros.length < 8*32) {
+  if (ros.length < 8 * 32) {
     generateDraftClass();
-    while (ros.length + draftClass.roster.length > 8*32) {
+    while (ros.length + draftClass.roster.length > 8 * 32) {
       draftClass.roster.unshift[0];
     }
   }
@@ -6454,33 +6607,33 @@ export function saveAsDraftClass(ros, name) {
     let ply = ros[i];
     ply.awareness = Math.round(scaleBetween(ply.awareness, 45, 79, 70, 99));
 
-    if(ply.position === POS_QB){
-    ply.pass = Math.round(scaleBetween(ply.pass, 50, 93, 70, 99));
+    if (ply.position === POS_QB) {
+      ply.pass = Math.round(scaleBetween(ply.pass, 50, 93, 70, 99));
 
     }
 
-    if(ply.position >= POS_HB && ply.position <= POS_TE){
-    ply.rush = Math.round(scaleBetween(ply.rush, 55, 84, 70, 99));
-    ply.catch = Math.round(scaleBetween(ply.catch, 55, 84, 70, 99));
-    ply.block = Math.round(scaleBetween(ply.block, 55, 84, 70, 99));
+    if (ply.position >= POS_HB && ply.position <= POS_TE) {
+      ply.rush = Math.round(scaleBetween(ply.rush, 55, 84, 70, 99));
+      ply.catch = Math.round(scaleBetween(ply.catch, 55, 84, 70, 99));
+      ply.block = Math.round(scaleBetween(ply.block, 55, 84, 70, 99));
     }
 
-    if(ply.position >= POS_LT && ply.position <= POS_RT){
-    ply.block = Math.round(scaleBetween(ply.block, 55, 84, 70, 99));
+    if (ply.position >= POS_LT && ply.position <= POS_RT) {
+      ply.block = Math.round(scaleBetween(ply.block, 55, 84, 70, 99));
     }
 
-    if(ply.position >= POS_LE && ply.position <= POS_DT){
+    if (ply.position >= POS_LE && ply.position <= POS_DT) {
       ply.breakBlock = Math.round(scaleBetween(ply.breakBlock, 55, 84, 70, 99));
       ply.tackle = Math.round(scaleBetween(ply.tackle, 55, 84, 70, 99));
     }
 
-    if(ply.position >= POS_LOLB && ply.position <= POS_SS){
+    if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
       ply.breakBlock = Math.round(scaleBetween(ply.breakBlock, 55, 84, 70, 99));
       ply.tackle = Math.round(scaleBetween(ply.tackle, 55, 84, 70, 99));
       ply.catch = Math.round(scaleBetween(ply.catch, 55, 84, 70, 99));
     }
 
-    if(ply.position >= POS_K && ply.position <= POS_P){
+    if (ply.position >= POS_K && ply.position <= POS_P) {
       ply.kick = Math.round(scaleBetween(ply.kick, 60, 90, 70, 99));
     }
     ply.years = 2 + 1;
@@ -6511,87 +6664,87 @@ export function manageSaveName(value) {
 }
 
 export function returnStatsView(player) {
-  let str ="";
-  if(player.seasonAttempts > 0){
+  let str = "";
+  if (player.seasonAttempts > 0) {
     str += `PASS: \nATT: ${player.seasonAttempts} \nCMP: ${player.seasonCompletions} \nYDS: ${player.seasonYards} \nTDS: ${player.seasonTouchdowns} \nCMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 100)} `;
   }
 
-  if(player.seasonRushAttempts > 0){
-    if(str.length>0){
+  if (player.seasonRushAttempts > 0) {
+    if (str.length > 0) {
       str += "\n"
     }
     str += `RUSH: \nATT: ${player.seasonRushAttempts} \nYDS: ${player.seasonRushYards} \nTDS: ${player.seasonRushTouchdowns} \nAVG: ${Math.round((player.seasonRushYards / player.seasonRushAttempts))} `;
   }
 
-  if(player.seasonReceptions > 0){
+  if (player.seasonReceptions > 0) {
     str += `REC: ${player.seasonReceptions} \nYDS: ${player.seasonYards} \nTDS: ${player.seasonTouchdowns}`;
   }
 
-  if(player.seasonTackles > 0){
+  if (player.seasonTackles > 0) {
     str += `TACKLES: ${player.seasonTackles} \nSACKS: ${player.seasonSacks} \nINTS: ${player.seasonInterceptions}`
   }
 
-  if(player.seasonKicksAttempted > 0){
-    str += `FGM: ${player.seasonKicksMade} \nFGA: ${player.seasonKicksAttempted} \nAVG: ${Math.round((player.seasonKicksMade/player.seasonKicksAttempted)*1000)/10}%`
+  if (player.seasonKicksAttempted > 0) {
+    str += `FGM: ${player.seasonKicksMade} \nFGA: ${player.seasonKicksAttempted} \nAVG: ${Math.round((player.seasonKicksMade / player.seasonKicksAttempted) * 1000) / 10}%`
   }
 
-  if(player.seasonPunts > 0){
-    str += `PUNTS: ${player.seasonPunts} \nAVG: ${Math.round((player.seasonPuntYards/player.seasonPunts)*10)/10}`
+  if (player.seasonPunts > 0) {
+    str += `PUNTS: ${player.seasonPunts} \nAVG: ${Math.round((player.seasonPuntYards / player.seasonPunts) * 10) / 10}`
   }
 
 
   return str;
 }
 export function returnSeasonStatsListView(player) {
-  let str ="";
-  if(player.seasonAttempts > 0){
-    str += `PASS: ATT: ${player.seasonAttempts} CMP: ${player.seasonCompletions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns} INTS: ${player.seasonInterceptions} CMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 1000)/10}% `;
+  let str = "";
+  if (player.seasonAttempts > 0) {
+    str += `PASS: ATT: ${player.seasonAttempts} CMP: ${player.seasonCompletions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns} INTS: ${player.seasonInterceptions} CMP%: ${Math.round((player.seasonCompletions / player.seasonAttempts) * 1000) / 10}% `;
   }
 
-  if(player.seasonRushAttempts > 0){
-    str += `RUSH: ATT: ${player.seasonRushAttempts} YDS: ${player.seasonRushYards} TDS: ${player.seasonRushTouchdowns} FUM: ${player.seasonFumbles} AVG: ${Math.round((player.seasonRushYards / player.seasonRushAttempts)*10)/10} `;
+  if (player.seasonRushAttempts > 0) {
+    str += `RUSH: ATT: ${player.seasonRushAttempts} YDS: ${player.seasonRushYards} TDS: ${player.seasonRushTouchdowns} FUM: ${player.seasonFumbles} AVG: ${Math.round((player.seasonRushYards / player.seasonRushAttempts) * 10) / 10} `;
   }
 
-  if(player.seasonReceptions > 0){
+  if (player.seasonReceptions > 0) {
     str += `REC: ${player.seasonReceptions} YDS: ${player.seasonYards} TDS: ${player.seasonTouchdowns}`;
   }
 
-  if(player.seasonTackles > 0){
+  if (player.seasonTackles > 0) {
     str += `TACKLES: ${player.seasonTackles} SACKS: ${player.seasonSacks} INTS: ${player.seasonInterceptions} FUM: ${player.seasonFumblesRecovered}`
   }
 
-  if(player.seasonKicksAttempted > 0){
-    str += `FGM: ${player.seasonKicksMade} FGA: ${player.seasonKicksAttempted} AVG: ${Math.round((player.seasonKicksMade/player.seasonKicksAttempted)*1000)/10}%`
+  if (player.seasonKicksAttempted > 0) {
+    str += `FGM: ${player.seasonKicksMade} FGA: ${player.seasonKicksAttempted} AVG: ${Math.round((player.seasonKicksMade / player.seasonKicksAttempted) * 1000) / 10}%`
   }
-  if(player.seasonPunts > 0){
-    str += `PUNTS: ${player.seasonPunts} AVG: ${Math.round((player.seasonPuntYards/player.seasonPunts)*10)/10}`
+  if (player.seasonPunts > 0) {
+    str += `PUNTS: ${player.seasonPunts} AVG: ${Math.round((player.seasonPuntYards / player.seasonPunts) * 10) / 10}`
   }
   return str;
 }
 
 export function returnStatsListView(player) {
   let str = "";
-  if(player.attempts > 0){
-    str += `PASS: ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} INTS: ${player.interceptions} CMP%: ${Math.round((player.completions / player.attempts) * 1000)/10}% `;
+  if (player.attempts > 0) {
+    str += `PASS: ATT: ${player.attempts} CMP: ${player.completions} YDS: ${player.yards} TDS: ${player.touchdowns} INTS: ${player.interceptions} CMP%: ${Math.round((player.completions / player.attempts) * 1000) / 10}% `;
   }
 
-  if(player.rushAttempts > 0){
-    str += `RUSH: ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.rushAttempts)*10)/10} `;
+  if (player.rushAttempts > 0) {
+    str += `RUSH: ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.rushAttempts) * 10) / 10} `;
   }
 
-  if(player.receptions > 0){
+  if (player.receptions > 0) {
     str += `REC: ${player.receptions} YDS: ${player.yards} TDS: ${player.touchdowns}`;
   }
 
-  if(player.tackles > 0){
+  if (player.tackles > 0) {
     str += `TACKLES: ${player.tackles} SACKS: ${player.sacks} INTS: ${player.interceptions}`
   }
 
-  if(player.kicksAttempted > 0){
-    str += `FGM: ${player.kicksMade} FGA: ${player.kicksAttempted} AVG: ${Math.round((player.kicksMade/player.kicksAttempted)*1000)/10}%`
+  if (player.kicksAttempted > 0) {
+    str += `FGM: ${player.kicksMade} FGA: ${player.kicksAttempted} AVG: ${Math.round((player.kicksMade / player.kicksAttempted) * 1000) / 10}%`
   }
-  if(player.punts > 0){
-    str += `PUNTS: ${player.punts} AVG: ${Math.round((player.puntYards/player.punts)*10)/10}`
+  if (player.punts > 0) {
+    str += `PUNTS: ${player.punts} AVG: ${Math.round((player.puntYards / player.punts) * 10) / 10}`
   }
 
   return str;
@@ -6625,7 +6778,7 @@ export function saveFranchise(slot) {
       offVsDefFocus: teams[i].offVsDefFocus,
       offenseType: teams[i].offenseType,
       defenseType: teams[i].defenseType,
-      runVsPass : teams[i].runVsPass,
+      runVsPass: teams[i].runVsPass,
       offTempo: teams[i].offTempo,
       scheduleString: scheduleString,
       wins: teams[i].wins,
@@ -6633,9 +6786,9 @@ export function saveFranchise(slot) {
       played: teams[i].played,
       seasonPoints: teams[i].seasonPoints,
       seasonPointsAllowed: teams[i].seasonPointsAllowed,
-      seasonPassYards : teams[i].seasonPassYards,
-      seasonRushYards : teams[i].seasonRushYards,
-      seasonPlays : teams[i].seasonPlays
+      seasonPassYards: teams[i].seasonPassYards,
+      seasonRushYards: teams[i].seasonRushYards,
+      seasonPlays: teams[i].seasonPlays
     };
 
     data.teams.push(teamDat);
@@ -6654,7 +6807,8 @@ export function saveFranchise(slot) {
     passSlider: passSlider,
     runSlider: runSlider,
     qbCompletionSlider: qbCompletionSlider,
-    rosterSize: rosterSize
+    rosterSize: rosterSize,
+    playerSigningDifficulty: playerSigningDifficulty
   };
 
   let dc = [];
@@ -6712,9 +6866,9 @@ export const loadFranchise = data => {
       teams[i].defenseType = loadedData.teams[i].defenseType;
       teams[i].runVsPass = loadedData.teams[i].runVsPass;
       teams[i].offTempo = loadedData.teams[i].offTempo;
-      
-      
-      
+
+
+
       //stats
       teams[i].seasonPoints = loadedData.teams[i].seasonPoints;
       teams[i].seasonPointsAllowed = loadedData.teams[i].seasonPointsAllowed;
@@ -6784,23 +6938,23 @@ export const loadFranchise = data => {
       availableFreeAgents.roster[i].teamLogoSrc = availableFreeAgents.logoSrc;
       availableFreeAgents.roster[i].teamName = availableFreeAgents.name;
       ///uhhh wtf there wasnt a {} GLITCH HOCKEY BASKETBALL
-      for (let j = 0; j < loadedData.day; j++){
+      for (let j = 0; j < loadedData.day; j++) {
         availableFreeAgents.roster[i].statsHistory.push({
-          completions:0 ,
-        attempts: 0 ,
-        touchdowns: 0 ,
-        yards: 0 ,
-        rushYards: 0 ,
-        rushAttempts: 0 ,
-        rushTouchdowns: 0 ,
-        kicksAttempted: 0 ,
-        kicksMade: 0 ,
-        receptions: 0 ,
-        tackles: 0,
-        interceptions: 0 ,
-        fumbles: 0 ,
-        fumblesRecovered: 0 ,
-        sacks: 0 
+          completions: 0,
+          attempts: 0,
+          touchdowns: 0,
+          yards: 0,
+          rushYards: 0,
+          rushAttempts: 0,
+          rushTouchdowns: 0,
+          kicksAttempted: 0,
+          kicksMade: 0,
+          receptions: 0,
+          tackles: 0,
+          interceptions: 0,
+          fumbles: 0,
+          fumblesRecovered: 0,
+          sacks: 0
         });
       }
     }
@@ -6811,13 +6965,14 @@ export const loadFranchise = data => {
     //this resets franchise
     if (loadedData.sliders != null) {
       setSliders(
-          loadedData.sliders.difficulty,
-          loadedData.sliders.tradeDifficulty,
-          loadedData.sliders.trainingPointsAvailable,
-          loadedData.sliders.passSlider,
-          loadedData.sliders.runSlider,
-          loadedData.sliders.qbCompletionSlider,
-          loadedData.sliders.rosterSize
+        loadedData.sliders.difficulty,
+        loadedData.sliders.tradeThreshold,
+        loadedData.sliders.trainingPointsAvailable,
+        loadedData.sliders.passSlider,
+        loadedData.sliders.runSlider,
+        loadedData.sliders.qbCompletionSlider,
+        loadedData.sliders.rosterSize,
+        loadedData.sliders.playerSigningDifficulty
       );
       setFranchiseSliders(
         loadedData.sliders.gamesPerSeason,
@@ -6919,46 +7074,46 @@ export let checkRequirements = (team) => {
   team.manageFootballLineup();
   let diff = 0;
   let str = '';
-  if(team.qbs.length < POS_QB_REQUIREMENTS){
+  if (team.qbs.length < POS_QB_REQUIREMENTS) {
     diff = POS_QB_REQUIREMENTS - team.qbs.length;
     str += diff + " more QB's"
   }
-  if(team.rbs.length < POS_HB_REQUIREMENTS){
+  if (team.rbs.length < POS_HB_REQUIREMENTS) {
     diff = POS_HB_REQUIREMENTS - team.rbs.length;
     str += diff + " more hb's"
   }
-  if(team.wrs.length < POS_WR_REQUIREMENTS){
+  if (team.wrs.length < POS_WR_REQUIREMENTS) {
     diff = POS_WR_REQUIREMENTS - team.wrs.length;
     str += diff + " more wr's"
   }
-  if(team.tes.length < POS_TE_REQUIREMENTS){
+  if (team.tes.length < POS_TE_REQUIREMENTS) {
     diff = POS_TE_REQUIREMENTS - team.tes.length;
     str += diff + " more te's"
   }
-  if(team.ol.length < POS_OL_REQUIREMENTS){
+  if (team.ol.length < POS_OL_REQUIREMENTS) {
     diff = POS_OL_REQUIREMENTS - team.ol.length;
     str += diff + " more O-linemen"
   }
-  if(team.dl.length < POS_DL_REQUIREMENTS){
+  if (team.dl.length < POS_DL_REQUIREMENTS) {
     diff = POS_DL_REQUIREMENTS - team.dl.length;
     str += diff + " more D-linemen"
   }
-  if(team.dbs.length < POS_DB_REQUIREMENTS){
+  if (team.dbs.length < POS_DB_REQUIREMENTS) {
     diff = POS_DB_REQUIREMENTS - team.dbs.length;
     str += diff + " more db's"
   }
-  if(team.ks.length < POS_K_REQUIREMENTS){
+  if (team.ks.length < POS_K_REQUIREMENTS) {
     diff = POS_K_REQUIREMENTS - team.ks.length;
     str += diff + " more k's"
   }
-  if(team.ps.length < POS_P_REQUIREMENTS){
+  if (team.ps.length < POS_P_REQUIREMENTS) {
     diff = POS_P_REQUIREMENTS - team.ps.length;
     str += diff + " more p's"
   }
 
-  if(str===''){
+  if (str === '') {
     return false;
-  }else{
+  } else {
     return str;
   }
 }
@@ -6973,128 +7128,128 @@ export function generateProspects(team, rating) {
   let dl = 0;
   let lbs = 0;
   let dbs = 0;
-  let ks=0;
-  let ps= 0;
+  let ks = 0;
+  let ps = 0;
   let ply;
-  for (let i = 0; i < rosterSize*3; i++) {
-    let playerRating = rating - (Math.round(Math.random()*10));
+  for (let i = 0; i < rosterSize * 3; i++) {
+    let playerRating = rating - (Math.round(Math.random() * 10));
     //10% elite players
-    if(Math.random()*100 <= 10){
-      playerRating += Math.round(Math.random()*20)+2;
+    if (Math.random() * 100 <= 10) {
+      playerRating += Math.round(Math.random() * 20) + 2;
     }
 
     //block over 87
-    if(playerRating>=88){
+    if (playerRating >= 88) {
       playerRating = 88;
     }
 
     //block 60 and under
-    if(playerRating<=61){
-      playerRating = Math.round(Math.random()*4)+61;
+    if (playerRating <= 61) {
+      playerRating = Math.round(Math.random() * 4) + 61;
     }
-    
-    if (qbs < POS_QB_REQUIREMENTS*3) {
+
+    if (qbs < POS_QB_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_QB, playerRating);
       qbs++;
-    } else if (hbs < POS_HB_REQUIREMENTS*3) {
+    } else if (hbs < POS_HB_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_HB, playerRating);
 
       hbs++;
-    } else if (wrs < POS_WR_REQUIREMENTS*3) {
+    } else if (wrs < POS_WR_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_WR, playerRating);
 
       wrs++;
     }
-    else if (tes < POS_TE_REQUIREMENTS*3) {
+    else if (tes < POS_TE_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_TE, playerRating);
 
       tes++;
     }
-    else if (ol < POS_OL_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*5) + POS_LT;
+    else if (ol < POS_OL_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 5) + POS_LT;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
 
       ol++;
     }
-    else if (dl < POS_DL_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*3) + POS_LE;
+    else if (dl < POS_DL_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 3) + POS_LE;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
       dl++;
     }
-    else if (lbs < POS_LB_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*3) + POS_LOLB;
+    else if (lbs < POS_LB_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 3) + POS_LOLB;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
       lbs++;
     }
-    else if (dbs < POS_DB_REQUIREMENTS*3) {
-      let chosenPosition = Math.floor(Math.random()*3) + POS_CB;
+    else if (dbs < POS_DB_REQUIREMENTS * 3) {
+      let chosenPosition = Math.floor(Math.random() * 3) + POS_CB;
 
 
       ply = generatePlayer(chosenPosition, playerRating);
       dbs++;
     }
-    else if (ks < POS_K_REQUIREMENTS*3) {
+    else if (ks < POS_K_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_K, playerRating);
       ks++;
     }
-    else if (ps < POS_P_REQUIREMENTS*3) {
+    else if (ps < POS_P_REQUIREMENTS * 3) {
       ply = generatePlayer(POS_P, playerRating);
 
       ps++;
-    }else{
-      let chosenPosition = Math.floor(Math.random()*(POS_P+1));
+    } else {
+      let chosenPosition = Math.floor(Math.random() * (POS_P + 1));
       ply = generatePlayer(chosenPosition, playerRating);
     }
 
     //slight boost with extra random 20%
-    let interest = Math.round(Math.random()*100) + Math.round(Math.random()*20);
-    if(interest>=100){
+    let interest = Math.round(Math.random() * 100) + Math.round(Math.random() * 20);
+    if (interest >= 100) {
       interest = 99;
     }
     ply.interest = interest;
     team.interestedProspects.roster.push(ply);
   }
 
-      }
+}
 
-export function sendRecruitOffer(ply, team){
-  let selection = Math.random()*100;
-  if(selection < ply.interest){
+export function sendRecruitOffer(ply, team) {
+  let selection = Math.random() * 100;
+  if (selection < ply.interest) {
     team.roster.push(ply);
     ply.teamLogoSrc = team.logoSrc;
     ply.teamName = team.name;
     team.manageFootballLineup();
     ply.signed = true;
-  }else{
+  } else {
     selectRecruitedTeam(ply);
     ply.signed = true;
   }
 
-  if(team.scholarshipsAvailable - 1 < 1){
-    for(let i=0; i<team.interestedProspects.roster.length; i++){
+  if (team.scholarshipsAvailable - 1 < 1) {
+    for (let i = 0; i < team.interestedProspects.roster.length; i++) {
       let player = team.interestedProspects.roster[i];
       selectRecruitedTeam(player);
-      player.signed=true;
+      player.signed = true;
 
     }
   }
 }
 
-function selectRecruitedTeam(ply){
-  if(ply.signed){
+function selectRecruitedTeam(ply) {
+  if (ply.signed) {
     return;
   }
-  let selection = Math.floor(Math.random()*teams.length);
+  let selection = Math.floor(Math.random() * teams.length);
   let otherTeam = teams[selection];
-  while(otherTeam === selectedTeam){
-  selection = Math.floor(Math.random()*teams.length);
-  otherTeam = teams[selection];
+  while (otherTeam === selectedTeam) {
+    selection = Math.floor(Math.random() * teams.length);
+    otherTeam = teams[selection];
   }
   otherTeam.roster.push(ply);
   ply.teamLogoSrc = otherTeam.logoSrc;
@@ -7102,7 +7257,7 @@ function selectRecruitedTeam(ply){
   otherTeam.manageFootballLineup();
 }
 
-function generatePlayer(pos, rating){
+function generatePlayer(pos, rating) {
   let name =
     draftData[Math.floor(Math.random() * draftData.length)].firstname +
     " " +
@@ -7111,39 +7266,39 @@ function generatePlayer(pos, rating){
   let age = 18;
   let playerComparison = Math.floor(Math.random() * draftData.length);
 
-  while(draftData[playerComparison].position != pos){
+  while (draftData[playerComparison].position != pos) {
     playerComparison = Math.floor(Math.random() * draftData.length);
   }
   let number = draftData[playerComparison].number;
   let position = draftData[playerComparison].position;
   let height = draftData[playerComparison].height;
   let pass =
-  draftData[playerComparison].pass  -
-  Math.floor(Math.random() * 12);
-let awareness =
-  draftData[playerComparison].awareness  -
-  Math.floor(Math.random() * 12);
-let rush =
-  draftData[playerComparison].rush  -
-  Math.floor(Math.random() * 12);
-let speed =
-  draftData[playerComparison].speed  -
-  Math.floor(Math.random() * 3);
-let catching =
-  draftData[playerComparison].catch  -
-  Math.floor(Math.random() * 12);
-let block =
-  draftData[playerComparison].block  -
-  Math.floor(Math.random() * 12);
+    draftData[playerComparison].pass -
+    Math.floor(Math.random() * 12);
+  let awareness =
+    draftData[playerComparison].awareness -
+    Math.floor(Math.random() * 12);
+  let rush =
+    draftData[playerComparison].rush -
+    Math.floor(Math.random() * 12);
+  let speed =
+    draftData[playerComparison].speed -
+    Math.floor(Math.random() * 3);
+  let catching =
+    draftData[playerComparison].catch -
+    Math.floor(Math.random() * 12);
+  let block =
+    draftData[playerComparison].block -
+    Math.floor(Math.random() * 12);
   let breakBlock =
-  draftData[playerComparison].breakBlock  -
-  Math.floor(Math.random() * 12);
+    draftData[playerComparison].breakBlock -
+    Math.floor(Math.random() * 12);
   let tackle =
-  draftData[playerComparison].tackle  -
-  Math.floor(Math.random() * 12);
+    draftData[playerComparison].tackle -
+    Math.floor(Math.random() * 12);
   let kick =
-  draftData[playerComparison].kick  -
-  Math.floor(Math.random() * 12); 
+    draftData[playerComparison].kick -
+    Math.floor(Math.random() * 12);
   //2 years the plus one is because the contract years go down AFTER the draft not before but contract years should be 2 for rookies
   let years = Math.floor(Math.random() * 3) + 1;
   let salary = 2400000;
@@ -7170,120 +7325,128 @@ let block =
   });
   ply.calculateRating();
 
-  while(ply.rating > rating){
-    if(ply.rating <= rating){
+  while (ply.rating > rating) {
+    if (ply.rating <= rating) {
       break;
     }
-    if(ply.awareness <= 40){
+    if (ply.awareness <= 40) {
       break;
     }
-    ply.awareness --;
-    if(ply.position === POS_QB){
-      ply.pass --;
+    ply.awareness--;
+    if (ply.position === POS_QB) {
+      ply.pass--;
 
     }
 
-    if(ply.position >= POS_HB && ply.position <= POS_TE){
-      ply.rush --;
+    if (ply.position >= POS_HB && ply.position <= POS_TE) {
+      ply.rush--;
       // ply.speed --;
-      ply.catch --;
-      ply.block --;
+      ply.catch--;
+      ply.block--;
     }
 
-    if(ply.position >= POS_LT && ply.position <= POS_RT){
-      ply.block --;
+    if (ply.position >= POS_LT && ply.position <= POS_RT) {
+      ply.block--;
     }
 
-    if(ply.position >= POS_LE && ply.position <= POS_RE){
-      ply.breakBlock --;
-      ply.tackle --;
+    if (ply.position >= POS_LE && ply.position <= POS_DT) {
+      ply.breakBlock--;
+      ply.tackle--;
     }
 
-    if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-      ply.breakBlock --;
-      ply.tackle --;
-      ply.catch --;
+    if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+      ply.breakBlock--;
+      ply.tackle--;
+      ply.catch--;
       // ply.speed --;
     }
 
-    if(ply.position >= POS_K && ply.position <= POS_P){
-      ply.kick --;
+    if (ply.position >= POS_K && ply.position <= POS_P) {
+      ply.kick--;
     }
     ply.calculateRating();
   }
 
-  while(ply.rating < rating){
-    if(ply.rating >= rating){
+  while (ply.rating < rating) {
+    if (ply.rating >= rating) {
       break;
     }
 
 
-    if(ply.awareness>=99){
+    if (ply.awareness >= 99) {
       break;
     }
-    if(ply.pass>=99){
+    if (ply.pass >= 99) {
       break;
     }
-    if(ply.rush>=99){
+    if (ply.rush >= 99) {
       break;
     }
-    if(ply.block>=99){
+    if (ply.block >= 99) {
       break;
     }
-    if(ply.breakBlock>=99){
+    if (ply.breakBlock >= 99) {
       break;
     }
-    if(ply.tackle>=99){
+    if (ply.tackle >= 99) {
       break;
     }
-    if(ply.catch>=99){
+    if (ply.catch >= 99) {
       break;
     }
-    if(ply.kick>=99){
+    if (ply.kick >= 99) {
       break;
     }
-    if(ply.speed>=99){
+    if (ply.speed >= 99) {
       break;
     }
 
 
-    ply.awareness ++;
-    if(ply.position === POS_QB){
-      ply.pass ++;
+    ply.awareness++;
+    if (ply.position === POS_QB) {
+      ply.pass++;
 
     }
 
-    if(ply.position >= POS_HB && ply.position <= POS_TE){
-      ply.rush ++;
+    if (ply.position >= POS_HB && ply.position <= POS_TE) {
+      ply.rush++;
       // ply.speed ++;
-      ply.catch ++;
-      ply.block ++;
+      ply.catch++;
+      ply.block++;
     }
 
-    if(ply.position >= POS_LT && ply.position <= POS_RT){
-      ply.block ++;
+    if (ply.position >= POS_LT && ply.position <= POS_RT) {
+      ply.block++;
     }
 
-    if(ply.position >= POS_LE && ply.position <= POS_RE){
-      ply.breakBlock ++;
-      ply.tackle ++;
+    if (ply.position >= POS_LE && ply.position <= POS_DT) {
+      ply.breakBlock++;
+      ply.tackle++;
     }
 
-    if(ply.position >= POS_LOLB && ply.position <= POS_SS){
-      ply.breakBlock ++;
-      ply.tackle ++;
-      ply.catch ++;
+    if (ply.position >= POS_LOLB && ply.position <= POS_SS) {
+      ply.breakBlock++;
+      ply.tackle++;
+      ply.catch++;
       // ply.speed ++;
     }
 
-    if(ply.position >= POS_K && ply.position <= POS_P){
-      ply.kick ++;
+    if (ply.position >= POS_K && ply.position <= POS_P) {
+      ply.kick++;
     }
     ply.calculateRating();
   }
 
   //fix the bug saying player got worse
   ply.awarenessOld = ply.awareness;
+  ply.passOld = ply.pass;
+  ply.rushOld = ply.rush;
+  ply.speedOld = ply.speed;
+  ply.catchOld = ply.catch;
+  ply.blockOld = ply.block;
+  ply.tackleOld = ply.tackle;
+  ply.breakBlockOld = ply.breakBlock;
+  ply.kickOld = ply.kick;
 
 
   return ply;
@@ -7291,35 +7454,35 @@ let block =
 }
 
 
-export function checkRequirementsWithoutPlayer(ply, team){
-  if(ply.position === POS_QB){
+export function checkRequirementsWithoutPlayer(ply, team) {
+  if (ply.position === POS_QB) {
     return (team.qbs.length - 1) >= POS_QB_REQUIREMENTS
   }
-  if(ply.position === POS_HB){
+  if (ply.position === POS_HB) {
     return (team.rbs.length - 1) >= POS_HB_REQUIREMENTS
   }
-  if(ply.position === POS_WR){
+  if (ply.position === POS_WR) {
     return (team.wrs.length - 1) >= POS_WR_REQUIREMENTS
   }
-  if(ply.position === POS_TE){
+  if (ply.position === POS_TE) {
     return (team.tes.length - 1) >= POS_TE_REQUIREMENTS
   }
-  if(ply.position >= POS_LT && ply.position <= POS_RT){
+  if (ply.position >= POS_LT && ply.position <= POS_RT) {
     return (team.ol.length - 1) >= POS_OL_REQUIREMENTS
   }
-  if(ply.position >= POS_LE && ply.position <= POS_DT){
+  if (ply.position >= POS_LE && ply.position <= POS_DT) {
     return (team.dl.length - 1) >= POS_DL_REQUIREMENTS
   }
-  if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
+  if (ply.position >= POS_LOLB && ply.position <= POS_ROLB) {
     return (team.lbs.length - 1) >= POS_LB_REQUIREMENTS
   }
-  if(ply.position >= POS_CB && ply.position <= POS_SS){
+  if (ply.position >= POS_CB && ply.position <= POS_SS) {
     return (team.dbs.length - 1) >= POS_DB_REQUIREMENTS
   }
-  if(ply.position === POS_K){
+  if (ply.position === POS_K) {
     return (team.ks.length - 1) >= POS_K_REQUIREMENTS
   }
-  if(ply.position === POS_P){
+  if (ply.position === POS_P) {
     return (team.ps.length - 1) >= POS_P_REQUIREMENTS
   }
 
@@ -7327,294 +7490,294 @@ export function checkRequirementsWithoutPlayer(ply, team){
 }
 
 
-function cpuRedshirting(){
-  for(let i=0; i<teams.length; i++){
-    if(teams[i] != selectedTeam){
-    let sortedRos = [...teams[i].roster];
-    //sort worst to best
-    sortedRos.sort(function(a,b){
-      if(a.rating>b.rating){
-        return 1;
-      }
-      if(a.rating<b.rating){
-        return -1
-      }
-      return 0;
-    });
-    for(let j=0; j<sortedRos.length; j++){
-      let ply = sortedRos[j];
-      let rand = Math.random()*100;
-      if(ply.age <= 18 && checkRequirementsWithoutPlayer(ply,teams[i]) && !playerWillStart(ply, teams[i]) && rand>50){
-        ply.redshirted = true;
+function cpuRedshirting() {
+  for (let i = 0; i < teams.length; i++) {
+    if (teams[i] != selectedTeam) {
+      let sortedRos = [...teams[i].roster];
+      //sort worst to best
+      sortedRos.sort(function (a, b) {
+        if (a.rating > b.rating) {
+          return 1;
+        }
+        if (a.rating < b.rating) {
+          return -1
+        }
+        return 0;
+      });
+      for (let j = 0; j < sortedRos.length; j++) {
+        let ply = sortedRos[j];
+        let rand = Math.random() * 100;
+        if (ply.age <= 18 && checkRequirementsWithoutPlayer(ply, teams[i]) && !playerWillStart(ply, teams[i]) && rand > 50) {
+          ply.redshirted = true;
 
-        //faster then just reordering lineup every time
-        if(ply.position === POS_QB){
-          teams[i].qbs.splice(teams[i].qbs.indexOf(ply),1);
-        }
-        if(ply.position === POS_HB){
-          teams[i].rbs.splice(teams[i].rbs.indexOf(ply),1);
-        }
-        if(ply.position === POS_WR){
-          teams[i].wrs.splice(teams[i].wrs.indexOf(ply),1);
-        }
-        if(ply.position === POS_TE){
-          teams[i].tes.splice(teams[i].tes.indexOf(ply),1);
-        }
-        if(ply.position >= POS_LT && ply.position <= POS_RT){
-          teams[i].ol.splice(teams[i].ol.indexOf(ply),1);
-        }
-        if(ply.position >= POS_LE && ply.position <= POS_DT){
-          teams[i].dl.splice(teams[i].dl.indexOf(ply),1);
-        }
-        if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
-          teams[i].lbs.splice(teams[i].lbs.indexOf(ply),1);
-        }
-        if(ply.position >= POS_CB && ply.position <= POS_SS){
-          teams[i].dbs.splice(teams[i].dbs.indexOf(ply),1);
-        }
-        if(ply.position === POS_K){
-          teams[i].ks.splice(teams[i].ks.indexOf(ply),1);
-        }
-        if(ply.position === POS_P){
-          teams[i].ps.splice(teams[i].ps.indexOf(ply),1);
-        }
-        
-      }
+          //faster then just reordering lineup every time
+          if (ply.position === POS_QB) {
+            teams[i].qbs.splice(teams[i].qbs.indexOf(ply), 1);
+          }
+          if (ply.position === POS_HB) {
+            teams[i].rbs.splice(teams[i].rbs.indexOf(ply), 1);
+          }
+          if (ply.position === POS_WR) {
+            teams[i].wrs.splice(teams[i].wrs.indexOf(ply), 1);
+          }
+          if (ply.position === POS_TE) {
+            teams[i].tes.splice(teams[i].tes.indexOf(ply), 1);
+          }
+          if (ply.position >= POS_LT && ply.position <= POS_RT) {
+            teams[i].ol.splice(teams[i].ol.indexOf(ply), 1);
+          }
+          if (ply.position >= POS_LE && ply.position <= POS_DT) {
+            teams[i].dl.splice(teams[i].dl.indexOf(ply), 1);
+          }
+          if (ply.position >= POS_LOLB && ply.position <= POS_ROLB) {
+            teams[i].lbs.splice(teams[i].lbs.indexOf(ply), 1);
+          }
+          if (ply.position >= POS_CB && ply.position <= POS_SS) {
+            teams[i].dbs.splice(teams[i].dbs.indexOf(ply), 1);
+          }
+          if (ply.position === POS_K) {
+            teams[i].ks.splice(teams[i].ks.indexOf(ply), 1);
+          }
+          if (ply.position === POS_P) {
+            teams[i].ps.splice(teams[i].ps.indexOf(ply), 1);
+          }
 
+        }
+
+      }
+      teams[i].reorderLineup();
     }
-    teams[i].reorderLineup();
-  }
-}
-}
-
-
-function playerWillStart(ply, team){
-  if(ply.position === POS_QB){
-    return team.qbs.indexOf(ply)<=0;
-  }
-  if(ply.position === POS_HB){
-    return team.rbs.indexOf(ply)<=1;
-  }
-  if(ply.position === POS_WR){
-    return team.wrs.indexOf(ply)<=3;
-  }
-  if(ply.position === POS_TE){
-    return team.tes.indexOf(ply)<=1;
-  }
-  if(ply.position >= POS_LT && ply.position <= POS_RT){
-    return team.ol.indexOf(ply)<=4;
-  }
-  if(ply.position >= POS_LE && ply.position <= POS_DT){
-    return team.dl.indexOf(ply)<=2;
-  }
-  if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
-    return team.lbs.indexOf(ply)<=2;
-  }
-  if(ply.position >= POS_CB && ply.position <= POS_SS){
-    return team.lbs.indexOf(ply)<=3;
-  }
-  if(ply.position === POS_K){
-    return team.ks.indexOf(ply)<=0;
-  }
-  if(ply.position === POS_P){
-    return team.ps.indexOf(ply)<=0;
   }
 }
 
-function playerWouldStart(ply, team){
-  if(ply.position === POS_QB){
-    return ply.rating>team.qbs[0];
-  }
-  if(ply.position === POS_HB){
-    return ply.rating>team.rbs[1];
-  }
-  if(ply.position === POS_WR){
-    return ply.rating>team.wrs[3];
-  }
-  if(ply.position === POS_TE){
-    return ply.rating>team.tes[1];
-  }
-  if(ply.position >= POS_LT && ply.position <= POS_RT){
-    return ply.rating>team.ol[4];
-  }
-  if(ply.position >= POS_LE && ply.position <= POS_DT){
-    return ply.rating>team.dl[2];
-  }
-  if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
-    return ply.rating>team.lbs[2];
 
+function playerWillStart(ply, team) {
+  if (ply.position === POS_QB) {
+    return team.qbs.indexOf(ply) <= 0;
   }
-  if(ply.position >= POS_CB && ply.position <= POS_SS){
-    return ply.rating>team.dbs[3];
-
+  if (ply.position === POS_HB) {
+    return team.rbs.indexOf(ply) <= 1;
   }
-  if(ply.position === POS_K){
-    return ply.rating>team.ks[0];
+  if (ply.position === POS_WR) {
+    return team.wrs.indexOf(ply) <= 3;
   }
-  if(ply.position === POS_P){
-    return ply.rating>team.ps[0];
+  if (ply.position === POS_TE) {
+    return team.tes.indexOf(ply) <= 1;
+  }
+  if (ply.position >= POS_LT && ply.position <= POS_RT) {
+    return team.ol.indexOf(ply) <= 4;
+  }
+  if (ply.position >= POS_LE && ply.position <= POS_DT) {
+    return team.dl.indexOf(ply) <= 2;
+  }
+  if (ply.position >= POS_LOLB && ply.position <= POS_ROLB) {
+    return team.lbs.indexOf(ply) <= 2;
+  }
+  if (ply.position >= POS_CB && ply.position <= POS_SS) {
+    return team.lbs.indexOf(ply) <= 3;
+  }
+  if (ply.position === POS_K) {
+    return team.ks.indexOf(ply) <= 0;
+  }
+  if (ply.position === POS_P) {
+    return team.ps.indexOf(ply) <= 0;
   }
 }
 
-function bowlGameSetup(){
+function playerWouldStart(ply, team) {
+  if (ply.position === POS_QB) {
+    return ply.rating > team.qbs[0];
+  }
+  if (ply.position === POS_HB) {
+    return ply.rating > team.rbs[1];
+  }
+  if (ply.position === POS_WR) {
+    return ply.rating > team.wrs[3];
+  }
+  if (ply.position === POS_TE) {
+    return ply.rating > team.tes[1];
+  }
+  if (ply.position >= POS_LT && ply.position <= POS_RT) {
+    return ply.rating > team.ol[4];
+  }
+  if (ply.position >= POS_LE && ply.position <= POS_DT) {
+    return ply.rating > team.dl[2];
+  }
+  if (ply.position >= POS_LOLB && ply.position <= POS_ROLB) {
+    return ply.rating > team.lbs[2];
+
+  }
+  if (ply.position >= POS_CB && ply.position <= POS_SS) {
+    return ply.rating > team.dbs[3];
+
+  }
+  if (ply.position === POS_K) {
+    return ply.rating > team.ks[0];
+  }
+  if (ply.position === POS_P) {
+    return ply.rating > team.ps[0];
+  }
+}
+
+function bowlGameSetup() {
   let bowlTeams = [];
   let games = [];
   // return [];
-  for(let i=0; i<teams.length; i++){
-    if(teams[i].seed> playoffSeeds && teams[i].wins >= (gamesPerSeason/2)){
+  for (let i = 0; i < teams.length; i++) {
+    if (teams[i].seed > playoffSeeds && teams[i].wins >= (gamesPerSeason / 2)) {
       //bowl elligible
       bowlTeams.push(teams[i]);
     }
   }
 
-    bowlTeams.sort(function(a,b){
-      //sort by rating instead of seed:)
-      if(a.seed<b.seed){
-        return 1;
-      }
-      if(a.seed>b.seed){
-        return -1;
-      }
-      return 0;
-    })
-
-    if(bowlTeams.length%2>0){
-      bowlTeams.pop();
-      //pop last team if odd teams :(
+  bowlTeams.sort(function (a, b) {
+    //sort by rating instead of seed:)
+    if (a.seed < b.seed) {
+      return 1;
     }
-
-    bowlTeams.sort(function(a,b){
-      //sort by rating instead of seed :)
-      if(a.rating<b.rating){
-        return 1;
-      }
-      if(a.rating>b.rating){
-        return -1;
-      }
-      return 0;
-    });
-
-    for(let i=0; i<bowlTeams.length; i++){
-      let series = new Series();
-      series.team1 = bowlTeams[i];
-      series.team2 = bowlTeams[i+1];
-      games.push(series);
-      i++;
+    if (a.seed > b.seed) {
+      return -1;
     }
+    return 0;
+  })
 
-    return games;
-    
+  if (bowlTeams.length % 2 > 0) {
+    bowlTeams.pop();
+    //pop last team if odd teams :(
+  }
+
+  bowlTeams.sort(function (a, b) {
+    //sort by rating instead of seed :)
+    if (a.rating < b.rating) {
+      return 1;
+    }
+    if (a.rating > b.rating) {
+      return -1;
+    }
+    return 0;
+  });
+
+  for (let i = 0; i < bowlTeams.length; i++) {
+    let series = new Series();
+    series.team1 = bowlTeams[i];
+    series.team2 = bowlTeams[i + 1];
+    games.push(series);
+    i++;
+  }
+
+  return games;
+
+}
+
+
+
+function balanceRoster() {
+  let allplys = [];
+  //football
+  let highLb = 0;
+  let qbs = 0;
+  let rbs = 0;
+  let fbs = 0;
+  let tes = 0;
+  let wrs = 0;
+  let ol = 0;
+  let dl = 0;
+  let lbs = 0;
+  let dbs = 0;
+  let ks = 0;
+  let ps = 0;
+  let qbsRat = 0;
+  let rbsRat = 0;
+  let fbsRat = 0;
+  let tesRat = 0;
+  let wrsRat = 0;
+  let olRat = 0;
+  let dlRat = 0;
+  let lbsRat = 0;
+  let dbsRat = 0;
+  let ksRat = 0;
+  let psRat = 0;
+
+  for (let i = 0; i < teams.length; i++) {
+    for (let j = 0; j < teams[i].roster.length; j++) {
+      allplys.push(teams[i].roster[j]);
+    }
   }
 
 
-
-  function balanceRoster(){
-    let allplys = [];
-        //football
-        let highLb=0;
-       let qbs = 0;
-       let rbs = 0;
-       let fbs = 0;
-       let tes = 0;
-       let wrs = 0;
-       let ol = 0;
-       let dl = 0;
-       let lbs = 0;
-       let dbs = 0;
-       let ks = 0;
-       let ps = 0;
-       let qbsRat = 0;
-       let rbsRat = 0;
-       let fbsRat = 0;
-       let tesRat = 0;
-       let wrsRat = 0;
-       let olRat = 0;
-       let dlRat = 0;
-       let lbsRat = 0;
-       let dbsRat = 0;
-       let ksRat = 0;
-       let psRat = 0;
-
-    for(let i=0; i<teams.length; i++){
-      for(let j=0; j<teams[i].roster.length; j++){
-        allplys.push(teams[i].roster[j]);
-      }
+  for (let i = 0; i < allplys.length; i++) {
+    let ply = allplys[i];
+    if (ply.position === POS_QB) {
+      qbs++;
+      qbsRat += ply.rating;
     }
-
-
-    for(let i=0; i<allplys.length; i++){
-      let ply = allplys[i];
-      if(ply.position === POS_QB){
-        qbs++;
-        qbsRat+=ply.rating;
-      }
-      if(ply.position === POS_HB){
-        ply.awareness= Math.round(scaleBetween(ply.awareness,10,99,40,99));
-        ply.speed= Math.round(scaleBetween(ply.speed,20,99,40,99));
-        ply.rush= Math.round(scaleBetween(ply.rush,20,99,40,99));
-        ply.calculateRating();
-        rbs++;
-        rbsRat+=ply.rating;
-      }
-      if(ply.position === POS_WR){
-        ply.catch= Math.round(scaleBetween(ply.catch,10,99,40,99));
-        ply.awareness= Math.round(scaleBetween(ply.awareness,10,99,40,99));
-        ply.speed= Math.round(scaleBetween(ply.speed,20,99,40,99));
-        ply.rush= Math.round(scaleBetween(ply.rush,10,90,40,99));
-        ply.calculateRating();
-        wrs++;
-        wrsRat+=ply.rating;
-      }
-      if(ply.position === POS_TE){
-        ply.awareness= Math.round(scaleBetween(ply.awareness,20,99,40,95));
-        ply.catch= Math.round(scaleBetween(ply.catch,50,99,40,90));
-        ply.block= Math.round(scaleBetween(ply.block,50,99,40,85));
-        ply.calculateRating();
-        tes++;
-        tesRat+=ply.rating;
-      }
-      if(ply.position >= POS_LT && ply.position <= POS_RT){
-        ply.block= Math.round(scaleBetween(ply.block,55,99,40,99));
-        ply.calculateRating();
-        ol++;
-        olRat+=ply.rating;
-      }
-      if(ply.position >= POS_LE && ply.position <= POS_DT){
-        ply.breakBlock= Math.round(scaleBetween(ply.breakBlock,55,99,40,99));
-        ply.calculateRating();
-        dl++;
-        dlRat+=ply.rating;
-      }
-      if(ply.position >= POS_LOLB && ply.position <= POS_ROLB){
-        ply.breakBlock= Math.round(scaleBetween(ply.breakBlock,55,99,40,99));
-        ply.calculateRating();
-        lbs++;
-        lbsRat+=ply.rating;
-      }
-      if(ply.position >= POS_CB && ply.position <= POS_SS){
-        ply.catch= Math.round(scaleBetween(ply.catch,50,95,40,99));
-        ply.tackle= Math.round(scaleBetween(ply.tackle,55,99,40,93));
-        ply.speed= Math.round(scaleBetween(ply.speed,50,99,40,99));
-        ply.awareness= Math.round(scaleBetween(ply.awareness,40,99,40,96));
-        ply.calculateRating();
-        dbs++;
-        dbsRat+=ply.rating;
-      }
-      if(ply.position === POS_K){
-        ply.awareness= Math.round(scaleBetween(ply.awareness,55,99,40,95));
-        ply.kick= Math.round(scaleBetween(ply.kick,55,99,40,95));
-        ply.calculateRating();
-        ks++;
-        ksRat+=ply.rating;
-      }
-      if(ply.position === POS_P){
-        ply.awareness= Math.round(scaleBetween(ply.awareness,55,99,40,95));
-        ply.kick= Math.round(scaleBetween(ply.kick,55,99,40,95));
-        ply.calculateRating();
-        ps++;
-        psRat+=ply.rating;
-      }
+    if (ply.position === POS_HB) {
+      ply.awareness = Math.round(scaleBetween(ply.awareness, 10, 99, 40, 99));
+      ply.speed = Math.round(scaleBetween(ply.speed, 20, 99, 40, 99));
+      ply.rush = Math.round(scaleBetween(ply.rush, 20, 99, 40, 99));
+      ply.calculateRating();
+      rbs++;
+      rbsRat += ply.rating;
     }
+    if (ply.position === POS_WR) {
+      ply.catch = Math.round(scaleBetween(ply.catch, 10, 99, 40, 99));
+      ply.awareness = Math.round(scaleBetween(ply.awareness, 10, 99, 40, 99));
+      ply.speed = Math.round(scaleBetween(ply.speed, 20, 99, 40, 99));
+      ply.rush = Math.round(scaleBetween(ply.rush, 10, 90, 40, 99));
+      ply.calculateRating();
+      wrs++;
+      wrsRat += ply.rating;
+    }
+    if (ply.position === POS_TE) {
+      ply.awareness = Math.round(scaleBetween(ply.awareness, 20, 99, 40, 95));
+      ply.catch = Math.round(scaleBetween(ply.catch, 50, 99, 40, 90));
+      ply.block = Math.round(scaleBetween(ply.block, 50, 99, 40, 85));
+      ply.calculateRating();
+      tes++;
+      tesRat += ply.rating;
+    }
+    if (ply.position >= POS_LT && ply.position <= POS_RT) {
+      ply.block = Math.round(scaleBetween(ply.block, 55, 99, 40, 99));
+      ply.calculateRating();
+      ol++;
+      olRat += ply.rating;
+    }
+    if (ply.position >= POS_LE && ply.position <= POS_DT) {
+      ply.breakBlock = Math.round(scaleBetween(ply.breakBlock, 55, 99, 40, 99));
+      ply.calculateRating();
+      dl++;
+      dlRat += ply.rating;
+    }
+    if (ply.position >= POS_LOLB && ply.position <= POS_ROLB) {
+      ply.breakBlock = Math.round(scaleBetween(ply.breakBlock, 55, 99, 40, 99));
+      ply.calculateRating();
+      lbs++;
+      lbsRat += ply.rating;
+    }
+    if (ply.position >= POS_CB && ply.position <= POS_SS) {
+      ply.catch = Math.round(scaleBetween(ply.catch, 50, 95, 40, 99));
+      ply.tackle = Math.round(scaleBetween(ply.tackle, 55, 99, 40, 93));
+      ply.speed = Math.round(scaleBetween(ply.speed, 50, 99, 40, 99));
+      ply.awareness = Math.round(scaleBetween(ply.awareness, 40, 99, 40, 96));
+      ply.calculateRating();
+      dbs++;
+      dbsRat += ply.rating;
+    }
+    if (ply.position === POS_K) {
+      ply.awareness = Math.round(scaleBetween(ply.awareness, 55, 99, 40, 95));
+      ply.kick = Math.round(scaleBetween(ply.kick, 55, 99, 40, 95));
+      ply.calculateRating();
+      ks++;
+      ksRat += ply.rating;
+    }
+    if (ply.position === POS_P) {
+      ply.awareness = Math.round(scaleBetween(ply.awareness, 55, 99, 40, 95));
+      ply.kick = Math.round(scaleBetween(ply.kick, 55, 99, 40, 95));
+      ply.calculateRating();
+      ps++;
+      psRat += ply.rating;
+    }
+  }
 
 
 
@@ -7643,68 +7806,86 @@ function bowlGameSetup(){
   //   `)
 
 
-  }
+}
 
 
 
- function checkIfByeNeeded(input){
+function checkIfByeNeeded(input) {
   let num = input;
-  while(num > 3){
+  while (num > 3) {
     num /= 2;
   }
-  return num%2 > 0;
- }
+  return num % 2 > 0;
+}
 
- function checkAmountOfByes(input){
+function checkAmountOfByes(input) {
   let num = input;
   byeCount = 1;
-  while(num > 3){
+  while (num > 3) {
     num /= 2;
     byeCount++;
   }
-  if(num%2 > 0){
+  if (num % 2 > 0) {
     return byeCount;
-  }else{return 0;}
- }
+  } else { return 0; }
+}
 
 
- export function played(roster){
-   let plyed = [];
-   for(let i=0; i<roster.length; i++){
-     if(roster[i].attempts > 0){
-       plyed.push(roster[i]);
-     }
-    else if(roster[i].kicksAttempted > 0){
+export function played(roster) {
+  let plyed = [];
+  for (let i = 0; i < roster.length; i++) {
+    if (roster[i].attempts > 0) {
       plyed.push(roster[i]);
     }
-    else if(roster[i].yards > 0){
+    else if (roster[i].kicksAttempted > 0) {
       plyed.push(roster[i]);
     }
-    else if(roster[i].tackles > 0){
+    else if (roster[i].yards > 0) {
       plyed.push(roster[i]);
     }
-    else if(roster[i].interceptions > 0){
+    else if (roster[i].tackles > 0) {
       plyed.push(roster[i]);
     }
-    else if(roster[i].fumbles > 0){
+    else if (roster[i].interceptions > 0) {
       plyed.push(roster[i]);
     }
-    else if(roster[i].punts > 0){
+    else if (roster[i].fumbles > 0) {
       plyed.push(roster[i]);
     }
-   }
+    else if (roster[i].punts > 0) {
+      plyed.push(roster[i]);
+    }
+  }
 
 
-   plyed.sort(function(a,b){
-     if(a.position > b.position){
-       return 1;
-     }
-     if(a.position < b.position){
+  plyed.sort(function (a, b) {
+    if (a.position > b.position) {
+      return 1;
+    }
+    if (a.position < b.position) {
       return -1;
     }
     return 0;
-   })
+  })
 
-   return plyed;
- }
+  return plyed;
+}
+
+
+// function exportPlayersToCSV(team){
+//   let csvString = 'team,name,position,age,height,years,salary,number,faceSrc,pass,awareness,rush,speed,catch,block,breakBlock,tackle,kick\n';
+//       for(let j=0; j<team.roster.length; j++){
+//         let ply = team.roster[j];
+//         csvString += `${team.name},${ply.name},${ply.position},${ply.age},${ply.height},${ply.years},${ply.salary},${ply.number},${ply.faceSrc === GENERIC_PLAYER_LOGO? '' : ply.faceSrc},${ply.pass},${ply.awareness},${ply.rush},${ply.speed},${ply.catch},${ply.block},${ply.breakBlock},${ply.tackle},${ply.kick}\n`;
+//       }
+// }
+
+// function importPlayersFromCSV(team, string){
+//   let data = csv.toObjects(string);
+//   console.log(data[0]);
+// }
+
+
+
+
 

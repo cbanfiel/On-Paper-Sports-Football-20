@@ -9,6 +9,10 @@ import ListItem from '../components/ListItem';
 
 const updateLog = [
     {
+        date: '10/23/2019',
+        updates: "-Fixed progression/regression bug with some positions\n-Overhauled player interests in signing/resignining stage"
+    },
+    {
         date: '7/23/2019',
         updates: "-New offseason training screen \n-New slider presets (college, pro) \n-Community rosters can now be binded to a slider preset (college rosters automatically use college sliders) \n-New rebounding slider \n-Various bug fixes"
     },

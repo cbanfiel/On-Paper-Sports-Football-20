@@ -237,7 +237,7 @@ export default class RosterMenu extends React.Component {
             </Card>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.writeToClipboard(exportTeamJSON(selectedTeam)) }}>
+          {/* <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.writeToClipboard(exportTeamJSON(selectedTeam)) }}>
             <Card
               containerStyle={{
                 width: '95%', backgroundColor: 'rgba(255,255,255,0)',
@@ -252,7 +252,7 @@ export default class RosterMenu extends React.Component {
               <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
               <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Export Team JSON'}</Text>
             </Card>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
 
 
