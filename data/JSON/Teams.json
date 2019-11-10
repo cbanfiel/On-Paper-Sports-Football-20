@@ -1,206 +1,123 @@
 [
-  {
-    "name": "USA",
+    {
+    "name": "Brooklyn Beavers",
     "id": 0,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/united-states-of-america/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/beavers.png?raw=true"
   },
   {
-    "name": "Norway",
+    "name": "Indianapolis Vikings",
     "id": 1,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/norway/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/vikings.png?raw=true"
   },
   {
-    "name": "Switzerland",
+    "name": "San Jose Snakes",
     "id": 2,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/switzerland/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/snakes.png?raw=true"
   },
   {
-    "name": "Germany",
+    "name": "Jacksonville Gators",
     "id": 3,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/germany/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/gators.png?raw=true"
   },
   {
-    "name": "Canada",
+    "name": "Denver Dragons",
     "id": 4,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/canada/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/dragons.png?raw=true"
   },
   {
-    "name": "Brazil",
+    "name": "Fort Worth Eagles",
     "id": 5,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/brazil/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/eagles.png?raw=true"
   },
   {
-    "name": "Belgium",
+    "name": "Seattle Warriors",
     "id": 6,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/belgium/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/warriors.png?raw=true"
   },
   {
-    "name": "Australia",
+    "name": "Oakland Owls",
     "id": 7,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/australia/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/owls.png?raw=true"
   },
   {
-    "name": "China",
+    "name": "Houston Stallions",
     "id": 8,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/china/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/broncos.png?raw=true"
   },
   {
-    "name": "Columbia",
+    "name": "Portland Badgers",
     "id": 9,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/colombia/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/badgers.png?raw=true"
   },
   {
-    "name": "Costa Rica",
+    "name": "Louisville Knights",
     "id": 10,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/costa-rica/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/knights.png?raw=true"
   },
   {
-    "name": "Denmark",
+    "name": "Detroit Roosters",
     "id": 11,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/denmark/flag-round-500.png"
-  },
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/roosters.png?raw=true"
+  }
+  ,
   {
-    "name": "Egypt",
+    "name": "Chicago Rhinos",
     "id": 12,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/egypt/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/rhinos.png?raw=true"
   },
   {
-    "name": "Ethiopia",
+    "name": "Phoenix Gorillas",
     "id": 13,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/ethiopia/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/gorillas.png?raw=true"
   },
   {
-    "name": "Finland",
+    "name": "Charlotte Cougars",
     "id": 14,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/finland/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/cougars.png?raw=true"
   },
   {
-    "name": "France",
+    "name": "Dallas Demons",
     "id": 15,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/france/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/demons.png?raw=true"
   },
   {
-    "name": "Greece",
+    "name": "Omaha Dinos",
     "id": 16,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/greece/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/dinos.png?raw=true"
   },
   {
-    "name": "India",
+    "name": "Honolulu Dolphins",
     "id": 17,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/india/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/dolphins.png?raw=true"
   },
   {
-    "name": "Ireland",
+    "name": "Virginia Beach Rams",
     "id": 18,
     "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/ireland/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/rams.png?raw=true"
   },
   {
-    "name": "Italy",
+    "name": "Milwaukee Trojans",
     "id": 19,
     "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/italy/flag-round-500.png"
-  },
-  {
-    "name": "Jamaica",
-    "id": 20,
-    "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/jamaica/flag-round-500.png"
-  },
-  {
-    "name": "Japan",
-    "id": 21,
-    "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/japan/flag-round-500.png"
-  },
-  {
-    "name": "Mexico",
-    "id": 22,
-    "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/mexico/flag-round-500.png"
-  },
-  {
-    "name": "Russia",
-    "id": 23,
-    "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/russia/flag-round-500.png"
-  },
-  {
-    "name": "South Korea",
-    "id": 24,
-    "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/south-korea/flag-round-500.png"
-  },
-  {
-    "name": "Spain",
-    "id": 25,
-    "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/spain/flag-round-500.png"
-  },
-  {
-    "name": "Argentina",
-    "id": 26,
-    "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/argentina/flag-round-500.png"
-  },
-  {
-    "name": "Kazakhstan",
-    "id": 27,
-    "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/kazakhstan/flag-round-500.png"
-  },
-  {
-    "name": "Algeria",
-    "id": 28,
-    "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/algeria/flag-round-500.png"
-  },
-  {
-    "name": "Turkey",
-    "id": 29,
-    "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/turkey/flag-round-500.png"
-  },
-  {
-    "name": "Nigeria",
-    "id": 30,
-    "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/nigeria/flag-round-500.png"
-  },
-  {
-    "name": "Iran",
-    "id": 31,
-    "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/iran/flag-round-500.png"
-  },
-  {
-    "name": "Pakistan",
-    "id": 32,
-    "conferenceId": 0,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/pakistan/flag-round-500.png"
-  },
-  {
-    "name": "South Africa",
-    "id": 33,
-    "conferenceId": 1,
-    "logoSrc": "https://cdn.countryflags.com/thumbs/south-africa/flag-round-500.png"
+    "logoSrc": "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/logos/trojans.png?raw=true"
   }
 ]

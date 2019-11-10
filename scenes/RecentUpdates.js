@@ -9,6 +9,10 @@ import ListItem from '../components/ListItem';
 
 const updateLog = [
     {
+        date: '11/9/2019',
+        updates: "-Added generic player faces\n-Added generic team logos\n-You can now use the generic player portraits in the create a player menu\n-You can now use the generic team logos in the create a team menu"
+    },
+    {
         date: '10/24/2019',
         updates: "-Simplified offer contract menu\n-Added player signing difficulty slider"
     },

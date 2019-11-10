@@ -102,9 +102,9 @@ export default class MainMenu extends React.Component {
               <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'OVR: ' + home.rating}</Text>
                 <CachedImage
-                 style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} uri={home.logoSrc } />
+                 style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} uri={home.logoSrc } name={home.name} />
                 <CachedImage
-                 style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginLeft: 20 }} uri={away.logoSrc } />
+                 style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginLeft: 20 }} uri={away.logoSrc }  name={away.name} />
                 <Text style={{ flex: 1, textAlign: 'center', fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'OVR: ' + away.rating}</Text>
 
               </View>
@@ -121,8 +121,8 @@ export default class MainMenu extends React.Component {
               }}
               >
               <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                <CachedImage style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginLeft: 20 }} uri={this.state.team.logoSrc } />
-                <CachedImage style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} uri={this.state.team.roster[0].faceSrc } />
+                <CachedImage style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginLeft: 20 }} uri={this.state.team.logoSrc } name={this.state.team.name} />
+                <CachedImage style={{ flex: 1, overflow: 'hidden',  resizeMode: 'contain', height: 75, width: 75, margin: 5, marginRight: 20 }} uri={this.state.team.roster[0].faceSrc } name={this.state.team.roster[0].name} />
 
               </View>
               <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.team.roster[0].positionString + ' #' + this.state.team.roster[0].number + ' ' + this.state.team.roster[0].name}</Text>

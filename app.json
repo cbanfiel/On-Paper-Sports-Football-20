@@ -8,7 +8,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -25,11 +25,11 @@
     "ios": {
       "bundleIdentifier": "com.chadbanfield.onpapersportsfootball20",
       "supportsTablet": true,
-      "buildNumber": "1.0.2"
+      "buildNumber": "1.0.3"
     },
     "android": {
       "package": "com.chadbanfield.onpapersportsfootball20",
-      "versionCode": 3
+      "versionCode": 4
     },
     "description": ""
   }

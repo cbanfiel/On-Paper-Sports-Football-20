@@ -1,4 +1,4 @@
-var teamsData = require("./JSON/Teams.json");
+export let teamsData = require("./JSON/Teams.json");
 
 var playerData = require("./JSON/Players.json");
 
@@ -7,6 +7,8 @@ var freeAgents = require("./JSON/FreeAgents.json");
 var draftData = require("./JSON/DraftData.json");
 
 const playbookData = require("./JSON/PlaybookData.json");
+
+export const portraits = require('./Portraits.json');
 
 import * as FileSystem from "expo-file-system";
 
@@ -61,7 +63,7 @@ export const DEF_425 = 3;
 export const DEF_52 = 4;
 
 export const REDSHIRT_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Redshirt.svg/1280px-Redshirt.svg.png';
-export const GENERIC_PLAYER_LOGO = 'https://www.2kratings.com/wp-content/uploads/NBA-Player.png';
+export const GENERIC_PLAYER_LOGO = 'https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/portraits/facegenplayer.png?raw=true';
 
 
 
@@ -168,6 +170,8 @@ export function collegeSliderPreset() {
   seriesWinCount = 1;
   conferencesOn = false;
   collegeMode = true;
+  franchise = new Franchise();
+
 }
 
 export function setSliders(
@@ -222,7 +226,7 @@ class Player {
     this.getPositionString();
     this.faceSrc = player.faceSrc;
     if (player.faceSrc == null || player.faceSrc.length < 1) {
-      this.faceSrc = GENERIC_PLAYER_LOGO;
+    this.faceSrc = portraits[Math.floor(Math.random()*portraits.length)];
     }
     this.teamLogoSrc;
     this.teamName;
@@ -686,7 +690,7 @@ class Team {
     this.expiring = {
       name: "Expiring Contracts",
       roster: [],
-      logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
+      logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
       reorderLineup: function () {
         availableFreeAgents.roster.sort(function (a, b) {
           if (a.rating > b.rating) return -1;
@@ -1180,14 +1184,14 @@ export let conferences = [];
 let easternConference = {
   name: "Eastern Conference",
   teams: [],
-  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
+  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
   id: 0
 };
 
 let westernConference = {
   name: "Western Conference",
   teams: [],
-  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
+  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
   id: 1
 };
 
@@ -1196,7 +1200,7 @@ conferences.push(easternConference, westernConference);
 export let availableFreeAgents = {
   name: "Free Agents",
   roster: [],
-  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
+  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
   reorderLineup: function () {
     availableFreeAgents.roster.sort(function (a, b) {
       if (a.rating > b.rating) return -1;
@@ -1225,7 +1229,9 @@ export function loadRosters() {
     }
     if (teams[i].roster.length <= 0) {
       //changed init custom rost to 78
-      generateCustomRoster(teams[i], 80);
+      let rating = 83+(Math.round(Math.random()*6)-3);
+
+      generateCustomRoster(teams[i], rating);
     }
     for (let k = 0; k < conferences.length; k++) {
       if (teams[i].conferenceId === conferences[k].id) {
@@ -1262,7 +1268,7 @@ export function loadRosters() {
 export let draftClass = {
   name: "Draft Class",
   roster: [],
-  logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
+  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
   reorderLineup: function () {
     draftClass.roster.sort(function (a, b) {
       if (a.rating > b.rating) return -1;
@@ -1293,6 +1299,9 @@ export function generateCustomRoster(team, rating) {
     let rat = rating + rand;
     if (rat < 61) {
       rat = 61;
+    }
+    if (rat > 99) {
+      rat = 99;
     }
     if (qbs < POS_QB_REQUIREMENTS) {
       ply = generatePlayer(POS_QB, rat);
@@ -1350,11 +1359,13 @@ export function generateCustomRoster(team, rating) {
       scaleBetween(
         tradeValueCalculation(ply),
         VETERANSMINIMUM,
-        30000000,
+        20000000,
         80,
         600
-      )
-    ) + Math.round(Math.random() * 100000);
+      )-Math.random()*10000000);
+    if(ply.salary < VETERANSMINIMUM){
+      ply.salary = VETERANSMINIMUM;
+    }
     ply.age = Math.floor(Math.random() * 14) + 23;
     if (collegeMode) {
       //set up for college fr - sr
@@ -3078,7 +3089,7 @@ export class Franchise {
     this.retirements = {
       name: "Retirements",
       roster: [],
-      logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
+      logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
       reorderLineup: function () {
         draftClass.roster.sort(function (a, b) {
           if (a.rating > b.rating) return -1;
@@ -4875,7 +4886,7 @@ export class Franchise {
       drafted: {
         name: "Drafted",
         roster: [],
-        logoSrc: "https://i.ibb.co/PGmLnWj/football.png",
+        logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
         reorderLineup: function () {
           availableFreeAgents.roster.sort(function (a, b) {
             if (a.rating > b.rating) return -1;
@@ -6221,6 +6232,8 @@ export async function getDataFromLink(link, type, sliderType, _callback) {
     } else if (type === "communityroster") {
       communityRosters = responseJson;
 
+    }else if (type === 'portraits'){
+      portraits = responseJson;
     }
   } catch (error) {
     console.log(error);
@@ -6233,6 +6246,7 @@ communityRosters = getDataFromLink(
   "https://raw.githubusercontent.com/cbanfiel/On-Paper-Sports-Football-20-Rosters/master/communityFiles.json",
   "communityroster"
 );
+
 
 //checked
 export function loadRosterJson(loadedDataIn) {

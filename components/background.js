@@ -14,7 +14,7 @@ export default class Background extends React.Component {
 
   async componentDidMount() {
     await Font.loadAsync({
-      'advent-pro': require('../assets/fonts/AdventPro-Regular.ttf'),
+      'advent-pro': require('../assets/fonts/AdventPro-Regular.ttf')
     });
     this.setState({ fontLoaded: true });
   }

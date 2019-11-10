@@ -444,7 +444,7 @@ export default class SlidersMenu extends React.Component {
                         />
 
                         
-<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"Player Signing Difficulty: " + this.state.playerSigningDifficulty}</Text>
+<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"User Signing Difficulty: " + this.state.playerSigningDifficulty}</Text>
                         <Slider
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
