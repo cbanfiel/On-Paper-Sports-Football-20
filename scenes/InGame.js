@@ -11,11 +11,11 @@ let poss;
 export default class InGame extends React.Component {
 
   resetCoachingSliders(){
-    selectedTeam.offVsDefFocus = this.state.offVsDefFocus;
-    selectedTeam.offenseType = this.state.offenseType;
-    selectedTeam.defenseType = this.state.defenseType;
-    selectedTeam.runVsPass = this.state.runVsPass;
-    selectedTeam.offTempo = this.state.offTempo;
+    selectedTeam.coach.offVsDefFocus = this.state.offVsDefFocus;
+    selectedTeam.coach.offenseType = this.state.offenseType;
+    selectedTeam.coach.defenseType = this.state.defenseType;
+    selectedTeam.coach.runVsPass = this.state.runVsPass;
+    selectedTeam.coach.offTempo = this.state.offTempo;
   }
 
 
@@ -28,11 +28,11 @@ export default class InGame extends React.Component {
     playByPlay: null,
     speed: 100,
     completed: false,
-    offVsDefFocus: selectedTeam.offVsDefFocus,
-    offenseType: selectedTeam.offenseType,
-    defenseType: selectedTeam.defenseType,
-    runVsPass: selectedTeam.runVsPass,
-    offTempo: selectedTeam.offTempo,
+    offVsDefFocus: selectedTeam.coach.offVsDefFocus,
+    offenseType: selectedTeam.coach.offenseType,
+    defenseType: selectedTeam.coach.defenseType,
+    runVsPass: selectedTeam.coach.runVsPass,
+    offTempo: selectedTeam.coach.offTempo,
     down: 1,
     yardsToGo: 10,
     yardMarker: 20,

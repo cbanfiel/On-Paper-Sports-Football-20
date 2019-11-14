@@ -3,27 +3,27 @@ import { Text, View, ScrollView } from 'react-native';
 import { Button, Card, Slider, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
-import { selectedTeam, OFF_PRO, OFF_SPREAD, OFF_OPTION, OFF_PISTOL, DEF_43, DEF_34, DEF_335, DEF_425, DEF_52 } from '../data/script';
+import { selectedTeam, OFF_PRO, OFF_SPREAD, OFF_OPTION, OFF_PISTOL, DEF_43, DEF_34, DEF_335, DEF_425, DEF_52, displaySalary } from '../data/script';
 import CachedImage from '../components/CachedImage';
 
 export default class CoachSettings extends React.Component {
     state = {
-        offVsDefFocus: selectedTeam.offVsDefFocus,
-        offenseType: selectedTeam.offenseType,
-        defenseType: selectedTeam.defenseType,
-        runVsPass: selectedTeam.runVsPass,
-        offTempo: selectedTeam.offTempo
+        offVsDefFocus: selectedTeam.coach.offVsDefFocus,
+        offenseType: selectedTeam.coach.offenseType,
+        defenseType: selectedTeam.coach.defenseType,
+        runVsPass: selectedTeam.coach.runVsPass,
+        offTempo: selectedTeam.coach.offTempo
 
     }
 
 
 
     saveChanges() {
-        selectedTeam.offVsDefFocus = this.state.offVsDefFocus;
-        selectedTeam.offenseType = this.state.offenseType;
-        selectedTeam.defenseType = this.state.defenseType;
-        selectedTeam.runVsPass = this.state.runVsPass;
-        selectedTeam.offTempo = this.state.offTempo;
+        selectedTeam.coach.offVsDefFocus = this.state.offVsDefFocus;
+        selectedTeam.coach.offenseType = this.state.offenseType;
+        selectedTeam.coach.defenseType = this.state.defenseType;
+        selectedTeam.coach.runVsPass = this.state.runVsPass;
+        selectedTeam.coach.offTempo = this.state.offTempo;
 
         if(this.props.inGame!=true){
             // if(this.state.rotationSize != selectedTeam.rotationSize){
@@ -103,6 +103,30 @@ export default class CoachSettings extends React.Component {
         return (
             <Background>
                 <ScrollView contentContainerStyle={{paddingBottom: 20}}>
+                <Card
+                        containerStyle={{
+                            width: '95%', backgroundColor: 'rgba(0,0,0,0)',
+                            borderColor: 'black',
+                            alignSelf:'center'
+                        }} >
+                            <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                            <CachedImage uri={selectedTeam.coach.faceSrc} style={{ height: 75, width: 75, maxHeight: 75, resizeMode: 'contain', marginRight: 5 }} />
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'HC: ' + selectedTeam.coach.name}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Age: ' + selectedTeam.coach.age}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.coach.years + ' Years $' + displaySalary(selectedTeam.coach.salary)}</Text>
+
+
+                        </View>
+                        <Divider style={{ backgroundColor: 'black', margin: 10 }}></Divider>
+                            <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'OFF: ' + selectedTeam.coach.offenseRating}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'DEF: ' + selectedTeam.coach.defenseRating}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'SIGNING: ' + selectedTeam.coach.signingInterest}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'TRAINING: ' + selectedTeam.coach.training}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'TRADING: ' + selectedTeam.coach.trading}</Text>
+
+                            <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Fire Coach" onPress={() => {}}></Button>
+
+                            </Card>
 
                     <Card
                         containerStyle={{

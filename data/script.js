@@ -4,11 +4,15 @@ var playerData = require("./JSON/Players.json");
 
 var freeAgents = require("./JSON/FreeAgents.json");
 
-var draftData = require("./JSON/DraftData.json");
+export var draftData = require("./JSON/DraftData.json");
 
 const playbookData = require("./JSON/PlaybookData.json");
 
 export const portraits = require('./Portraits.json');
+
+import {Sliders} from './Sliders.js';
+import {Coach} from './Coach.js';
+
 
 import * as FileSystem from "expo-file-system";
 
@@ -95,7 +99,10 @@ export let passSlider = 3;
 export let runSlider = 3;
 
 
+//NEW
+export let sliders = new Sliders();
 
+//LEGACY
 //sliders
 export let twoPointPercentageLow = 20;
 export let twoPointPercentageHigh = 73;
@@ -148,6 +155,7 @@ export function resetSliders() {
   trainingPointsAvailable = 2;
   rosterSize = 55;
   playerSigningDifficulty = 90;
+  sliders.proSliderPreset();
 
 }
 
@@ -170,7 +178,9 @@ export function collegeSliderPreset() {
   seriesWinCount = 1;
   conferencesOn = false;
   collegeMode = true;
+  sliders.collegeSliderPreset();
   franchise = new Franchise();
+  
 
 }
 
@@ -574,6 +584,8 @@ class Player {
 }
 class Team {
   constructor(team) {
+    this.coach = new Coach();
+    console.log(this.coach.name);
     this.conferenceId = team.conferenceId;
     this.id = team.id;
     this.name = team.name;
@@ -702,18 +714,6 @@ class Team {
 
     //salary cap
     this.salary = 0;
-
-    //Coach Sliders
-    this.offVsDefFocus = Math.round(Math.random() * 4) - 2;
-    this.offenseType = Math.floor(Math.random() * 4);
-    this.runPlays = [];
-    this.passPlays = [];
-    this.defenseType = Math.floor(Math.random() * 3);
-    //run pref is lower number
-    //rand between 40-60
-    this.runVsPass = (Math.round(Math.random() * 10)) + 55;
-    //limit between -3 and 3
-    this.offTempo = (Math.round(Math.random() * 6)) - 3;
 
     //football
     this.qbs = [];
@@ -1914,7 +1914,7 @@ export class Game {
       return off.rbs[2];
     }
 
-    if (off.offenseType === OFF_SPREAD) {
+    if (off.coach.offenseType === OFF_SPREAD) {
       if (Math.random() * 100 > (80 - qbRunPercentageBoost)) {
         return off.qbs[0];
       } else {
@@ -1922,7 +1922,7 @@ export class Game {
       }
     }
 
-    if (off.offenseType === OFF_OPTION) {
+    if (off.coach.offenseType === OFF_OPTION) {
       if (Math.random() * 100 > (65 - qbRunPercentageBoost)) {
         return off.qbs[0];
       } else {
@@ -2002,7 +2002,7 @@ export class Game {
 
     off.seasonPlays++;
 
-    let offvdef = (Math.random() * off.offVsDefFocus + Math.random() * def.offVsDefFocus) / 1.5;
+    let offvdef = (Math.random() * off.coach.offVsDefFocus + Math.random() * def.coach.offVsDefFocus) / 1.5;
 
     let yardModifier = Math.round(offvdef);
 
@@ -2097,7 +2097,7 @@ export class Game {
       }
 
 
-      if (playSelection < off.runVsPass) {
+      if (playSelection < off.coach.runVsPass) {
         //pass
         ({ yardsGained, spotlightPlayer, result, timeRemoved } = this.pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField));
 
@@ -2206,27 +2206,27 @@ export class Game {
     let lbsOnField = 4;
     let dlOnField = 3;
     let dbsOnField = 4;
-    if (def.defenseType === DEF_43) {
+    if (def.coach.defenseType === DEF_43) {
       dlOnField = 4;
       lbsOnField = 3;
       dbsOnField = 4;
     }
-    if (def.defenseType === DEF_335) {
+    if (def.coach.defenseType === DEF_335) {
       dlOnField = 3;
       lbsOnField = 3;
       dbsOnField = 5;
     }
-    if (def.defenseType === DEF_34) {
+    if (def.coach.defenseType === DEF_34) {
       dlOnField = 3;
       lbsOnField = 4;
       dbsOnField = 4;
     }
-    if (def.defenseType === DEF_425) {
+    if (def.coach.defenseType === DEF_425) {
       dlOnField = 4;
       lbsOnField = 2;
       dbsOnField = 5;
     }
-    if (def.defenseType === DEF_52) {
+    if (def.coach.defenseType === DEF_52) {
       dlOnField = 5;
       lbsOnField = 2;
       dbsOnField = 4;
@@ -2359,15 +2359,12 @@ export class Game {
       result = " recovers a fumble ";
     }
     timeRemoved = (Math.floor(Math.random() * 10)) + 35;
-    timeRemoved -= off.offTempo;
+    timeRemoved -= off.coach.offTempo;
     return { yardsGained, spotlightPlayer, result, timeRemoved };
   }
 
 
   pass(off, def, dbsOnField, lineInteraction, yardsGained, yardModifier, lbsOnField, spotlightPlayer, result, dlOnField) {
-
-    //implementation
-    let play = off.passPlays[Math.floor(Math.random() * off.passPlays.length)];
 
     let qb = off.qbs[0];
     let pointDifference = 0;
@@ -2437,7 +2434,7 @@ export class Game {
         spotlightPlayer = qb;
         result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
         timeRemoved = (Math.floor(Math.random() * 10)) + 30;
-        timeRemoved -= off.offTempo;
+        timeRemoved -= off.coach.offTempo;
 
 
       }
@@ -2505,7 +2502,7 @@ export class Game {
       result = ` sacks ${qb.name} for a loss of ${yardsLoss} yards`;
       yardsGained = yardsLoss * -1;
       timeRemoved = (Math.floor(Math.random() * 15)) + 30;
-      timeRemoved -= off.offTempo;
+      timeRemoved -= off.coach.offTempo;
 
 
     }
@@ -2568,27 +2565,6 @@ export class Game {
   }
 
   jumpBall() {
-
-    //set playbooks
-    home.passPlays = [];
-    away.passPlays = [];
-    home.runPlays = [];
-    away.runPlays = [];
-    for (let i = 0; i < playbookData.length; i++) {
-      if (home.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass') {
-        home.passPlays.push(playbookData[i]);
-      }
-      if (home.offenseType === playbookData[i].playbook && playbookData[i].type === 'run') {
-        home.runPlays.push(playbookData[i]);
-      }
-      if (away.offenseType === playbookData[i].playbook && playbookData[i].type === 'pass') {
-        away.passPlays.push(playbookData[i]);
-      }
-      if (away.offenseType === playbookData[i].playbook && playbookData[i].type === 'run') {
-        away.runPlays.push(playbookData[i]);
-      }
-
-    }
 
     if (Math.floor(Math.random() * 2) > 0) {
       return true;
@@ -4348,9 +4324,16 @@ export class Franchise {
         let rating = Math.round((teamRating + scaledSeed) / 2) - 20;
         // console.log(`${teams[i].name} ${rating}`);
 
-        if (teams[i] === selectedTeam) {
-          console.log(`generateprospect rating: ${rating}`);
-        }
+                if (teams[i] === selectedTeam) {
+                    console.log(`generateprospect b4: ${rating}`);
+                    rating = Math.round(((((sliders.recruitingDifficulty*-1)+100)/100) * rating) + rating);
+                    console.log(`generateprospect rating: ${rating}`);
+                }
+
+        if(rating >= 99){
+          rating = 99;
+      }
+        
 
         if (rating <= 60) {
           rating = 60;
@@ -5804,12 +5787,13 @@ export function resetFranchise() {
 franchise = new Franchise();
 //CHECKED
 export function saveData(slot) {
-  let data = {
-    teams: [],
-    freeAgents: "",
-    draftClass: "",
-    sliders: ""
-  };
+    let data = {
+        teams: [],
+        freeAgents: '',
+        draftClass: '',
+        sliders: '',
+        newSliders: sliders
+    }
 
   for (let i = 0; i < teams.length; i++) {
     let teamDat = {
@@ -5819,11 +5803,7 @@ export function saveData(slot) {
       division: teams[i].division,
       logoSrc: teams[i].logoSrc,
       roster: teams[i].roster,
-      offVsDefFocus: teams[i].offVsDefFocus,
-      offenseType: teams[i].offenseType,
-      defenseType: teams[i].defenseType,
-      runVsPass: teams[i].runVsPass,
-      offTempo: teams[i].offTempo
+      coach: teams[i].coach
     };
     data.teams.push(teamDat);
   }
@@ -5984,6 +5964,10 @@ export const loadData = data => {
         loadedData.sliders.conferencesOn,
         loadedData.sliders.collegeMode
       );
+    }
+
+    if(loadedData.newSliders != null){
+      sliders.loadSliders(loadedData.newSliders);
     }
 
     generateDraftClass();
@@ -6765,14 +6749,16 @@ export function returnStatsListView(player) {
 }
 //CHECKED
 export function saveFranchise(slot) {
-  let data = {
-    teams: [],
-    freeAgents: "",
-    draftClass: "",
-    sliders: "",
-    day: franchise.season.day,
-    pastChampions: franchise.pastChampions
-  };
+    let data = {
+        teams: [],
+        freeAgents: '',
+        draftClass: '',
+        sliders: '',
+        newSliders: sliders,
+        day: franchise.season.day,
+        pastChampions: franchise.pastChampions,
+        logo: selectedTeam.logoSrc
+    }
 
   for (let i = 0; i < teams.length; i++) {
     scheduleString = [];
@@ -6789,11 +6775,7 @@ export function saveFranchise(slot) {
       logoSrc: teams[i].logoSrc,
       roster: teams[i].roster,
       history: teams[i].history,
-      offVsDefFocus: teams[i].offVsDefFocus,
-      offenseType: teams[i].offenseType,
-      defenseType: teams[i].defenseType,
-      runVsPass: teams[i].runVsPass,
-      offTempo: teams[i].offTempo,
+      coach: teams[i].coach,
       scheduleString: scheduleString,
       wins: teams[i].wins,
       losses: teams[i].losses,
@@ -6874,12 +6856,13 @@ export const loadFranchise = data => {
       teams[i].roster = [];
       teams[i].division = loadedData.teams[i].division;
       teams[i].seed = loadedData.teams[i].seed;
-      //coach sliders
-      teams[i].offVsDefFocus = loadedData.teams[i].offVsDefFocus;
-      teams[i].offenseType = loadedData.teams[i].offenseType;
-      teams[i].defenseType = loadedData.teams[i].defenseType;
-      teams[i].runVsPass = loadedData.teams[i].runVsPass;
-      teams[i].offTempo = loadedData.teams[i].offTempo;
+      //coach 
+      if(loadedData.teams[i].coach != null){
+        teams[i].coach = loadedData.teams[i].coach;
+      }else{
+        teams[i].coach = new Coach();
+      }
+   
 
 
 
@@ -6996,6 +6979,10 @@ export const loadFranchise = data => {
         loadedData.sliders.collegeMode,
         true
       );
+    }
+
+    if(loadedData.newSliders != null){
+      sliders.loadSliders(loadedData.newSliders);
     }
 
     // generateDraftClass();
@@ -7884,7 +7871,6 @@ export function played(roster) {
 
   return plyed;
 }
-
 
 // function exportPlayersToCSV(team){
 //   let csvString = 'team,name,position,age,height,years,salary,number,faceSrc,pass,awareness,rush,speed,catch,block,breakBlock,tackle,kick\n';

@@ -58,14 +58,6 @@ export default class TradeMenu extends React.Component {
                 })
             }
 
-            // for(let i=0; i<selectedTeam.draftPicks.length; i++){
-            //     data.push({
-            //       type:'NORMAL',
-            //       item: selectedTeam.draftPicks[i]
-            //     })
-            //     arrayForFilter.push(selectedTeam.draftPicks[i]);
-            // }
-
             arrayForFilterT2 = selectedTeam2.roster;
             for(let i=0; i<selectedTeam2.roster.length; i++){
                 dataT2.push({
@@ -73,14 +65,6 @@ export default class TradeMenu extends React.Component {
                   item: sortedRoster(selectedTeam2,'rating')[i]
                 })
             }
-
-            // for(let i=0; i<selectedTeam.draftPicks.length; i++){
-            //     dataT2.push({
-            //       type:'NORMAL',
-            //       item: selectedTeam2.draftPicks[i]
-            //     })
-            //     arrayForFilterT2.push(selectedTeam2.draftPicks[i]);
-            // }
 
         this.state = {
             t1Offers: [],
@@ -146,7 +130,7 @@ export default class TradeMenu extends React.Component {
         return(
             <ListItem onPress={() => { this.addToTrade(player, selectedTeam) }}
             title={player.positionString + ' #' + player.number + ' ' + player.name}
-            leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating}
+            leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating + ' Age: ' + player.age}
             bottomDivider={true}
             rightSubtitle={'$' + displaySalary(player.salary)}
             rightTitle={this.state.t1Offers.includes(player) ? "SELECTED" : null}
@@ -176,7 +160,7 @@ export default class TradeMenu extends React.Component {
         return(
             <ListItem onPress={() => { this.addToTrade(player, selectedTeam2) }}
             title={player.positionString + ' #' + player.number + ' ' + player.name}
-            leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating}
+            leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating + ' Age: ' + player.age}
             bottomDivider={true}
             rightSubtitle={'$' + displaySalary(player.salary)}
             rightTitle={this.state.t2Offers.includes(player) ? "SELECTED" : null}

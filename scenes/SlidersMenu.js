@@ -3,7 +3,8 @@ import { Text, View, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { Button, Card, Slider, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
-import { setSliders, setFranchiseSliders, conferences, gamesPerSeason, playoffSeeds, seriesWinCount, conferencesOn, teams, franchise, collegeMode, difficulty, tradeThreshold, resetSliders, collegeSliderPreset, trainingPointsAvailable, qbCompletionSlider, passSlider, runSlider, rosterSize, playerSigningDifficulty } from '../data/script';
+import { setSliders, setFranchiseSliders, conferences, gamesPerSeason, playoffSeeds, seriesWinCount, conferencesOn, teams, franchise, collegeMode, difficulty, tradeThreshold, resetSliders, collegeSliderPreset, trainingPointsAvailable, qbCompletionSlider, passSlider, runSlider, rosterSize, playerSigningDifficulty, sliders } from '../data/script';
+import { Sliders } from '../data/Sliders';
 
 export default class SlidersMenu extends React.Component {
 
@@ -22,7 +23,8 @@ export default class SlidersMenu extends React.Component {
         runSlider : runSlider,
         qbCompletionSlider : qbCompletionSlider,
         rosterSize : rosterSize,
-        playerSigningDifficulty: playerSigningDifficulty
+        playerSigningDifficulty: playerSigningDifficulty,
+        recruitingDifficulty : sliders.recruitingDifficulty
     }
 
 
@@ -56,6 +58,10 @@ export default class SlidersMenu extends React.Component {
             return;
         }
         if(this.state.playerSigningDifficulty != playerSigningDifficulty){
+            this.setState({ gameSlidersChanged: true });
+            return;
+        }
+        if(this.state.recruitingDifficulty != sliders.recruitingDifficulty){
             this.setState({ gameSlidersChanged: true });
             return;
         }
@@ -238,6 +244,7 @@ export default class SlidersMenu extends React.Component {
 
     saveChanges() {
         setSliders(this.state.difficulty, this.state.tradeDifficulty, this.state.trainingPointsAvailable, this.state.passSlider, this.state.runSlider, this.state.qbCompletionSlider, this.state.rosterSize, this.state.playerSigningDifficulty);
+        sliders.recruitingDifficulty = this.state.recruitingDifficulty;
         this.setState({ gameSlidersChanged: false });
     }
 
@@ -284,7 +291,8 @@ export default class SlidersMenu extends React.Component {
                 qbCompletionSlider : qbCompletionSlider,
             franchiseSlidersChanged: false,
             gameSlidersChanged: false,
-            rosterSize: rosterSize
+            rosterSize: rosterSize,
+            recruitingDifficulty: sliders.recruitingDifficulty
         });
     }
 
@@ -306,7 +314,8 @@ export default class SlidersMenu extends React.Component {
                 qbCompletionSlider : qbCompletionSlider,
             franchiseSlidersChanged: false,
             gameSlidersChanged: false,
-            rosterSize: rosterSize
+            rosterSize: rosterSize,
+            recruitingDifficulty: sliders.recruitingDifficulty
     });
     }
 
@@ -453,6 +462,17 @@ export default class SlidersMenu extends React.Component {
                             maximumValue={150}
                             value={this.state.playerSigningDifficulty}
                             onValueChange={value => { this.checkGameSliders(), this.setState({ playerSigningDifficulty: value }) }}
+                        />
+
+<Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{"User Recruiting Difficulty: " + this.state.recruitingDifficulty}</Text>
+                        <Slider
+                            thumbTintColor={'rgb(180,180,180)'}
+                            maximumTrackTintColor={'rgb(180,180,180)'}
+                            step={2}
+                            minimumValue={80}
+                            maximumValue={120}
+                            value={this.state.recruitingDifficulty}
+                            onValueChange={value => { this.checkGameSliders(), this.setState({ recruitingDifficulty: value }) }}
                         />
 
 
