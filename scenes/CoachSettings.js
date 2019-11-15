@@ -124,7 +124,7 @@ export default class CoachSettings extends React.Component {
                             <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'TRAINING: ' + selectedTeam.coach.training}</Text>
                             <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'TRADING: ' + selectedTeam.coach.trading}</Text>
 
-                            <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Fire Coach" onPress={() => {}}></Button>
+                            <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Fire Coach" onPress={() => {Actions.coachlist()}}></Button>
 
                             </Card>
 
