@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import CachedImage from './CachedImage';
-import { teams } from '../data/script';
+import { teams, availableCoaches } from '../data/script';
 
 var {height, width} = Dimensions.get('window');
 
@@ -16,7 +16,9 @@ export default class CoachFilter extends React.Component {
     setFilter(filter){
         let filteredArray = [];
         if(filter === 'available'){
-            
+            for(let i=0; i<availableCoaches.length; i++){
+                filteredArray.push(availableCoaches[i]);
+              }
         }
 
         if(filter === 'signed'){

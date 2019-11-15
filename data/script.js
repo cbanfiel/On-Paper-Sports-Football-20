@@ -18,6 +18,8 @@ import * as FileSystem from "expo-file-system";
 
 //for draft trades
 export let inDraft = false;
+export let availableCoaches = [];
+
 
 export function setInDraft() {
   inDraft = true;
@@ -584,8 +586,6 @@ class Player {
 }
 class Team {
   constructor(team) {
-    this.coach = new Coach();
-    console.log(this.coach.name);
     this.conferenceId = team.conferenceId;
     this.id = team.id;
     this.name = team.name;
@@ -603,6 +603,8 @@ class Team {
     this.totalRankingRating = 0;
 
     this.logoSrc = team.logoSrc;
+    this.coach = new Coach();
+    this.coach.teamLogoSrc = team.logoSrc;
     this.schedule = [];
     this.played = [];
     this.wins = 0;
@@ -1262,7 +1264,10 @@ export function loadRosters() {
   //temporary
   generateFreeAgents(600, 25);
   generateDraftClass();
+  generateFreeAgentCoaches();
 }
+
+
 
 //DRAFT CLASS GENERATOR
 export let draftClass = {
@@ -1277,6 +1282,17 @@ export let draftClass = {
     });
   }
 };
+
+
+function generateFreeAgentCoaches(){
+  for(let i=0; i<teams.length/2; i++){
+    let coach = new Coach();
+    let rating = 40;
+    rating += Math.round(Math.random()*30);
+    coach.generateRatings(rating);
+    availableCoaches.push(coach);
+  }
+}
 
 
 //updated to work with generatePlayer function (Much more control)

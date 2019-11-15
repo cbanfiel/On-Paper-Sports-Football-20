@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ScrollView, Alert, TouchableOpacity, Modal, Text, Dimensions } from 'react-native';
 import { Button, Input, Icon } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { sortedRoster, collegeMode, releasePlayer, saveAsDraftClass, manageSaveName, selectedTeam, REDSHIRT_LOGO, checkRequirementsWithoutPlayer, displaySalary, teams } from '../data/script';
+import { sortedRoster, collegeMode, releasePlayer, saveAsDraftClass, manageSaveName, selectedTeam, REDSHIRT_LOGO, checkRequirementsWithoutPlayer, displaySalary, teams, availableCoaches } from '../data/script';
 import Background from '../components/background';
 import TeamHeader from '../components/TeamHeader';
 import ListItem from '../components/ListItem';
@@ -69,6 +69,9 @@ export default class CoachList extends React.Component {
         for(let i=0; i<teams.length; i++){
             arrayForFilter.push(teams[i].coach);
         }
+        for(let i=0; i<availableCoaches.length; i++){
+          arrayForFilter.push(availableCoaches[i]);
+        }
 
             for(let i=0; i<arrayForFilter.length; i++){
               data.push({
@@ -89,7 +92,7 @@ export default class CoachList extends React.Component {
           switch(type){
             case 'NORMAL':
               dim.width = width;
-              dim.height = 70;
+              dim.height = 100;
               break;
             default :
               dim.width=0;
@@ -103,9 +106,11 @@ export default class CoachList extends React.Component {
             let coach = data.item;
                 return(
                     <ListItem
+                    xl={true}
                     title={coach.name}
                      leftAvatar={ coach.faceSrc } 
-                    subtitle={' '}
+                     rightAvatar = {coach.teamLogoSrc}
+                    subtitle={`Age: ${coach.age} Yrs: ${coach.years} Sal: $${coach.salary} Ovr: ${coach.rating}\nOff: ${coach.offenseRating} Def: ${coach.defenseRating} Training: ${coach.training} Trading: ${coach.trading}\nSigning: ${coach.signingInterest}`}
                     rightTitle={' '}
                     onPress={() => {}}
                     ></ListItem>
