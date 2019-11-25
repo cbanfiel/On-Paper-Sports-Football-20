@@ -7,14 +7,34 @@ import { selectedTeam, OFF_PRO, OFF_SPREAD, OFF_OPTION, OFF_PISTOL, DEF_43, DEF_
 import CachedImage from '../components/CachedImage';
 
 export default class CoachSettings extends React.Component {
-    state = {
-        offVsDefFocus: selectedTeam.coach.offVsDefFocus,
-        offenseType: selectedTeam.coach.offenseType,
-        defenseType: selectedTeam.coach.defenseType,
-        runVsPass: selectedTeam.coach.runVsPass,
-        offTempo: selectedTeam.coach.offTempo
 
+    update = (_callback) => {
+        this.setState({
+            offVsDefFocus: selectedTeam.coach.offVsDefFocus,
+            offenseType: selectedTeam.coach.offenseType,
+            defenseType: selectedTeam.coach.defenseType,
+            runVsPass: selectedTeam.coach.runVsPass,
+            offTempo: selectedTeam.coach.offTempo
+        }, () => _callback())
     }
+
+    constructor(props){
+        super(props);
+
+        if(selectedTeam.coach != null){
+            this.state = {
+                offVsDefFocus: selectedTeam.coach.offVsDefFocus,
+                offenseType: selectedTeam.coach.offenseType,
+                defenseType: selectedTeam.coach.defenseType,
+                runVsPass: selectedTeam.coach.runVsPass,
+                offTempo: selectedTeam.coach.offTempo
+        
+            }
+        }
+    }
+
+
+ 
 
 
 
@@ -102,15 +122,25 @@ export default class CoachSettings extends React.Component {
     render() {
         return (
             <Background>
+                
+           
+                    {
+                        selectedTeam.coach != null?(
                 <ScrollView contentContainerStyle={{paddingBottom: 20}}>
                 <Card
+                
                         containerStyle={{
                             width: '95%', backgroundColor: 'rgba(0,0,0,0)',
                             borderColor: 'black',
                             alignSelf:'center'
                         }} >
+                                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <CachedImage uri={selectedTeam.logoSrc} style={{ height: 30, width: 30, maxHeight: 30, resizeMode: 'contain', marginRight: 5 }} />
+                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.name}</Text>
+                        </View>
+                        <Divider style={{ backgroundColor: 'black'}}></Divider>
                             <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                            <CachedImage uri={selectedTeam.coach.faceSrc} style={{ height: 75, width: 75, maxHeight: 75, resizeMode: 'contain', marginRight: 5 }} />
+                            <CachedImage uri={selectedTeam.coach.faceSrc} style={{ height: 100, width: 100, maxHeight: 100, resizeMode: 'contain', marginRight: 5 }} />
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'HC: ' + selectedTeam.coach.name}</Text>
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Age: ' + selectedTeam.coach.age}</Text>
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.coach.years + ' Years $' + displaySalary(selectedTeam.coach.salary)}</Text>
@@ -122,9 +152,10 @@ export default class CoachSettings extends React.Component {
                             <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'DEF: ' + selectedTeam.coach.defenseRating}</Text>
                             <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'SIGNING: ' + selectedTeam.coach.signingInterest}</Text>
                             <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'TRAINING: ' + selectedTeam.coach.training}</Text>
-                            <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'TRADING: ' + selectedTeam.coach.trading}</Text>
 
-                            <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Fire Coach" onPress={() => {Actions.coachlist()}}></Button>
+                            <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="View Coaches" onPress={() => {Actions.coachlist({update: this.update})}}></Button>
+
+                            <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Resign Coach" onPress={() => {Actions.coachlist({update: this.update})}}></Button>
 
                             </Card>
 
@@ -143,11 +174,6 @@ export default class CoachSettings extends React.Component {
                 ): null
 }
 
-                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <CachedImage uri={selectedTeam.logoSrc} style={{ height: 30, width: 30, maxHeight: 30, resizeMode: 'contain', marginRight: 5 }} />
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.name}</Text>
-                        </View>
-                        <Divider style={{ backgroundColor: 'black', margin: 10 }}></Divider>
 
                         <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.getOffVsDefFocusString()}</Text>
                         <Slider
@@ -210,12 +236,19 @@ export default class CoachSettings extends React.Component {
 
 
                     </Card>
-
-
-
-
-
+    
+    
                 </ScrollView>
+        ): <Card
+        containerStyle={{
+            width: '95%', backgroundColor: 'rgba(0,0,0,0)',
+            borderColor: 'black',
+            alignSelf:'center'
+        }} >
+        <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Hire A Coach" onPress={() => {Actions.coachlist({update: this.update})}}></Button>
+        </Card>
+    }
+
             </Background>
 
 

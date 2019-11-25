@@ -2,18 +2,39 @@ import React from 'react';
 import { View, ScrollView, Alert, TouchableOpacity, Modal, Text, Dimensions } from 'react-native';
 import { Button, Input, Icon } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { sortedRoster, collegeMode, releasePlayer, saveAsDraftClass, manageSaveName, selectedTeam, REDSHIRT_LOGO, checkRequirementsWithoutPlayer, displaySalary, teams, availableCoaches } from '../data/script';
+import { sortedRoster, collegeMode, releasePlayer, saveAsDraftClass, manageSaveName, selectedTeam, REDSHIRT_LOGO, checkRequirementsWithoutPlayer, displaySalary, teams } from '../data/script';
 import Background from '../components/background';
 import TeamHeader from '../components/TeamHeader';
 import ListItem from '../components/ListItem';
 import PlayerCardModal from '../components/PlayerCardModal';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import CoachFilter from '../components/CoachFilter';
+import { availableCoaches, coachSigningInterest } from '../data/Coach';
 var {height, width} = Dimensions.get('window');
 
 
 
 export default class CoachList extends React.Component {
+
+    signCoach = (coach) =>{
+      if(availableCoaches.includes(coach)){
+        if(coachSigningInterest(coach, selectedTeam)){
+          let temp = selectedTeam.coach;
+          coach.teamLogoSrc = selectedTeam.logoSrc;
+          if(temp != null){
+            temp.teamLogoSrc = null;
+            availableCoaches.push(temp);
+          }
+          selectedTeam.coach = coach;
+          availableCoaches.splice(availableCoaches.indexOf(coach),1);
+          this.props.update(Actions.pop);
+
+        }else{
+          Alert.alert('Coach Not Interested');
+        }
+        
+      }
+    }
 
     setCoachFilter(arr){
         const data = [];
@@ -67,11 +88,13 @@ export default class CoachList extends React.Component {
         let arrayForFilter = [];
         this.setCoachFilter = this.setCoachFilter.bind(this);
         for(let i=0; i<teams.length; i++){
+          if(teams[i].coach != null){
             arrayForFilter.push(teams[i].coach);
+          }
         }
-        for(let i=0; i<availableCoaches.length; i++){
-          arrayForFilter.push(availableCoaches[i]);
-        }
+        // for(let i=0; i<availableCoaches.length; i++){
+        //   arrayForFilter.push(availableCoaches[i]);
+        // }
 
             for(let i=0; i<arrayForFilter.length; i++){
               data.push({
@@ -92,7 +115,7 @@ export default class CoachList extends React.Component {
           switch(type){
             case 'NORMAL':
               dim.width = width;
-              dim.height = 100;
+              dim.height = 70;
               break;
             default :
               dim.width=0;
@@ -106,13 +129,12 @@ export default class CoachList extends React.Component {
             let coach = data.item;
                 return(
                     <ListItem
-                    xl={true}
                     title={coach.name}
                      leftAvatar={ coach.faceSrc } 
                      rightAvatar = {coach.teamLogoSrc}
-                    subtitle={`Age: ${coach.age} Yrs: ${coach.years} Sal: $${coach.salary} Ovr: ${coach.rating}\nOff: ${coach.offenseRating} Def: ${coach.defenseRating} Training: ${coach.training} Trading: ${coach.trading}\nSigning: ${coach.signingInterest}`}
+                    subtitle={`Age: ${coach.age} Yrs: ${coach.years} Sal: $${coach.salary} Ovr: ${coach.rating}\nOff: ${coach.offenseRating} Def: ${coach.defenseRating} Training: ${coach.training} Signing: ${coach.signingInterest}`}
                     rightTitle={' '}
-                    onPress={() => {}}
+                    onPress={() => {this.signCoach(coach)}}
                     ></ListItem>
                 )
       }

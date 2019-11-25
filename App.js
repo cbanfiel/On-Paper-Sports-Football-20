@@ -50,6 +50,7 @@ import TrainingScreen from './scenes/TrainingScreen';
 import BowlGames from './scenes/BowlGames';
 import FranchiseSetup from './scenes/FranchiseSetup';
 import CoachList from './scenes/CoachList';
+import EditSchedule from './scenes/EditSchedule';
 
 
 export default class App extends React.Component {
@@ -111,6 +112,7 @@ export default class App extends React.Component {
               <Scene key="bowlgames" component={BowlGames} title="Training Stage" hideNavBar />
               <Scene key="franchisesetup" component={FranchiseSetup} title="Training Stage" hideNavBar />
               <Scene key="coachlist" component={CoachList} title="" hideNavBar />
+              <Scene key="editschedule" component={EditSchedule} title="" hideNavBar />
 
 
               {/* <Scene key="recoverymenu" component={RecoveryMenu} title="FreeAgency" hideNavBar /> */}

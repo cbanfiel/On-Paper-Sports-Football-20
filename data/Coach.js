@@ -1,6 +1,9 @@
 const portraits = require('./Portraits.json');
 const draftData = require("./JSON/DraftData.json");
 
+export let coachRetirements = [];
+export let availableCoaches = [];
+
 export class Coach {
     constructor() {
         let firstName = draftData[Math.floor(Math.random() * draftData.length)].firstname;
@@ -32,7 +35,6 @@ export class Coach {
     }
 
     calculateRating() {
-
         if(this.offenseRating>99){
             this.offenseRating = 99;
         }
@@ -63,14 +65,7 @@ export class Coach {
         if(this.signingInterest<40){
             this.signingInterest = 40;
         }
-
-
-
-
-
-
-
-        this.rating = Math.round((this.offenseRating + this.defenseRating + this.signingInterest + this.training + this.trading) / 5);
+        this.rating = Math.round((this.offenseRating + this.defenseRating + this.signingInterest + this.training) / 4);
     }
 
     generateRatings(rating) {
@@ -98,3 +93,107 @@ export class Coach {
 
     }
 }
+
+export function coachSetup(teams){
+    generateFreeAgentCoaches(teams);
+}
+
+export function coachOffseasonSetup(teams){
+
+    coachRetirements = [];
+
+    for(let i=0; i<teams.length; i++){
+        coachProgression(teams[i].coach);
+        if(didCoachRetire(teams[i].coach) || checkCoachContractExpiration(teams[i].coach)){
+            teams[i].coach = null;
+        }
+    }
+
+    for(let i=0; i<availableCoaches.length; i++){
+        //NO PROGRESSION FOR FA COACHES!
+        if(didCoachRetire(availableCoaches[i])){
+            availableCoaches.splice(availableCoaches.indexOf(availableCoaches[i],1));
+            availableCoaches.push(new Coach());
+        }
+    }
+
+    if(availableCoaches.length < (teams.length/2)){
+        generateFreeAgentCoaches(teams);
+    }
+}
+
+export function coachSigning(teams){
+    for(let i=0; i<teams.length; i++){
+        if(teams[i].coach == null){
+            let index = Math.floor(Math.random()*availableCoaches.length);
+            // let years = Math.round(Math.random()*5)+1;
+            let coach = availableCoaches[index];
+            console.log(coach.name + " signs with the " + teams[i].name);
+            // coach.years = years;
+            teams[i].coach = coach;
+            availableCoaches.splice(index, 1);
+        }
+    }
+}
+
+const coachProgression = (coach) => {
+    let growth = scaleBetween(coach.age, 0,4,70,40);
+    coach.offenseRating += Math.round(Math.random()*growth);
+    coach.defenseRating += Math.round(Math.random()*growth);
+    coach.trading += Math.round(Math.random()*growth);
+    coach.training += Math.round(Math.random()*growth);
+    coach.signingInterest += Math.round(Math.random()*growth);
+    coach.calculateRating();
+}
+
+const coachSalaryCalculation = (coach) =>{
+    return Math.round(scaleBetween(coach.rating, 700000,10000000,40,99));
+}
+
+function generateFreeAgentCoaches(teams){
+    for(let i=0; i<teams.length/2; i++){
+      let coach = new Coach();
+      let rating = 40;
+      rating += Math.round(Math.random()*30);
+      coach.generateRatings(rating);
+      availableCoaches.push(coach);
+    }
+  }
+
+
+const didCoachRetire = (coach) =>{
+    coach.age++;
+    if(coach.age >= 59){
+        let retirementChance = scaleBetween(coach.age, 10, 70, 59,80);
+        if(retirementChance > Math.random()*100){
+            coachRetirements.push(coach);
+        }
+    }
+}
+
+const releaseCoach = (coach) =>{
+    coach.teamLogoSrc = null;
+    coach.years = Math.floor(Math.random()*4) + 1;
+    coach.salary = coachSalaryCalculation(coach);
+    availableCoaches.push(coach);
+}
+
+export const coachSigningInterest = (coach, team) => {
+    return true;
+}
+
+const checkCoachContractExpiration = (coach) => {
+    coach.years--;
+    if(coach.years < 1){
+        releaseCoach(coach);
+        return true;
+    }else{
+        return false
+    }
+}
+
+function scaleBetween(unscaledNum, minAllowed, maxAllowed, min, max) {
+    return (
+      ((maxAllowed - minAllowed) * (unscaledNum - min)) / (max - min) + minAllowed
+    );
+  }

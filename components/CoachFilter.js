@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import CachedImage from './CachedImage';
-import { teams, availableCoaches } from '../data/script';
+import { teams } from '../data/script';
+import { coachRetirements, availableCoaches } from '../data/Coach';
 
 var {height, width} = Dimensions.get('window');
 
@@ -23,9 +24,17 @@ export default class CoachFilter extends React.Component {
 
         if(filter === 'signed'){
            for(let i=0; i<teams.length; i++){
+            if(teams[i].coach != null){
                filteredArray.push(teams[i].coach);
+            }
            }
         }
+
+        if(filter === 'retirements'){
+            for(let i=0; i<coachRetirements.length; i++){
+                filteredArray.push(coachRetirements[i]);
+            }
+         }
         this.props.setCoachFilter(filteredArray);
     }
 
@@ -41,6 +50,12 @@ export default class CoachFilter extends React.Component {
                     <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter('signed')}>
                         <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
                         <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>Signed</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{flex:1}} onPress={() => this.setFilter('retirements')}>
+                        <View style={{backgroundColor:'rgb(30,30,30)', height:'100%', justifyContent:'center'}}>
+                        <Text style={{ fontFamily: 'advent-pro' , fontSize:16, color:'white', textAlign: 'center' }}>Retirements</Text>
                         </View>
                     </TouchableOpacity>
                     </View>
