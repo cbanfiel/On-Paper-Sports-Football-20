@@ -41,10 +41,17 @@ scheduleRank = () => {
 swapTeam = (team, i) =>{
     let originalTeam = selectedTeam.schedule[i];
     let oppOriginalTeam = team.schedule[i];
+ 
     originalTeam.schedule[i] = oppOriginalTeam;
     oppOriginalTeam.schedule[i] = originalTeam;
     team.schedule[i] = selectedTeam;
     selectedTeam.schedule[i] = team;
+    if(originalTeam == selectedTeam){
+        oppOriginalTeam.schedule[i] = oppOriginalTeam;
+    }
+    if(oppOriginalTeam == team){
+        originalTeam.schedule[i] = originalTeam;
+    }
     originalTeam.generateScheduleRating();
     oppOriginalTeam.generateScheduleRating();
     selectedTeam.generateScheduleRating();
@@ -111,18 +118,16 @@ swapTeam = (team, i) =>{
                     ) : null
                 }
 
-        <TeamHeader selectedTeam={selectedTeam} season={true}></TeamHeader>
-        <View style={{borderBottomWidth: 1, padding:5}}>
-
-        <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20}}>{'Schedule Rank: #' + this.state.scheduleRank }</Text>
-        </View>
+        <TeamHeader selectedTeam={selectedTeam} season={true} subText={'Schedule Rank: #' + this.state.scheduleRank }></TeamHeader>
        
 
         <ScrollView contentContainerStyle={{paddingBottom: 20}}>
 
           {this.state.team.schedule.map((team, i) => (
             this.state.team === team? (
-              null
+                <ListItem title={"Game " + (i + 1) + ": BYE WEEK"} key={i}
+                onPress={() => {Actions.teamlist({home:7, swapTeam: this.swapTeam, week: i, update: this.update})}}
+                ></ListItem>
             ):
             <ListItem title={"Game " + (i + 1) + ":" + this.getTitle(team)} key={i} leftAvatar={team.logoSrc } 
             subtitle={this.state.team.played[i] != null ? this.state.team.played[i].userScore + '-' + this.state.team.played[i].oppScore : null} 

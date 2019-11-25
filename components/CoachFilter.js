@@ -35,6 +35,19 @@ export default class CoachFilter extends React.Component {
                 filteredArray.push(coachRetirements[i]);
             }
          }
+
+         filteredArray.sort(function (a, b) {
+            if (a.rating > b.rating) {
+              return -1;
+            }
+            if (a.rating < b.rating) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+
+
         this.props.setCoachFilter(filteredArray);
     }
 

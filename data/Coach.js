@@ -96,6 +96,7 @@ export class Coach {
 
 export function coachSetup(teams){
     generateFreeAgentCoaches(teams);
+
 }
 
 export function coachOffseasonSetup(teams){
@@ -103,9 +104,13 @@ export function coachOffseasonSetup(teams){
     coachRetirements = [];
 
     for(let i=0; i<teams.length; i++){
+        teams[i].coachingBudget = scaleBetween(teams[i].seed, 900000, 11000000, teams.length, 1);
+
         coachProgression(teams[i].coach);
         if(didCoachRetire(teams[i].coach) || checkCoachContractExpiration(teams[i].coach)){
             teams[i].coach = null;
+        }else{
+            teams[i].coachingBudget -= teams[i].coach.salary;
         }
     }
 
@@ -123,12 +128,33 @@ export function coachOffseasonSetup(teams){
 }
 
 export function coachSigning(teams){
+    teams.sort(function (a, b) {
+        if (a.seed < b.seed) return -1;
+        if (a.seed > b.seed) return 1;
+        return 0;
+      });
+
+      availableCoaches.sort(function (a, b) {
+        if (a.rating > b.rating) {
+          return -1;
+        }
+        if (a.rating < b.rating) {
+          return 1;
+        } else {
+          return 0;
+        }});
+    
     for(let i=0; i<teams.length; i++){
         if(teams[i].coach == null){
-            let index = Math.floor(Math.random()*availableCoaches.length);
+
+
+            let index = Math.floor(Math.random()*4);
+            if(index > availableCoaches.length-1){
+                index = 0;
+            }
             // let years = Math.round(Math.random()*5)+1;
             let coach = availableCoaches[index];
-            console.log(coach.name + " signs with the " + teams[i].name);
+            console.log(coach.name + " OVR:" + coach.rating + " signs with the " + teams[i].name);
             // coach.years = years;
             teams[i].coach = coach;
             availableCoaches.splice(index, 1);
@@ -137,7 +163,7 @@ export function coachSigning(teams){
 }
 
 const coachProgression = (coach) => {
-    let growth = scaleBetween(coach.age, 0,4,70,40);
+    let growth = scaleBetween(coach.age, -4,4,80,40);
     coach.offenseRating += Math.round(Math.random()*growth);
     coach.defenseRating += Math.round(Math.random()*growth);
     coach.trading += Math.round(Math.random()*growth);
@@ -147,7 +173,14 @@ const coachProgression = (coach) => {
 }
 
 const coachSalaryCalculation = (coach) =>{
-    return Math.round(scaleBetween(coach.rating, 700000,10000000,40,99));
+    let sal = Math.round(scaleBetween(coach.rating, 700000,10000000,55,90));
+    if(sal < 700000){
+        sal = 700000;
+    }
+    if(sal > 10000000){
+        sal = 10000000;
+    }
+    return sal;
 }
 
 function generateFreeAgentCoaches(teams){
@@ -156,6 +189,8 @@ function generateFreeAgentCoaches(teams){
       let rating = 40;
       rating += Math.round(Math.random()*30);
       coach.generateRatings(rating);
+      coach.years = Math.floor(Math.random()*4) + 3;
+      coach.salary = coachSalaryCalculation(coach);
       availableCoaches.push(coach);
     }
   }
@@ -173,13 +208,13 @@ const didCoachRetire = (coach) =>{
 
 const releaseCoach = (coach) =>{
     coach.teamLogoSrc = null;
-    coach.years = Math.floor(Math.random()*4) + 1;
+    coach.years = Math.floor(Math.random()*4) + 3;
     coach.salary = coachSalaryCalculation(coach);
     availableCoaches.push(coach);
 }
 
-export const coachSigningInterest = (coach, team) => {
-    return true;
+export const canSignCoach = (coach, team) =>{
+    return (coach.salary <= team.coachingBudget);
 }
 
 const checkCoachContractExpiration = (coach) => {

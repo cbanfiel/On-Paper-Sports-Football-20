@@ -14,6 +14,11 @@ export default class TeamHeader extends React.Component {
                         uri= { this.props.selectedTeam.logoSrc }/>
                     <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20}}>{this.props.selectedTeam.name}</Text>
                     <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20}}>{'Record: ' + this.props.selectedTeam.wins + '-' + (this.props.selectedTeam.losses)}</Text>
+                    {
+                        this.props.subText?(
+                            <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20}}>{this.props.subText}</Text>
+                        ):null
+                    }
 
                 </View>
 
@@ -25,6 +30,12 @@ export default class TeamHeader extends React.Component {
                         style={{ resizeMode:'contain', height: 50 }}
                         uri={this.props.selectedTeam.logoSrc } />
                     <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20}}>{this.props.selectedTeam.name}</Text>
+                    {
+                        this.props.subText?(
+                            <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20}}>{this.props.subText}</Text>
+                        ):null
+                    }
+
                 </View>
                
         )

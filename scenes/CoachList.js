@@ -9,7 +9,7 @@ import ListItem from '../components/ListItem';
 import PlayerCardModal from '../components/PlayerCardModal';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import CoachFilter from '../components/CoachFilter';
-import { availableCoaches, coachSigningInterest } from '../data/Coach';
+import { availableCoaches, canSignCoach } from '../data/Coach';
 var {height, width} = Dimensions.get('window');
 
 
@@ -18,7 +18,7 @@ export default class CoachList extends React.Component {
 
     signCoach = (coach) =>{
       if(availableCoaches.includes(coach)){
-        if(coachSigningInterest(coach, selectedTeam)){
+        if(canSignCoach(coach, selectedTeam)){
           let temp = selectedTeam.coach;
           coach.teamLogoSrc = selectedTeam.logoSrc;
           if(temp != null){
@@ -30,7 +30,7 @@ export default class CoachList extends React.Component {
           this.props.update(Actions.pop);
 
         }else{
-          Alert.alert('Coach Not Interested');
+          Alert.alert('Not Enough Funds');
         }
         
       }
@@ -92,6 +92,17 @@ export default class CoachList extends React.Component {
             arrayForFilter.push(teams[i].coach);
           }
         }
+
+        arrayForFilter.sort(function (a, b) {
+          if (a.rating > b.rating) {
+            return -1;
+          }
+          if (a.rating < b.rating) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
         // for(let i=0; i<availableCoaches.length; i++){
         //   arrayForFilter.push(availableCoaches[i]);
         // }
@@ -132,7 +143,7 @@ export default class CoachList extends React.Component {
                     title={coach.name}
                      leftAvatar={ coach.faceSrc } 
                      rightAvatar = {coach.teamLogoSrc}
-                    subtitle={`Age: ${coach.age} Yrs: ${coach.years} Sal: $${coach.salary} Ovr: ${coach.rating}\nOff: ${coach.offenseRating} Def: ${coach.defenseRating} Training: ${coach.training} Signing: ${coach.signingInterest}`}
+                    subtitle={`Age: ${coach.age} Yrs: ${coach.years} Sal: $${displaySalary(coach.salary)} Ovr: ${coach.rating}\nOff: ${coach.offenseRating} Def: ${coach.defenseRating} Training: ${coach.training} Signing: ${coach.signingInterest}`}
                     rightTitle={' '}
                     onPress={() => {this.signCoach(coach)}}
                     ></ListItem>
@@ -143,7 +154,7 @@ export default class CoachList extends React.Component {
         return (
             <Background>
 
-                <TeamHeader selectedTeam={selectedTeam}></TeamHeader>
+                <TeamHeader selectedTeam={selectedTeam} subText={'Coaching Budget: $' + displaySalary(selectedTeam.coachingBudget) }></TeamHeader>
 
 <CoachFilter roster={this.state.arrayForFilter} setCoachFilter={this.setCoachFilter}></CoachFilter>
 

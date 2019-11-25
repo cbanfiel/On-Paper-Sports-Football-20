@@ -604,6 +604,7 @@ class Team {
     this.logoSrc = team.logoSrc;
     this.coach = new Coach();
     this.coach.teamLogoSrc = team.logoSrc;
+    this.coachingBudget = 2000000;
     this.schedule = [];
     this.played = [];
     this.wins = 0;
@@ -3389,7 +3390,7 @@ export class Franchise {
 
 
         let coachTraining = scaleBetween(teams[i].coach.training,0,2,40,99);
-        let development = scaleBetween(ply.age,-4,4 + coachTraining, 36,22);
+        let development = scaleBetween(ply.age,-4,3 + coachTraining, 36,19);
           ply.awareness += Math.round(Math.random() * development);
           if (ply.position === POS_QB) {
             ply.pass += Math.round(Math.random() * development);
