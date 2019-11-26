@@ -3153,6 +3153,7 @@ export class Franchise {
       this.retirementStage();
 
       if (!collegeMode) {
+        coachSigning(teams);
         this.currentDraft = this.manualDraft();
         this.currentDraft.simDraft();
         this.checkForBustOrStar();
@@ -3390,7 +3391,7 @@ export class Franchise {
 
 
         let coachTraining = scaleBetween(teams[i].coach.training,0,2,40,99);
-        let development = scaleBetween(ply.age,-4,3 + coachTraining, 36,19);
+        let development = scaleBetween(ply.age,-4,3.5 + coachTraining, 43,20);
           ply.awareness += Math.round(Math.random() * development);
           if (ply.position === POS_QB) {
             ply.pass += Math.round(Math.random() * development);
@@ -4572,7 +4573,7 @@ export class Franchise {
 
     //added specific autosave names
     let teamName = selectedTeam.name.split(' ').join('');
-    saveFranchise(teamName + "_Autosave");
+    // saveFranchise(teamName + "_Autosave");
   }
 
   retirementStage() {
@@ -5793,6 +5794,7 @@ export const loadData = data => {
     for (let i = 0; i < loadedData.teams.length; i++) {
       teams.push(new Team(loadedData.teams[i]));
       teams[i].roster = [];
+      teams[i].coach = Object.assign(new Coach, loadedData.teams[i].coach);
       for (let j = 0; j < loadedData.teams[i].roster.length; j++) {
         ply = new Player(loadedData.teams[i].roster[j]);
         ply.calculateRating();

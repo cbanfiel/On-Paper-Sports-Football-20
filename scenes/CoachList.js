@@ -16,24 +16,15 @@ var {height, width} = Dimensions.get('window');
 
 export default class CoachList extends React.Component {
 
-    signCoach = (coach) =>{
-      if(availableCoaches.includes(coach)){
-        if(canSignCoach(coach, selectedTeam)){
-          let temp = selectedTeam.coach;
-          coach.teamLogoSrc = selectedTeam.logoSrc;
-          if(temp != null){
-            temp.teamLogoSrc = null;
-            availableCoaches.push(temp);
-          }
-          selectedTeam.coach = coach;
-          availableCoaches.splice(availableCoaches.indexOf(coach),1);
-          this.props.update(Actions.pop);
 
-        }else{
-          Alert.alert('Not Enough Funds');
+
+    getCoachesTeam = (coach) => {
+      for(let i=0; i<teams.length; i++){
+        if(teams[i].coach ===  coach){
+          return teams[i];
         }
-        
       }
+      return null;
     }
 
     setCoachFilter(arr){
@@ -88,7 +79,7 @@ export default class CoachList extends React.Component {
         let arrayForFilter = [];
         this.setCoachFilter = this.setCoachFilter.bind(this);
         for(let i=0; i<teams.length; i++){
-          if(teams[i].coach != null){
+          if(teams[i].coach != null && !teams[i].coach.contractExpired){
             arrayForFilter.push(teams[i].coach);
           }
         }
@@ -145,7 +136,7 @@ export default class CoachList extends React.Component {
                      rightAvatar = {coach.teamLogoSrc}
                     subtitle={`Age: ${coach.age} Yrs: ${coach.years} Sal: $${displaySalary(coach.salary)} Ovr: ${coach.rating}\nOff: ${coach.offenseRating} Def: ${coach.defenseRating} Training: ${coach.training} Signing: ${coach.signingInterest}`}
                     rightTitle={' '}
-                    onPress={() => {this.signCoach(coach)}}
+                    onPress={() => {Actions.coachmenu({coach: coach, team: this.getCoachesTeam(coach), update:this.props.update})}}
                     ></ListItem>
                 )
       }

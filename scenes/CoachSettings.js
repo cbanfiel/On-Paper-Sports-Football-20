@@ -8,14 +8,14 @@ import CachedImage from '../components/CachedImage';
 
 export default class CoachSettings extends React.Component {
 
-    update = (_callback) => {
+    update = (_callback, popto) => {
         this.setState({
             offVsDefFocus: selectedTeam.coach.offVsDefFocus,
             offenseType: selectedTeam.coach.offenseType,
             defenseType: selectedTeam.coach.defenseType,
             runVsPass: selectedTeam.coach.runVsPass,
             offTempo: selectedTeam.coach.offTempo
-        }, () => _callback())
+        }, () => _callback(popto))
     }
 
     constructor(props){
@@ -143,7 +143,7 @@ export default class CoachSettings extends React.Component {
                             <CachedImage uri={selectedTeam.coach.faceSrc} style={{ height: 100, width: 100, maxHeight: 100, resizeMode: 'contain', marginRight: 5 }} />
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'HC: ' + selectedTeam.coach.name}</Text>
                             <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Age: ' + selectedTeam.coach.age}</Text>
-                            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.coach.years + ' Years $' + displaySalary(selectedTeam.coach.salary)}</Text>
+                            <Text style={{ textAlign: "center", fontSize: 20, color: selectedTeam.coach.contractExpired? 'red' : 'black', fontFamily: 'advent-pro' }}>{selectedTeam.coach.contractExpired? 'CONTRACT EXPIRED' :selectedTeam.coach.years + ' Years $' + displaySalary(selectedTeam.coach.salary)}</Text>
 
 
                         </View>
@@ -154,6 +154,7 @@ export default class CoachSettings extends React.Component {
                             <Text style={{ textAlign: "center", fontSize: 15, color: 'black', fontFamily: 'advent-pro' }}>{'TRAINING: ' + selectedTeam.coach.training}</Text>
 
                             <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="View Coaches" onPress={() => {Actions.coachlist({update: this.update})}}></Button>
+                            <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title={selectedTeam.coach.contractExpired?"Resign Coach" : "Coach Menu"} onPress={() => {Actions.coachmenu({coach: selectedTeam.coach, team: selectedTeam, update:this.update})}}></Button>
 
                             </Card>
 

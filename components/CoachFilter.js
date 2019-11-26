@@ -24,7 +24,7 @@ export default class CoachFilter extends React.Component {
 
         if(filter === 'signed'){
            for(let i=0; i<teams.length; i++){
-            if(teams[i].coach != null){
+            if(teams[i].coach != null && !teams[i].coach.contractExpired){
                filteredArray.push(teams[i].coach);
             }
            }

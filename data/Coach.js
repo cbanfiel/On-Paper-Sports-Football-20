@@ -1,4 +1,5 @@
-const portraits = require('./Portraits.json');
+const portraits = require('./CoachPortraits.json');
+
 const draftData = require("./JSON/DraftData.json");
 
 export let coachRetirements = [];
@@ -31,6 +32,9 @@ export class Coach {
         //limit between -3 and 3
         this.offTempo = (Math.round(Math.random() * 6)) - 3;
         this.rating = 75;
+        this.teamName = '';
+        this.contractExpired = false;
+        this.history = [];
         this.calculateRating();
     }
 
@@ -99,31 +103,75 @@ export function coachSetup(teams){
 
 }
 
+const saveCoachHistory = (coach, team) =>{
+    coach.history.push({wins: team.wins, losses: team.losses, logoSrc: team.logoSrc, name: team.name});
+}
+
 export function coachOffseasonSetup(teams){
 
     coachRetirements = [];
 
     for(let i=0; i<teams.length; i++){
         teams[i].coachingBudget = scaleBetween(teams[i].seed, 900000, 11000000, teams.length, 1);
+        saveCoachHistory(teams[i].coach, teams[i]);
 
         coachProgression(teams[i].coach);
-        if(didCoachRetire(teams[i].coach) || checkCoachContractExpiration(teams[i].coach)){
+        if(didCoachRetire(teams[i].coach)){
             teams[i].coach = null;
-        }else{
+        }else if(checkCoachContractExpiration(teams[i].coach)){
+            teams[i].coach.contractExpired = true;
+        }
+        else{
             teams[i].coachingBudget -= teams[i].coach.salary;
         }
     }
 
     for(let i=0; i<availableCoaches.length; i++){
         //NO PROGRESSION FOR FA COACHES!
-        if(didCoachRetire(availableCoaches[i])){
-            availableCoaches.splice(availableCoaches.indexOf(availableCoaches[i],1));
-            availableCoaches.push(new Coach());
+        //this fixes aging bug
+        if(!availableCoaches[i].contractExpired){
+            if(didCoachRetire(availableCoaches[i])){
+                availableCoaches.splice(availableCoaches.indexOf(availableCoaches[i],1));
+                availableCoaches.push(new Coach());
+            }
         }
     }
 
     if(availableCoaches.length < (teams.length/2)){
         generateFreeAgentCoaches(teams);
+    }
+}
+
+const coachResigning = (teams) => {
+
+    for(let i=0; i<teams.length; i++){
+        if(teams[i].coach.contractExpired){
+            let rand = Math.random()*125;
+            let winPer = ((teams[i].wins/(teams[i].wins + teams[i].losses))*100);
+            // console.log(`winper${winPer} rand${rand}`)
+    
+        if(rand < winPer && teams[i].coach != null){
+            let coach = teams[i].coach;
+            coach.teamLogoSrc = teams[i].logoSrc;
+            coach.teamName = teams[i].name;
+            coach.contractExpired = false;
+            // coach.years = years;
+            teams[i].coach = coach;
+            availableCoaches.splice(availableCoaches.indexOf(coach), 1);
+            // console.log(coach.name + " OVR:" + coach.rating + " RESIGNS with the " + teams[i].name);
+        }else{
+            teams[i].coach = null;
+        }
+    }
+}
+}
+
+const resetContractExpiredFlag = (teams) => {
+    for(let i=0; i<availableCoaches.length; i++){
+        availableCoaches[i].contractExpired = false;
+    }
+    for(let i=0; i<teams.length; i++){
+        teams[i].coach.contractExpired = false;
     }
 }
 
@@ -143,23 +191,28 @@ export function coachSigning(teams){
         } else {
           return 0;
         }});
+
+        coachResigning(teams);
     
     for(let i=0; i<teams.length; i++){
         if(teams[i].coach == null){
-
-
             let index = Math.floor(Math.random()*4);
             if(index > availableCoaches.length-1){
                 index = 0;
             }
             // let years = Math.round(Math.random()*5)+1;
             let coach = availableCoaches[index];
-            console.log(coach.name + " OVR:" + coach.rating + " signs with the " + teams[i].name);
+            // console.log(coach.name + " OVR:" + coach.rating + " signs with the " + teams[i].name);
+            coach.teamLogoSrc = teams[i].logoSrc;
+            coach.teamName = teams[i].name;
+            coach.contractExpired = false;
             // coach.years = years;
             teams[i].coach = coach;
             availableCoaches.splice(index, 1);
         }
     }
+
+    resetContractExpiredFlag(teams);
 }
 
 const coachProgression = (coach) => {
@@ -208,6 +261,7 @@ const didCoachRetire = (coach) =>{
 
 const releaseCoach = (coach) =>{
     coach.teamLogoSrc = null;
+    coach.teamName = '';
     coach.years = Math.floor(Math.random()*4) + 3;
     coach.salary = coachSalaryCalculation(coach);
     availableCoaches.push(coach);
