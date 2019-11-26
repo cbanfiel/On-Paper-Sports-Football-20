@@ -1,4 +1,4 @@
-const portraits = require('./CoachPortraits.json');
+export const portraits = require('./CoachPortraits.json');
 
 const draftData = require("./JSON/DraftData.json");
 

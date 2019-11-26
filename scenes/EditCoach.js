@@ -1,10 +1,11 @@
 import React from 'react';
-import { Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { Button, Card, Slider, Divider, Input } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
 import { OFF_PRO, OFF_SPREAD, OFF_OPTION, OFF_PISTOL, DEF_43, DEF_34, DEF_335, DEF_425, DEF_52, displaySalary } from '../data/script';
 import CachedImage from '../components/CachedImage';
+import { portraits } from '../data/Coach';
 
 
 export default class EditCoach extends React.Component {
@@ -44,6 +45,24 @@ export default class EditCoach extends React.Component {
         this.props.coach.calculateRating();
         this.props.update(Actions.popTo, 'coachsettings');
     }
+
+    previousPortrait(){
+        let index=portraits.indexOf(this.state.faceSrc);
+        index--;
+        if(index<0){
+          index = portraits.length-1;
+        }
+        this.setState({faceSrc: portraits[index]});
+       }
+   
+       nextPortrait(){
+         let index=portraits.indexOf(this.state.faceSrc);
+         index++;
+         if(index>portraits.length-1){
+           index = 0;
+         }
+         this.setState({faceSrc: portraits[index]});
+        }
 
     
     getOffVsDefFocusString() {
@@ -138,8 +157,18 @@ this.props.team == null ?(null):
                         </View>
     
 }
+<View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                          <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}  onPress={() =>this.previousPortrait()}>
+                          <Text style={{ textAlign: "center", fontSize: 30, color: 'black', fontFamily: 'advent-pro' }}>{'<-'}</Text>
 
-                        <CachedImage rounded style={{ height: 75, width: 75, resizeMode: 'contain', flexDirection: 'column', alignSelf: 'center', marginBottom: 5 }} uri={this.state.faceSrc} />
+                          </TouchableOpacity>
+                        <CachedImage uri={this.state.faceSrc  } style={{flex:1, height: 75, width: 75, resizeMode:'contain', flexDirection: 'column', alignSelf: 'center', marginBottom: 5 }}/>
+                          <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}  onPress={() =>this.nextPortrait()}>
+                          <Text style={{textAlign: "center", fontSize: 30, color: 'black', fontFamily: 'advent-pro' }}>{'->'}</Text>
+                          </TouchableOpacity>
+                        </View>
+
+
                         <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'HC ' + this.state.name}</Text>
                         <Divider style={{ backgroundColor: 'black', margin: 10 }}></Divider>
 

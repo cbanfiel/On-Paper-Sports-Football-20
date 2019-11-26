@@ -4207,9 +4207,9 @@ export class Franchise {
         // console.log(`${teams[i].name} ${rating}`);
 
                 if (teams[i] === selectedTeam) {
-                    console.log(`generateprospect b4: ${rating}`);
+                    // console.log(`generateprospect b4: ${rating}`);
                     rating = Math.round(((((sliders.recruitingDifficulty*-1)+100)/100) * rating) + rating);
-                    console.log(`generateprospect rating: ${rating}`);
+                    // console.log(`generateprospect rating: ${rating}`);
                 }
 
         if(rating >= 99){
@@ -4573,7 +4573,7 @@ export class Franchise {
 
     //added specific autosave names
     let teamName = selectedTeam.name.split(' ').join('');
-    // saveFranchise(teamName + "_Autosave");
+    saveFranchise(teamName + "_Autosave");
   }
 
   retirementStage() {
@@ -5794,7 +5794,9 @@ export const loadData = data => {
     for (let i = 0; i < loadedData.teams.length; i++) {
       teams.push(new Team(loadedData.teams[i]));
       teams[i].roster = [];
-      teams[i].coach = Object.assign(new Coach, loadedData.teams[i].coach);
+      if(loadedData.teams[i].coach != null){
+        teams[i].coach = Object.assign(new Coach, loadedData.teams[i].coach);
+      }
       for (let j = 0; j < loadedData.teams[i].roster.length; j++) {
         ply = new Player(loadedData.teams[i].roster[j]);
         ply.calculateRating();
@@ -6749,13 +6751,8 @@ export const loadFranchise = data => {
       teams[i].seed = loadedData.teams[i].seed;
       //coach 
       if(loadedData.teams[i].coach != null){
-        teams[i].coach = loadedData.teams[i].coach;
-      }else{
-        teams[i].coach = new Coach();
+        teams[i].coach = Object.assign(new Coach, loadedData.teams[i].coach);
       }
-   
-
-
 
       //stats
       teams[i].seasonPoints = loadedData.teams[i].seasonPoints;
@@ -7536,7 +7533,7 @@ function bowlGameSetup() {
   if (bowlTeams.length % 2 > 0) {
     //changed to unshift to kick worst team not best team
     let kickedTeam = bowlTeams.pop();
-    console.log(kickedTeam.seed + ' ' + kickedTeam.name + ' Didnt Make A Bowl');
+    // console.log(kickedTeam.seed + ' ' + kickedTeam.name + ' Didnt Make A Bowl');
     //pop last team if odd teams :(
   }
 
