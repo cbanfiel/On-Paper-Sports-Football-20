@@ -18,6 +18,9 @@ export default class CoachFilter extends React.Component {
         let filteredArray = [];
         if(filter === 'available'){
             for(let i=0; i<availableCoaches.length; i++){
+                if(availableCoaches[i].name == 'Jim Harbaugh'){
+                    console.log('ghost')
+                }
                 filteredArray.push(availableCoaches[i]);
               }
         }

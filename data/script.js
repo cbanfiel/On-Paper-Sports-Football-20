@@ -11,7 +11,7 @@ const playbookData = require("./JSON/PlaybookData.json");
 export const portraits = require('./Portraits.json');
 
 import {Sliders} from './Sliders.js';
-import {Coach, generateFreeAgentCoaches, coachOffseasonSetup, coachSetup, coachSigning} from './Coach.js';
+import {Coach, generateFreeAgentCoaches, coachOffseasonSetup, coachSetup, coachSigning, availableCoaches, loadAvailableCoaches} from './Coach.js';
 
 
 import * as FileSystem from "expo-file-system";
@@ -132,7 +132,7 @@ export let playoffSeeds = 6;
 export let seriesWinCount = 1;
 export let conferencesOn = true;
 export let collegeMode = false;
-export let difficulty = -1;
+export let difficulty = 0;
 //************************************ */
 
 let autoSign = true;
@@ -152,7 +152,7 @@ export function resetSliders() {
   seriesWinCount = 1;
   conferencesOn = true;
   collegeMode = false;
-  difficulty = -1;
+  difficulty = 0;
   trainingPointsAvailable = 2;
   rosterSize = 55;
   playerSigningDifficulty = 90;
@@ -4574,7 +4574,7 @@ export class Franchise {
 
     //added specific autosave names
     let teamName = selectedTeam.name.split(' ').join('');
-    // saveFranchise(teamName + "_Autosave");
+    saveFranchise(teamName + "_Autosave");
   }
 
   retirementStage() {
@@ -6653,10 +6653,13 @@ export function saveFranchise(slot) {
         draftClass: '',
         sliders: '',
         newSliders: sliders,
+        availableCoaches: [],
         day: franchise.season.day,
         pastChampions: franchise.pastChampions,
         logo: selectedTeam.logoSrc
     }
+
+    data.availableCoaches = availableCoaches;
 
   for (let i = 0; i < teams.length; i++) {
     scheduleString = [];
@@ -6748,6 +6751,9 @@ export const loadFranchise = data => {
     for (let i = 0; i < conferences.length; i++) {
       conferences[i].teams = [];
     }
+
+
+
     for (let i = 0; i < loadedData.teams.length; i++) {
       teams.push(new Team(loadedData.teams[i]));
       teams[i].history = loadedData.teams[i].history;
@@ -6819,6 +6825,13 @@ export const loadFranchise = data => {
     // for (let i = 0; i < rosterData.length; i++) {
     //     teams.push(new Team(rosterData[i]));
     // }
+
+    //coach
+    if(loadedData.availableCoaches !=null){
+      loadAvailableCoaches(loadedData.availableCoaches);
+    }
+
+
     availableFreeAgents.roster = [];
     for (let i = 0; i < loadedData.freeAgents.roster.length; i++) {
       availableFreeAgents.roster.push(
@@ -7103,9 +7116,18 @@ export function generateProspects(team, rating) {
 
     //slight boost with extra random 20%
     let interest = Math.round(Math.random() * 100) + Math.round(Math.random() * 20);
+
+    //makes it harder to land top tier players
+    let interestMod = scaleBetween(ply.rating, 0, 25, 73, 88);
+    // console.log(ply.rating + ' -' + Math.round(interestMod));
+    interest -= Math.round(interestMod);
     if (interest >= 100) {
       interest = 99;
     }
+    if(interest <= 10){
+      interest = Math.round(Math.random()*10) + 5;
+    }
+    
     ply.interest = interest;
     team.interestedProspects.roster.push(ply);
   }

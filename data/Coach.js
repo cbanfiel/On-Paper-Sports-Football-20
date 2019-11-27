@@ -34,6 +34,7 @@ export class Coach {
         this.rating = 75;
         this.teamName = '';
         this.contractExpired = false;
+        this.retired = false;
         this.history = [];
         this.calculateRating();
     }
@@ -131,8 +132,11 @@ export function coachOffseasonSetup(teams){
         //this fixes aging bug
         if(!availableCoaches[i].contractExpired){
             if(didCoachRetire(availableCoaches[i])){
-                availableCoaches.splice(availableCoaches.indexOf(availableCoaches[i],1));
-                availableCoaches.push(new Coach());
+                availableCoaches.splice(availableCoaches.indexOf(availableCoaches[i]),1);
+                let coach = new Coach();
+                coach.salary = coachSalaryCalculation(coach);
+                coach.generateRatings(rating);
+                availableCoaches.push(coach);
             }
         }
     }
@@ -144,24 +148,33 @@ export function coachOffseasonSetup(teams){
 
 const coachResigning = (teams) => {
 
+
     for(let i=0; i<teams.length; i++){
-        if(teams[i].coach.contractExpired){
-            let rand = Math.random()*125;
-            let winPer = ((teams[i].wins/(teams[i].wins + teams[i].losses))*100);
-            // console.log(`winper${winPer} rand${rand}`)
-    
-        if(rand < winPer && teams[i].coach != null){
-            let coach = teams[i].coach;
-            coach.teamLogoSrc = teams[i].logoSrc;
-            coach.teamName = teams[i].name;
-            coach.contractExpired = false;
-            // coach.years = years;
-            teams[i].coach = coach;
-            availableCoaches.splice(availableCoaches.indexOf(coach), 1);
-            // console.log(coach.name + " OVR:" + coach.rating + " RESIGNS with the " + teams[i].name);
-        }else{
-            teams[i].coach = null;
+
+        if(teams[i].coach){
+            if(teams[i].coach.contractExpired){
+                let rand = Math.random()*125;
+                let winPer = ((teams[i].wins/(teams[i].wins + teams[i].losses))*100);
+                // console.log(`winper${winPer} rand${rand}`)
+        
+            if(rand < winPer && teams[i].coach != null){
+                let coach = teams[i].coach;
+                if(coachRetirements.includes(coach)){
+                    console.log('resigning');
+                }
+                coach.teamLogoSrc = teams[i].logoSrc;
+                coach.teamName = teams[i].name;
+                coach.contractExpired = false;
+                // coach.years = years;
+                teams[i].coach = coach;
+                availableCoaches.splice(availableCoaches.indexOf(coach), 1);
+                // console.log(coach.name + " OVR:" + coach.rating + " RESIGNS with the " + teams[i].name);
+            }else{
+                teams[i].coach = null;
+            }
+
         }
+
     }
 }
 }
@@ -202,6 +215,9 @@ export function coachSigning(teams){
             }
             // let years = Math.round(Math.random()*5)+1;
             let coach = availableCoaches[index];
+            if(coachRetirements.includes(coach)){
+                console.log('signing');
+            }
             // console.log(coach.name + " OVR:" + coach.rating + " signs with the " + teams[i].name);
             coach.teamLogoSrc = teams[i].logoSrc;
             coach.teamName = teams[i].name;
@@ -255,7 +271,10 @@ const didCoachRetire = (coach) =>{
         let retirementChance = scaleBetween(coach.age, 10, 70, 59,80);
         if(retirementChance > Math.random()*100){
             coachRetirements.push(coach);
+            coach.retired = true;
+            return true;
         }
+        return false;
     }
 }
 
@@ -265,6 +284,7 @@ const releaseCoach = (coach) =>{
     coach.years = Math.floor(Math.random()*4) + 3;
     coach.salary = coachSalaryCalculation(coach);
     availableCoaches.push(coach);
+  
 }
 
 export const canSignCoach = (coach, team) =>{
@@ -285,4 +305,12 @@ function scaleBetween(unscaledNum, minAllowed, maxAllowed, min, max) {
     return (
       ((maxAllowed - minAllowed) * (unscaledNum - min)) / (max - min) + minAllowed
     );
+  }
+
+  export const loadAvailableCoaches = (load) => {
+      availableCoaches = [];
+      for(let i=0; i<load.length; i++){
+          let coach = Object.assign(new Coach, load[i]);
+          availableCoaches.push(coach);
+      }
   }

@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native';
 import { selectedTeam, franchise } from '../data/script';
 import Background from '../components/background';
 import ListItem from '../components/ListItem';
+import StatListItem from '../components/StatListItem';
 
 export default class CoachHistory extends React.Component {
 
@@ -14,13 +15,27 @@ export default class CoachHistory extends React.Component {
                 <ScrollView contentContainerStyle={{paddingBottom: 20}}>
 
                     {this.props.coach.history.map((history, i) => (
-                        <ListItem 
-                        title={'Year: ' + (i+1) + ' ' + history.name} 
+                        <StatListItem 
+                        teamName={"YEAR #" + (i+1)} 
                         key={i} 
-                        leftAvatar={history.logoSrc }
-                        subtitle={'Record: ' + history.wins + '-' + (history.losses)}
-                        rightTitle={ history.champions ?  'CHAMPS' : null} ></ListItem>
+                        teamLogoSrc={history.logoSrc }
+                        stats={history.champions ?  'CHAMPS\n' : '' + 'Record: ' + history.wins + '-' + (history.losses)}
+                        playerInfo = {'HC ' + this.props.coach.name}
+                        faceSrc = {this.props.coach.faceSrc}
+                        
+                        ></StatListItem>
                     ))}
+
+
+<StatListItem 
+                        teamName={"CURRENT"} 
+                        teamLogoSrc={this.props.coach.teamLogoSrc }
+                        stats={''}
+                        playerInfo = {'HC ' + this.props.coach.name}
+                        faceSrc = {this.props.coach.faceSrc}
+                        
+                        ></StatListItem>
+
                 </ScrollView>
             </Background>
 

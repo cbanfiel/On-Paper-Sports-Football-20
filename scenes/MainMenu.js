@@ -20,7 +20,7 @@ export default class MainMenu extends React.Component {
       const update = await Updates.checkForUpdateAsync();
       if (update.isAvailable) {
         await Updates.fetchUpdateAsync();
-        Alert.alert('New Update Available Restart Now?', '', [
+        Alert.alert('New Update Available Restart Now?', 'You can see changes by checking the patch notes in the options menu', [
           {
             text: 'Cancel',
             onPress: () => {return},

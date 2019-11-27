@@ -16,7 +16,12 @@ export default class StatListItem extends React.Component {
 
                     
                 <View style={{display: 'flex', flexDirection: 'row', alignSelf:'center', justifyContent: 'center', alignItems: 'center', borderBottomWidth:1, width:'50%', margin:2 }}>
-                            <CachedImage uri={this.props.teamLogoSrc} style={{ height: 30, width: 30, maxHeight: 30, resizeMode: 'contain', marginRight: 5 }} />
+                    {
+                        this.props.teamLogoSrc!=null?(
+                        <CachedImage uri={this.props.teamLogoSrc} style={{ height: 30, width: 30, maxHeight: 30, resizeMode: 'contain', marginRight: 5 }} />
+                        ):null
+
+                    }
                             <Text style={{ textAlign: "center", fontSize: 18, color: 'black', fontFamily: 'advent-pro' }}>{this.props.teamName}</Text>
                         </View>
                         <Text style={{ textAlign: "center", fontSize: 18, color: 'black', fontFamily: 'advent-pro' }}>{this.props.playerInfo}</Text>

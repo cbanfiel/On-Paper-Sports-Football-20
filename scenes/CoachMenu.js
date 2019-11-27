@@ -4,7 +4,7 @@ import { Button, Card, Slider, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
 import CachedImage from '../components/CachedImage';
-import {displaySalary, selectedTeam} from '../data/script';
+import {displaySalary, selectedTeam, teams} from '../data/script';
 import { availableCoaches, canSignCoach } from '../data/Coach';
 
 
@@ -15,10 +15,20 @@ export default class CoachMenu extends React.Component {
           if(canSignCoach(coach, selectedTeam)){
             let temp = selectedTeam.coach;
             coach.teamLogoSrc = selectedTeam.logoSrc;
-            if(temp != null){
-              temp.teamLogoSrc = null;
-              availableCoaches.push(temp);
+            //checks if retired or if same coach
+            if(temp != null && temp != coach){
+            if(!availableCoaches.includes(temp)){
+                temp.teamLogoSrc = null;
+                availableCoaches.push(temp);
             }
+            }
+
+            for(let i=0; i<teams.length; i++){
+                if(teams[i].coach === coach){
+                    teams[i].coach = null;
+                }
+            }
+
             selectedTeam.coach = coach;
             coach.contractExpired = false;
             availableCoaches.splice(availableCoaches.indexOf(coach),1);
@@ -86,7 +96,7 @@ export default class CoachMenu extends React.Component {
 
                             <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Coach History" onPress={() => Actions.coachhistory({coach: this.props.coach})}></Button>
                             {
-                                this.props.team!=null && !this.props.coach.contractExpired? (null):
+                                (this.props.team!=null && !this.props.coach.contractExpired) || this.props.coach.retired? (null):
                                 <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} disabled={!this.canSign()} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title={this.canSign()? "Sign Coach": "Not Enough Funds"} onPress={() => {this.signCoach(this.props.coach)}}></Button>
                             }
                             <Button titleStyle={{ fontFamily: 'advent-pro', color: 'black' }} buttonStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderColor: 'rgba(255,255,255,0.75)', borderWidth: 1, borderColor: 'black', marginTop: 5}} title="Edit Coach" onPress={() => {Actions.editcoach({coach: this.props.coach, update: this.props.update, team: this.props.team})}}></Button>

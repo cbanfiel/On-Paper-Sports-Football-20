@@ -9,6 +9,10 @@ import ListItem from '../components/ListItem';
 
 const updateLog = [
     {
+        date: '11/27/2019',
+        updates: "-Added Coaches, all teams now have coaches that can be hired/fired.\n-Custom Schedule Component, At the beginning of each season you can now edit your schedule.\n-New stat list display (larger then previous for easier viewing of statistics)\n-Various bug fixes."
+    },
+    {
         date: '11/12/2019',
         updates: "-Player age now displayed in roster lists\n-player expected salary now displayed in resigning menu\n-New recruiting difficulty slider "
     },
@@ -70,7 +74,7 @@ export default class RecentUpdates extends React.Component {
             <Background>
                 <ScrollView style={{backgroundColor:'rgba(255,255,255,0)'}}>
                     {updateLog.map((update, i) => (
-                       <View style={{borderBottomWidth:0.5, padding:10}}>
+                       <View style={{borderBottomWidth:0.5, padding:10}} key={i}>
                            <Text style={{fontSize: 20, color: 'black', fontFamily: 'advent-pro'}} >{update.date}</Text>
                            <Text style={{fontSize: 17, color: 'black', fontFamily: 'advent-pro'}}>{update.updates}</Text>
                        </View>
