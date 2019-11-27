@@ -2507,8 +2507,9 @@ export class Game {
       yardsLoss = Math.floor(Math.random() * 10) + 1;
       sacker.sacks++;
       sacker.tackles++;
-      qb.rushYards -= yardsLoss;
-      off.seasonRushYards -= yardsLoss;
+      //SACKS DO NOT COUNT FOR NEGATIVE RUSH YARDS
+      // qb.rushYards -= yardsLoss;
+      // off.seasonRushYards -= yardsLoss;
       spotlightPlayer = sacker;
       result = ` sacks ${qb.name} for a loss of ${yardsLoss} yards`;
       yardsGained = yardsLoss * -1;
