@@ -3140,7 +3140,7 @@ export class Franchise {
   }
 
   sim20() {
-    for (let i = 0; i <= 20; i++) {
+    for (let i = 0; i <= 10; i++) {
       this.season.simToEnd();
       sortStandings();
       this.offSeason = true;
@@ -4573,7 +4573,7 @@ export class Franchise {
 
     //added specific autosave names
     let teamName = selectedTeam.name.split(' ').join('');
-    saveFranchise(teamName + "_Autosave");
+    // saveFranchise(teamName + "_Autosave");
   }
 
   retirementStage() {
@@ -6593,6 +6593,9 @@ export function returnSeasonStatsListView(player) {
   }
 
   if (player.seasonRushAttempts > 0) {
+    if(str.length>1){
+      str+= '\n';
+    }
     str += `RUSH: ATT: ${player.seasonRushAttempts} YDS: ${player.seasonRushYards} TDS: ${player.seasonRushTouchdowns} FUM: ${player.seasonFumbles} AVG: ${Math.round((player.seasonRushYards / player.seasonRushAttempts) * 10) / 10} `;
   }
 
@@ -6620,6 +6623,7 @@ export function returnStatsListView(player) {
   }
 
   if (player.rushAttempts > 0) {
+    
     str += `RUSH: ATT: ${player.rushAttempts} YDS: ${player.rushYards} TDS: ${player.rushTouchdowns} AVG: ${Math.round((player.rushYards / player.rushAttempts) * 10) / 10} `;
   }
 

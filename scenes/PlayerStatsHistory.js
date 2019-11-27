@@ -4,6 +4,7 @@ import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
 import { sortedRoster, returnSeasonStatsListView } from '../data/script';
 import ListItem from '../components/ListItem';
+import StatListItem from '../components/StatListItem';
 
 export default class PlayerStatsHistory extends React.Component {
 
@@ -14,22 +15,28 @@ export default class PlayerStatsHistory extends React.Component {
         <ScrollView contentContainerStyle={{paddingBottom: 20}}>
 
           {this.props.player.previousSeasonsStats.map((year, i) => (
-            <ListItem 
-              title={"YEAR " + (i+1) + ": " + year.data}
+            <StatListItem 
+              teamName={"YEAR #" + (i+1)}
+              stats={ year.data}
               key={i}
-              leftAvatar={year.team}
+              teamLogoSrc={year.team}
+              playerInfo = {this.props.player.positionString + ' #' + this.props.player.number + ' ' + this.props.player.name}
+              faceSrc={this.props.player.faceSrc}
             >
-            </ListItem>
+            </StatListItem>
 
 
 
           ))}
 
-          <ListItem 
-              title={"CURRENT : " + returnSeasonStatsListView(this.props.player) }
-              leftAvatar={this.props.player.teamLogoSrc}
+          <StatListItem 
+              stats={returnSeasonStatsListView(this.props.player) }
+              teamName={"CURRENT"}
+              teamLogoSrc={this.props.player.teamLogoSrc}
+              playerInfo = {this.props.player.positionString + ' #' + this.props.player.number + ' ' + this.props.player.name}
+              faceSrc={this.props.player.faceSrc}
             >
-            </ListItem>
+            </StatListItem>
         </ScrollView>
       </Background>
 

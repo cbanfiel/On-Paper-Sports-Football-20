@@ -8,22 +8,13 @@ import ListItem from '../components/ListItem';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import PlayerCardModal from '../components/PlayerCardModal';
 import StatFilter from '../components/StatFilter';
+import StatListItem from '../components/StatListItem';
 
 
 var {height, width} = Dimensions.get('window');
 
 export default class StatsList extends React.Component {
 
-
-  statsView(player) {
-    let str;
-    if (this.props.season) {
-        return "GOALS: " + player.seasonGoals + " SHOTS: " + player.seasonShots + " ASSISTS: " + player.seasonAssists + " SAVE%: " + Math.round((player.seasonSaves/ (player.seasonSaves + player.seasonGoalsAllowed))*1000)/10;  
-    }
-    else {
-      return "GOALS: " + player.goals + " SHOTS: " + player.shots + " ASSISTS: " + player.assists + " SAVE%: " + Math.round((player.saves/ (player.saves + player.goalsAllowed))*1000)/10;  
-    }
-  }
 
   setStatFilter(arr){
     const data = [];
@@ -76,7 +67,7 @@ export default class StatsList extends React.Component {
       switch(type){
         case 'NORMAL':
           dim.width = width;
-          dim.height = 70;
+          dim.height = 140;
           break;
         default :
           dim.width=0;
@@ -88,15 +79,16 @@ export default class StatsList extends React.Component {
 
   rowRenderer = (type,data) => {
     return(
-            <ListItem 
-              title={data.item.positionString + ' #' + data.item.number + ' ' + data.item.name}
-              leftAvatar={data.item.faceSrc}
-              subtitle={this.props.season? returnSeasonStatsListView(data.item): returnStatsListView(data.item)}
-              rightAvatar={data.item.teamLogoSrc}
+            <StatListItem 
+            stats={returnSeasonStatsListView(data.item) }
+            teamName={data.item.teamName}
+            teamLogoSrc={data.item.teamLogoSrc}
+            playerInfo = {data.item.positionString + ' #' + data.item.number + ' ' + data.item.name}
+            faceSrc={data.item.faceSrc}
               onPress={() => Actions.playerprofile({selectedPlayer: data.item})}
               onLongPress={() => this.setModalVisible(true, data.item)}
             >
-            </ListItem>
+            </StatListItem>
     )
   }
 
