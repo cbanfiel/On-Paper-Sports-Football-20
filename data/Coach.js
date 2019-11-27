@@ -135,7 +135,6 @@ export function coachOffseasonSetup(teams){
                 availableCoaches.splice(availableCoaches.indexOf(availableCoaches[i]),1);
                 let coach = new Coach();
                 coach.salary = coachSalaryCalculation(coach);
-                coach.generateRatings(rating);
                 availableCoaches.push(coach);
             }
         }

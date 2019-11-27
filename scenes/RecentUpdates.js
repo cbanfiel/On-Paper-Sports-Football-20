@@ -10,7 +10,7 @@ import ListItem from '../components/ListItem';
 const updateLog = [
     {
         date: '11/27/2019',
-        updates: "-Added Coaches, all teams now have coaches that can be hired/fired.\n-Custom Schedule Component, At the beginning of each season you can now edit your schedule.\n-New stat list display (larger then previous for easier viewing of statistics)\n-Various bug fixes."
+        updates: "-Added Coaches, all teams now have coaches that can be hired/fired.\n-Custom Schedule Component, At the beginning of each season you can now edit your schedule.\n-New stat list display (larger then previous for easier viewing of statistics)\n-Various small updates and bug fixes."
     },
     {
         date: '11/12/2019',

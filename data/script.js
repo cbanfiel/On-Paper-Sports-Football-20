@@ -132,7 +132,7 @@ export let playoffSeeds = 6;
 export let seriesWinCount = 1;
 export let conferencesOn = true;
 export let collegeMode = false;
-export let difficulty = 0;
+export let difficulty = -1;
 //************************************ */
 
 let autoSign = true;
@@ -152,8 +152,7 @@ export function resetSliders() {
   seriesWinCount = 1;
   conferencesOn = true;
   collegeMode = false;
-  difficulty = 0;
-  trainingPointsAvailable = 2;
+  difficulty = -1;
   rosterSize = 55;
   playerSigningDifficulty = 90;
   sliders.proSliderPreset();
@@ -3141,7 +3140,7 @@ export class Franchise {
   }
 
   sim20() {
-    for (let i = 0; i <= 10; i++) {
+    for (let i = 0; i <= 20; i++) {
       this.season.simToEnd();
       sortStandings();
       this.offSeason = true;
@@ -6677,6 +6676,7 @@ export function saveFranchise(slot) {
       roster: teams[i].roster,
       history: teams[i].history,
       coach: teams[i].coach,
+      coachingBudget: teams[i].coachingBudget,
       scheduleString: scheduleString,
       wins: teams[i].wins,
       losses: teams[i].losses,
@@ -6763,6 +6763,7 @@ export const loadFranchise = data => {
       //coach 
       if(loadedData.teams[i].coach != null){
         teams[i].coach = Object.assign(new Coach, loadedData.teams[i].coach);
+        teams[i].coachingBudget = loadedData.teams[i].coachingBudget;
       }
 
       //stats
