@@ -83,6 +83,9 @@ export default class OfferContractMenu extends React.Component {
                         value={this.state.salary}
                         onValueChange={value => this.setState({ salary: value, signable:canSign(selectedTeam,value), declined:'' })}
                     /> */}
+
+<Button titleStyle={{ fontFamily: 'advent-pro' , color: 'black'}} buttonStyle={{ borderRadius:25, backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black', borderWidth: 1, marginBottom:10 }} title={"Player History"} onPress={() => {Actions.playerstatshistory({player: this.props.selectedPlayer})}}></Button>
+
 {
 
     this.state.declined ? 

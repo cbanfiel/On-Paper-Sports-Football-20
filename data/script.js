@@ -7119,7 +7119,8 @@ export function generateProspects(team, rating) {
     let interest = Math.round(Math.random() * 100) + Math.round(Math.random() * 20);
 
     //makes it harder to land top tier players
-    let interestMod = scaleBetween(ply.rating, 0, 25, 73, 88);
+    //changed from 25 to 15 , 25 was a little to hard imo
+    let interestMod = scaleBetween(ply.rating, 0, 15, 74, 88);
     // console.log(ply.rating + ' -' + Math.round(interestMod));
     interest -= Math.round(interestMod);
     if (interest >= 100) {
