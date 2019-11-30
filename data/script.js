@@ -7057,6 +7057,11 @@ export function generateProspects(team, rating) {
     }
 
     if (qbs < POS_QB_REQUIREMENTS * 3) {
+      //boost to qb ratings
+      let scale = scaleBetween(playerRating, 10,3, 61,76)
+      if(playerRating < 76){
+        playerRating += Math.floor(Math.random()*scale);
+      }
       ply = generatePlayer(POS_QB, playerRating);
       qbs++;
     } else if (hbs < POS_HB_REQUIREMENTS * 3) {

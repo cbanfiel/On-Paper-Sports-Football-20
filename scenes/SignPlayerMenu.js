@@ -113,7 +113,15 @@ manageOffer(ply){
   if(this.state.scholarships<1){
     return;
   }
-  if(ply.signed){return;}
+  if(ply.signed){
+    if(selectedTeam.roster.includes(ply)){
+      return;
+    }else{
+      Actions.secondchancemenu({player: ply, secondChancePoints: 3})
+    }
+  
+  
+  }
 
   sendRecruitOffer(ply, selectedTeam);
   selectedTeam.scholarshipsAvailable --;
