@@ -1,28 +1,36 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { Button, Card, Divider, Slider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import { selectedTeam,  signPlayer,  canSign, calculateCapRoom, displaySalary, collegeMode, offerContract, availableFreeAgents, getPlayerSigningInterest, teams } from '../data/script';
 import Background from '../components/background';
 import CachedImage from '../components/CachedImage';
 
+const secondChanceInfluence = 15;
+
 export default class SecondChanceMenu extends React.Component {
 
     state = {
         interest: this.props.player.interest,
-        secondChancePoints: this.props.secondChancePoints,
+        secondChancePoints: 1,
         declined: false
     }
 
-    manage = (value) => {
-        let interest = this.props.player.interest;
-        let secondChancePoints = this.props.secondChancePoints - value;
-        if(value > 1){
-            interest+= (15*(value-1));
-        }else{
-            interest = this.props.player.interest;
+    subtract = () => {
+        if(this.state.secondChancePoints > 1){
+            let secondChance = this.state.secondChancePoints -1;
+            let interest = this.interestInfluence(secondChance);
+            this.setState({secondChancePoints: secondChance, interest: interest});
+
         }
-        this.setState({interest: interest, secondChancePoints: secondChancePoints})
+    }
+
+    add = () => {
+        if(this.state.secondChancePoints < selectedTeam.secondChancePoints){
+            let secondChance = this.state.secondChancePoints + 1;
+            let interest = this.interestInfluence(secondChance);
+            this.setState({secondChancePoints: secondChance, interest: interest});
+        }
     }
 
     secondChance = () => {
@@ -37,13 +45,26 @@ export default class SecondChanceMenu extends React.Component {
             this.props.player.teamLogoSrc = selectedTeam.logoSrc;
             this.props.player.teamName = selectedTeam.name;
             selectedTeam.manageFootballLineup();
-            selectedTeam.secondChancePoints = this.state.secondChancePoints;
+            selectedTeam.secondChancePoints = selectedTeam.secondChancePoints- this.state.secondChancePoints;
+            this.props.update(Actions.pop)
         }else{
             //do nothing
-            this.setState({declined: true});
-            selectedTeam.secondChancePoints = this.state.secondChancePoints;
+            this.setState({declined: true, secondChancePoints: 0});
+            selectedTeam.secondChancePoints = selectedTeam.secondChancePoints- this.state.secondChancePoints;
+            this.props.update();
         }
 
+    }
+
+    interestInfluence(secondChance) {
+        let interest = this.props.player.interest;
+        if (secondChance > 1) {
+            interest += (secondChanceInfluence * (secondChance - 1));
+        }
+        else {
+            interest = this.props.player.interest;
+        }
+        return interest;
     }
 
     render() {
@@ -59,7 +80,7 @@ export default class SecondChanceMenu extends React.Component {
 
                     <CachedImage style={{ width: 100, height:100, resizeMode:'contain',flexDirection: 'column', alignSelf: 'center', marginBottom: 5 }} uri= {selectedTeam.logoSrc } />
                     <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.name}</Text>
-                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Second Chance Points: ' + this.props.secondChancePoints}</Text>
+                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Second Chance Points Remaining: ' + (selectedTeam.secondChancePoints - (this.state.secondChancePoints))}</Text>
                     <Divider style={{ backgroundColor: 'black', margin: 10 }}></Divider>
 
                     <CachedImage style={{ height: 125, width:125, resizeMode:'contain', flexDirection: 'column', alignSelf: 'center', marginBottom: 5 }} uri= {this.props.player.faceSrc }/>
@@ -67,27 +88,28 @@ export default class SecondChanceMenu extends React.Component {
                     <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Interest: ' + this.state.interest}</Text>
 
 
-                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Second Chance Points Remaining: ' + this.state.secondChancePoints}</Text>
-                    <Slider
-                            thumbTintColor={'rgb(180,180,180)'}
-                            maximumTrackTintColor={'rgb(180,180,180)'}
-                            step={1}
-                            minimumValue={1}
-                            maximumValue={this.props.secondChancePoints}
-                            value={1}
-                            onValueChange={value => {this.manage(value)}}
-                        />
+                    <View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                          <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}  onPress={() =>this.subtract()}>
+                          <Text style={{ textAlign: "center", fontSize: 30, color: 'black', fontFamily: 'advent-pro' }}>{'<-'}</Text>
+
+                          </TouchableOpacity>
+                          <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Second Chance Points: ' + this.state.secondChancePoints}</Text>
+                          <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}}  onPress={() =>this.add()}>
+                          <Text style={{textAlign: "center", fontSize: 30, color: 'black', fontFamily: 'advent-pro' }}>{'->'}</Text>
+                          </TouchableOpacity>
+                        </View>
 
                     
                     <Divider style={{ backgroundColor: 'black', margin: 10 }}></Divider>
 {
     this.state.declined ? 
-    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'\"Sorry coach not interested, try again\"'}</Text>
-    :null
+    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'\"Sorry coach not interested\"'}</Text>
+    :
+<Button titleStyle={{ fontFamily: 'advent-pro' , color: 'black'}} buttonStyle={{ borderRadius:25, backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black', borderWidth: 1, marginBottom:10 }} title={"Second Chance"} onPress={() => {this.secondChance()}}></Button>
+
 
 }
 
-<Button titleStyle={{ fontFamily: 'advent-pro' , color: 'black'}} buttonStyle={{ borderRadius:25, backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black', borderWidth: 1, marginBottom:10 }} title={"Second Chance"} onPress={() => {this.secondChance()}}></Button>
 
 
                 </Card>

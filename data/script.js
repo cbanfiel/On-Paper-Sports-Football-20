@@ -597,6 +597,7 @@ class Team {
 
 
     this.scheduleRating = 0;
+    this.scheduleRank=0;
 
     this.totalRankingRating = 0;
 
@@ -616,6 +617,7 @@ class Team {
     this.ratingRank;
     this.powerRanking = 30;
     this.scholarshipsAvailable = 0;
+    this.secondChancePoints = 0;
     //keep track of retirmements
     this.retirements = [];
     // this.calculateRating();
@@ -745,6 +747,8 @@ class Team {
     }
 
     this.scheduleRating = Math.round(rat / this.schedule.length);
+
+    // console.log(this.name +  ' ' + this.scheduleRating);
 
   }
 
@@ -4179,30 +4183,31 @@ export class Franchise {
 
   freeAgencySetup() {
     if (collegeMode) {
-      //OLD WAY
-      // generateFreeAgents(this.classLength * 2, 12);
 
-      // for (let i = 0; i < teams.length; i++) {
-      //   teams[i].salary = Math.round(
-      //     scaleBetween(teams[i].seed, 75000000, 105000000, 0, teams.length)
-      //   );
-      //   if (teams[i] === this.playoffs.champs) {
-      //     teams[i].salary -= 10000000;
-      //   }
-      // }
+      teams.sort(function (a, b) {
+        if (a.scheduleRating > b.scheduleRating) return -1;
+        if (a.scheduleRating < b.scheduleRating) return 1;
+        return 0;
+      });
 
-       //COACH
+      for(let i=0; i<teams.length; i++){
+          teams[i].scheduleRank = i+1;
+      }
+
        coachSigning(teams);
 
       //NEW WAY
       for (let i = 0; i < teams.length; i++) {
+        //second chance points
+        teams[i].secondChancePoints = 3;
         let seedRat = teams.length - teams[i].seed;
         let teamRating = teams[i].rating;
         let recruiting = scaleBetween(teams[i].coach.signingInterest,-2,2,40,99);
         let scaledSeed = scaleBetween((seedRat), 70, 95, 0, teams.length);
+        let scheduleRank = scaleBetween(teams[i].scheduleRank, -3, 3, teams.length, 1);
 
 
-        let rating = Math.round(((teamRating + scaledSeed) / 2) + recruiting) - 20;
+        let rating = Math.round(((teamRating + scaledSeed) / 2) + recruiting) - 20 + scheduleRank;
 
         // console.log(`${teams[i].name} ${rating}`);
 
@@ -4573,7 +4578,7 @@ export class Franchise {
 
     //added specific autosave names
     let teamName = selectedTeam.name.split(' ').join('');
-    saveFranchise(teamName + "_Autosave");
+    // saveFranchise(teamName + "_Autosave");
   }
 
   retirementStage() {
@@ -7058,13 +7063,17 @@ export function generateProspects(team, rating) {
 
     if (qbs < POS_QB_REQUIREMENTS * 3) {
       //boost to qb ratings
-      let scale = scaleBetween(playerRating, 10,3, 61,76)
+      let scale = scaleBetween(playerRating, 8,1, 61,76)
       if(playerRating < 76){
         playerRating += Math.floor(Math.random()*scale);
       }
       ply = generatePlayer(POS_QB, playerRating);
       qbs++;
     } else if (hbs < POS_HB_REQUIREMENTS * 3) {
+      let scale = scaleBetween(playerRating, 8,1, 61,76)
+      if(playerRating < 76){
+        playerRating += Math.floor(Math.random()*scale);
+      }
       ply = generatePlayer(POS_HB, playerRating);
 
       hbs++;

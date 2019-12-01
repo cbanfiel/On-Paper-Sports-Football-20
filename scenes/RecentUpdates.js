@@ -9,6 +9,10 @@ import ListItem from '../components/ListItem';
 
 const updateLog = [
     {
+        date: '12/1/2019',
+        updates: "-Added second chances in recruiting, you can use second chances to try and flip recruits that have committed to other schools\n-Schedule strength now plays a role in recruiting, stronger schedules attract better recruits"
+    },
+    {
         date: '11/27/2019',
         updates: "-Added Coaches, all teams now have coaches that can be hired/fired.\n-Custom Schedule Component, At the beginning of each season you can now edit your schedule.\n-New stat list display (larger then previous for easier viewing of statistics)\n-Various small updates and bug fixes."
     },

@@ -24,6 +24,33 @@ export default class SignPlayerMenu extends React.Component {
     }
 }
 
+update = (_callback) => {
+  let data = [];
+  if(this.state.filteredList != null){
+    for(let i=0; i<this.state.filteredList.length; i++){
+      data.push({
+        type:'NORMAL',
+        item: this.state.filteredList[i]
+      })
+    }
+  }else{
+  for(let i=0; i<selectedTeam.interestedProspects.roster.length; i++){
+    data.push({
+      type:'NORMAL',
+      item: sortedRoster(selectedTeam.interestedProspects,'rating')[i]
+    })
+  }
+}
+
+  this.setState({
+    list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data), secondChancePoints: selectedTeam.secondChancePoints
+  }, () => {
+    if(_callback){
+      _callback();
+    }
+  });
+}
+
 setPositionFilter(arr){
   const data = [];
   const empty = [];
@@ -110,17 +137,22 @@ rosterRequirements(){
 }
 
 manageOffer(ply){
-  if(this.state.scholarships<1){
-    return;
-  }
+ 
   if(ply.signed){
     if(selectedTeam.roster.includes(ply)){
       return;
     }else{
-      Actions.secondchancemenu({player: ply, secondChancePoints: 3})
+      if(selectedTeam.secondChancePoints>0){
+        Actions.secondchancemenu({player: ply, update: this.update});
+      }
+      return;
     }
   
   
+  }
+
+  if(this.state.scholarships<1){
+    return;
   }
 
   sendRecruitOffer(ply, selectedTeam);
@@ -184,7 +216,8 @@ manageOffer(ply){
           modalVisible:false,
           offered: selectedTeam.offered,
           scholarships: selectedTeam.scholarshipsAvailable - selectedTeam.offered.length,
-          arrayForFilter : arrayForFilter
+          arrayForFilter : arrayForFilter,
+          secondChancePoints: selectedTeam.secondChancePoints
         };
       
         this.layoutProvider = new LayoutProvider((i) => {
@@ -276,6 +309,12 @@ manageOffer(ply){
                     <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20 }}>{this.props.collegeMode ? 'Scholarships Available: ' + this.state.scholarships :'Cap Space: $' + displaySalary((selectedTeam.salary - CAPROOM) *-1)}</Text>
                     <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20 }}>{this.props.collegeMode ? 'Requirements: ' + this.rosterRequirements()  : null}</Text>
                 </View>
+
+                {
+                  collegeMode? 
+                  <Text style={{ fontFamily: 'advent-pro', textAlign:'center', fontSize:20 }}>{'Second Chance Points Remaining: ' + this.state.secondChancePoints}</Text>
+                  :null
+                }
 
                 <PositionFilter roster={this.state.arrayForFilter} setPositionFilter={this.setPositionFilter}></PositionFilter>
 
