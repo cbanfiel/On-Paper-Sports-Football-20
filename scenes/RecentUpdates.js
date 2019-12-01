@@ -10,7 +10,7 @@ import ListItem from '../components/ListItem';
 const updateLog = [
     {
         date: '12/1/2019',
-        updates: "-Added second chances in recruiting, you can use second chances to try and flip recruits that have committed to other schools\n-Schedule strength now plays a role in recruiting, stronger schedules attract better recruits"
+        updates: "-Added second chances in recruiting, you can use second chances to try and flip recruits that have committed to other schools\n-Schedule strength now plays a role in recruiting, stronger schedules attract better recruits\n-Recruit rating tweaks (lower end qb/rb recruits are slightly better)"
     },
     {
         date: '11/27/2019',

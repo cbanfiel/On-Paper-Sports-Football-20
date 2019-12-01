@@ -130,7 +130,7 @@ swapTeam = (team, i) =>{
                 ></ListItem>
             ):
             <ListItem title={"Game " + (i + 1) + ":" + this.getTitle(team)} key={i} leftAvatar={team.logoSrc } 
-            subtitle={this.state.team.played[i] != null ? this.state.team.played[i].userScore + '-' + this.state.team.played[i].oppScore : null} 
+            subtitle={`Rating: ${team.rating}`} 
             rightTitleStyle={this.state.team.played[i] != null ? this.state.team.played[i].won ? {color:'green', fontFamily: 'advent-pro', fontSize:25, textAlign:'center'} : {color:'red', fontFamily: 'advent-pro', fontSize:25, textAlign:'center'} : null}
             rightTitle={this.state.team.played[i] != null ? this.state.team.played[i].won ? 'W' : 'L' : null}
             onPress={() => {Actions.teamlist({home:7, swapTeam: this.swapTeam, week: i, update: this.update})}}
