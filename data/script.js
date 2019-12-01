@@ -4578,7 +4578,7 @@ export class Franchise {
 
     //added specific autosave names
     let teamName = selectedTeam.name.split(' ').join('');
-    // saveFranchise(teamName + "_Autosave");
+    saveFranchise(teamName + "_Autosave");
   }
 
   retirementStage() {
