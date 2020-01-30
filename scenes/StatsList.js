@@ -4,7 +4,6 @@ import {Icon, Button} from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 import Background from '../components/background';
 import { sortedRoster, allPlayers, returnStatsListView, returnSeasonStatsListView } from '../data/script';
-import ListItem from '../components/ListItem';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
 import PlayerCardModal from '../components/PlayerCardModal';
 import StatFilter from '../components/StatFilter';

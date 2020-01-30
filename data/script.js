@@ -10,6 +10,7 @@ const playbookData = require("./JSON/PlaybookData.json");
 
 export const portraits = require('./Portraits.json');
 
+
 import {Sliders} from './Sliders.js';
 import {Coach, generateFreeAgentCoaches, coachOffseasonSetup, coachSetup, coachSigning, availableCoaches, loadAvailableCoaches} from './Coach.js';
 
@@ -68,7 +69,6 @@ export const DEF_425 = 3;
 export const DEF_52 = 4;
 
 export const REDSHIRT_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Redshirt.svg/1280px-Redshirt.svg.png';
-export const GENERIC_PLAYER_LOGO = 'https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/portraits/facegenplayer.png?raw=true';
 
 
 
@@ -132,7 +132,7 @@ export let playoffSeeds = 6;
 export let seriesWinCount = 1;
 export let conferencesOn = true;
 export let collegeMode = false;
-export let difficulty = -1;
+export let difficulty = 0;
 //************************************ */
 
 let autoSign = true;
@@ -152,7 +152,7 @@ export function resetSliders() {
   seriesWinCount = 1;
   conferencesOn = true;
   collegeMode = false;
-  difficulty = -1;
+  difficulty = 0;
   rosterSize = 55;
   playerSigningDifficulty = 90;
   sliders.proSliderPreset();
@@ -705,7 +705,7 @@ class Team {
     this.expiring = {
       name: "Expiring Contracts",
       roster: [],
-      logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
+      logoSrc: "https://on-paper-sports.s3.us-east-2.amazonaws.com/app_icons/football.png",
       reorderLineup: function () {
         availableFreeAgents.roster.sort(function (a, b) {
           if (a.rating > b.rating) return -1;
@@ -1189,14 +1189,14 @@ export let conferences = [];
 let easternConference = {
   name: "Eastern Conference",
   teams: [],
-  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
+  logoSrc: "https://on-paper-sports.s3.us-east-2.amazonaws.com/app_icons/football.png",
   id: 0
 };
 
 let westernConference = {
   name: "Western Conference",
   teams: [],
-  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
+  logoSrc: "https://on-paper-sports.s3.us-east-2.amazonaws.com/app_icons/football.png",
   id: 1
 };
 
@@ -1205,7 +1205,7 @@ conferences.push(easternConference, westernConference);
 export let availableFreeAgents = {
   name: "Free Agents",
   roster: [],
-  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
+  logoSrc: "https://on-paper-sports.s3.us-east-2.amazonaws.com/app_icons/football.png",
   reorderLineup: function () {
     availableFreeAgents.roster.sort(function (a, b) {
       if (a.rating > b.rating) return -1;
@@ -1278,7 +1278,7 @@ export function loadRosters() {
 export let draftClass = {
   name: "Draft Class",
   roster: [],
-  logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
+  logoSrc: "https://on-paper-sports.s3.us-east-2.amazonaws.com/app_icons/football.png",
   reorderLineup: function () {
     draftClass.roster.sort(function (a, b) {
       if (a.rating > b.rating) return -1;
@@ -2362,7 +2362,7 @@ export class Game {
         runner.rushTouchdowns++;
       }
       spotlightPlayer = runner;
-      result = " runs for " + yardsGained + " yards";
+      result = "runs for " + yardsGained + " yards";
     }
     else {
       tackler.tackles++;
@@ -2370,7 +2370,7 @@ export class Game {
       runner.fumbles++;
       runner.rushAttempts++;
       spotlightPlayer = tackler;
-      result = " recovers a fumble ";
+      result = "recovers a fumble ";
     }
     timeRemoved = (Math.floor(Math.random() * 10)) + 35;
     timeRemoved -= off.coach.offTempo;
@@ -2446,7 +2446,7 @@ export class Game {
           target.touchdowns++;
         }
         spotlightPlayer = qb;
-        result = " throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
+        result = "throws a complete pass to " + target.name + " for " + yardsGained + " yards!";
         timeRemoved = (Math.floor(Math.random() * 10)) + 30;
         timeRemoved -= off.coach.offTempo;
 
@@ -2455,7 +2455,7 @@ export class Game {
       else {
         //incomplete check for int
         spotlightPlayer = qb;
-        result = " throws an incomplete pass intended for " + target.name;
+        result = "throws an incomplete pass intended for " + target.name;
         //linebacker ints
         if (Math.random() * 100 > 70) {
           defender = this.selectLBTackler(def, lbsOnField);
@@ -2475,7 +2475,7 @@ export class Game {
           this.down = 1;
           this.yardsToFirst = 10;
           spotlightPlayer = defender;
-          result = " intercepts  " + qb.name;
+          result = "intercepts  " + qb.name;
           timeRemoved = (Math.floor(Math.random() * 15)) + 15;
 
         }
@@ -3080,7 +3080,7 @@ export class Franchise {
     this.retirements = {
       name: "Retirements",
       roster: [],
-      logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
+      logoSrc: "https://on-paper-sports.s3.us-east-2.amazonaws.com/app_icons/football.png",
       reorderLineup: function () {
         draftClass.roster.sort(function (a, b) {
           if (a.rating > b.rating) return -1;
@@ -3221,8 +3221,6 @@ export class Franchise {
       this.retirementStage();
     }
     if (this.stage === "draft") {
-      //draft
-          //COACH
       coachSigning(teams);
       this.currentDraft = this.manualDraft();
     }
@@ -4204,7 +4202,7 @@ export class Franchise {
         let teamRating = teams[i].rating;
         let recruiting = scaleBetween(teams[i].coach.signingInterest,-2,2,40,99);
         let scaledSeed = scaleBetween((seedRat), 70, 95, 0, teams.length);
-        let scheduleRank = scaleBetween(teams[i].scheduleRank, -3, 3, teams.length, 1);
+        let scheduleRank = scaleBetween(teams[i].scheduleRank, -1.5, 1.5, teams.length, 1);
 
 
         let rating = Math.round(((teamRating + scaledSeed) / 2) + recruiting) - 20 + scheduleRank;
@@ -4762,7 +4760,7 @@ export class Franchise {
       drafted: {
         name: "Drafted",
         roster: [],
-        logoSrc: "https://github.com/cbanfiel/On-Paper-Sports-Images/blob/master/app/football.png?raw=true",
+        logoSrc: "https://on-paper-sports.s3.us-east-2.amazonaws.com/app_icons/football.png",
         reorderLineup: function () {
           availableFreeAgents.roster.sort(function (a, b) {
             if (a.rating > b.rating) return -1;
@@ -4919,7 +4917,7 @@ export class Franchise {
 
 var shuffle = function (array) {
   var currentIndex = array.length;
-  var forwardsVsDefensemenraryValue, randomIndex;
+  var temporaryValue, randomIndex;
 
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
@@ -4928,9 +4926,9 @@ var shuffle = function (array) {
     currentIndex -= 1;
 
     // And swap it with the current element.
-    forwardsVsDefensemenraryValue = array[currentIndex];
+    temporaryValue = array[currentIndex];
     array[currentIndex] = array[randomIndex];
-    array[randomIndex] = forwardsVsDefensemenraryValue;
+    array[randomIndex] = temporaryValue;
   }
 
   return array;
@@ -6123,7 +6121,7 @@ export async function getDataFromLink(link, type, sliderType, _callback) {
 
 export let communityRosters = [];
 communityRosters = getDataFromLink(
-  "https://raw.githubusercontent.com/cbanfiel/On-Paper-Sports-Football-20-Rosters/master/communityFiles.json",
+  "https://on-paper-sports.s3.us-east-2.amazonaws.com/football/CommunityFiles.json",
   "communityroster"
 );
 

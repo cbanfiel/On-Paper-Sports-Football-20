@@ -8,6 +8,14 @@ import StatListItem from '../components/StatListItem';
 
 export default class PlayerStatsHistory extends React.Component {
 
+  shouldDisplayCurrent(){
+    if(this.props.player.previousSeasonsStats.length>0){
+      if(this.props.player.previousSeasonsStats[this.props.player.previousSeasonsStats.length-1].data === returnSeasonStatsListView(this.props.player)){
+        return false;
+      }
+    }
+    return true;
+  }
   
   render() {
     return (
@@ -28,7 +36,8 @@ export default class PlayerStatsHistory extends React.Component {
 
 
           ))}
-
+ {
+            this.shouldDisplayCurrent()?(
           <StatListItem 
               stats={returnSeasonStatsListView(this.props.player) }
               teamName={"CURRENT"}
@@ -36,7 +45,9 @@ export default class PlayerStatsHistory extends React.Component {
               playerInfo = {this.props.player.positionString + ' #' + this.props.player.number + ' ' + this.props.player.name}
               faceSrc={this.props.player.faceSrc}
             >
-            </StatListItem>
+            </StatListItem>) : null
+
+}
         </ScrollView>
       </Background>
 

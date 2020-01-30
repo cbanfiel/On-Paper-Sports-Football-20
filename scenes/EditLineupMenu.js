@@ -139,7 +139,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'QB ' + (i===0? 'STARTER' : 'BACKUP')}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.qbs, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -152,7 +152,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'RB ' + (i+1)}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.rbs , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -165,7 +165,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'WR ' + (i+1)}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.wrs, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -178,7 +178,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'TE ' + (i+1)}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.tes , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -191,7 +191,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'OL ' + (i+1)}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.ol, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -204,7 +204,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'DL ' + (i+1)}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.dl , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -217,7 +217,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc }
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'LB ' + (i+1)}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.lbs, i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -230,7 +230,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'DB ' + (i+1)}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.dbs , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -243,7 +243,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'K ' + (i===0? 'STARTER' : 'BACKUP')}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.ks , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 
@@ -256,7 +256,7 @@ export default class EditLineupMenu extends React.Component {
                                 key={i} leftAvatar={ player.faceSrc } 
                                 subtitle={'Rating: ' + player.rating}
                                 rightTitle={'P ' + (i===0? 'STARTER' : 'BACKUP')}
-                                color={this.state.selectedPlayer === player? 'rgba(180,180,180,0.75)': this.state.selectedPlayer2 === player? 'rgba(180,180,180,0.75)': null}
+                                color={this.state.selectedPlayer === player? 'rgba(53,115,209,.75)': this.state.selectedPlayer2 === player? 'rgba(53,115,209,.75)': null}
                                 onPress={() => this.selectPlayer(player, selectedTeam.ps , i)}
                                 onLongPress={() => this.setModalVisible(true, player)}
 

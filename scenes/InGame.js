@@ -260,7 +260,7 @@ leavePage(){
 
 
                     <Divider style={{backgroundColor:'black' ,  height:1, margin:5}} ></Divider>
-                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Sim Game'}</Text>
+                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.timer != null ? 'Pause' : 'Sim Game'}</Text>
                   </Card>
                 </TouchableOpacity>
 
@@ -337,14 +337,14 @@ leavePage(){
                             disabled={this.state.timer != null}
                             thumbTintColor={'rgb(180,180,180)'}
                             maximumTrackTintColor={'rgb(180,180,180)'}
-                            step={25}
-                            minimumValue={50}
+                            step={100}
+                            minimumValue={100}
                             maximumValue={1000}
                             value={1000 - this.state.speed}
                             onValueChange={value => this.setState({ speed: 1000 - value })}
                         />
 
-          <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{1000 - this.state.speed}</Text>
+          <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{(1000 - this.state.speed)/100}</Text>
           <Divider style={{backgroundColor:'black' ,  height:1, margin:5}} ></Divider>
           <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Simulation Speed'}</Text>
         </Card>
