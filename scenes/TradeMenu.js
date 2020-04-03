@@ -8,37 +8,50 @@ import CachedImage from '../components/CachedImage';
 import ListItem from '../components/ListItem';
 import PlayerCardModal from '../components/PlayerCardModal';
 import { LayoutProvider, DataProvider, RecyclerListView } from 'recyclerlistview';
-var {height, width} = Dimensions.get('window');
+var { height, width } = Dimensions.get('window');
 import PositionFilter from '../components/PositionFilter';
 
 
 
 export default class TradeMenu extends React.Component {
 
-    setPositionFilter(arr, tm){
+    componentDidMount() {
+        //for trade finder component
+        if (this.props.t1Offers != null) {
+            for (let i = 0; i < this.props.t1Offers.players.length; i++) {
+                this.addToTrade(this.props.t1Offers.players[i], this.props.t1Offers.team);
+            }
+
+            for (let i = 0; i < this.props.t2Offers.players.length; i++) {
+                this.addToTrade(this.props.t2Offers.players[i], this.props.t2Offers.team);
+            }
+        }
+    }
+
+    setPositionFilter(arr, tm) {
         const data = [];
         const empty = [];
-    
-        for(let i=0; i<arr.length; i++){
-          data.push({
-            type:'NORMAL',
-            item: arr[i]
-          })
+
+        for (let i = 0; i < arr.length; i++) {
+            data.push({
+                type: 'NORMAL',
+                item: arr[i]
+            })
         }
-    
-        if(tm === selectedTeam){
+
+        if (tm === selectedTeam) {
             this.setState({
-              list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
-              filteredList: arr
+                list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
+                filteredList: arr
             });
-        }else{
+        } else {
             this.setState({
                 listT2: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
                 filteredListT2: arr
-              });
+            });
         }
-        
-      }
+
+    }
 
 
     constructor() {
@@ -50,21 +63,21 @@ export default class TradeMenu extends React.Component {
         let arrayForFilterT2 = [];
         this.setPositionFilter = this.setPositionFilter.bind(this);
 
-            arrayForFilter = selectedTeam.roster;
-            for(let i=0; i<selectedTeam.roster.length; i++){
-                data.push({
-                  type:'NORMAL',
-                  item: sortedRoster(selectedTeam,'rating')[i]
-                })
-            }
+        arrayForFilter = selectedTeam.roster;
+        for (let i = 0; i < selectedTeam.roster.length; i++) {
+            data.push({
+                type: 'NORMAL',
+                item: sortedRoster(selectedTeam, 'rating')[i]
+            })
+        }
 
-            arrayForFilterT2 = selectedTeam2.roster;
-            for(let i=0; i<selectedTeam2.roster.length; i++){
-                dataT2.push({
-                  type:'NORMAL',
-                  item: sortedRoster(selectedTeam2,'rating')[i]
-                })
-            }
+        arrayForFilterT2 = selectedTeam2.roster;
+        for (let i = 0; i < selectedTeam2.roster.length; i++) {
+            dataT2.push({
+                type: 'NORMAL',
+                item: sortedRoster(selectedTeam2, 'rating')[i]
+            })
+        }
 
         this.state = {
             t1Offers: [],
@@ -82,91 +95,91 @@ export default class TradeMenu extends React.Component {
 
         this.layoutProvider = new LayoutProvider((i) => {
             return this.state.list.getDataForIndex(i).type
-          }, (type, dim) => {
-            switch(type){
-              case 'NORMAL':
-                dim.width = width;
-                dim.height = 70;
-                break;
-              default :
-                dim.width=0;
-                dim.height=0;
-                break
+        }, (type, dim) => {
+            switch (type) {
+                case 'NORMAL':
+                    dim.width = width;
+                    dim.height = 70;
+                    break;
+                default:
+                    dim.width = 0;
+                    dim.height = 0;
+                    break
             }
-          })
+        })
 
-          this.layoutProvider2 = new LayoutProvider((i) => {
+        this.layoutProvider2 = new LayoutProvider((i) => {
             return this.state.listT2.getDataForIndex(i).type
-          }, (type, dim) => {
-            switch(type){
-              case 'NORMAL':
-                dim.width = width;
-                dim.height = 70;
-                break;
-              default :
-                dim.width=0;
-                dim.height=0;
-                break
+        }, (type, dim) => {
+            switch (type) {
+                case 'NORMAL':
+                    dim.width = width;
+                    dim.height = 70;
+                    break;
+                default:
+                    dim.width = 0;
+                    dim.height = 0;
+                    break
             }
-          })
+        })
 
     }
 
-    rowRenderer = (type,data) => {
+    rowRenderer = (type, data) => {
         let player = data.item;
-        if(player.isPick){
+        if (player.isPick) {
             let pick = player;
-            return(
+            return (
                 <ListItem onPress={() => { this.addToTrade(pick, selectedTeam) }}
-                title={pick.originalTeam + ' Draft Pick'}
-                subtitle={'Round: ' + pick.round + ' Projected Pick: ' + getDraftPickProjectedPick(pick)}
-                bottomDivider={true}
-                leftAvatar={'https://www.2kratings.com/wp-content/uploads/NBA-Player.png'}
-                rightTitle={this.state.t1Offers.includes(pick) ? "SELECTED" : null}
-    
-            ></ListItem>
+                    title={pick.originalTeam + ' Draft Pick'}
+                    subtitle={'Round: ' + pick.round + ' Projected Pick: ' + getDraftPickProjectedPick(pick)}
+                    bottomDivider={true}
+                    leftAvatar={'https://www.2kratings.com/wp-content/uploads/NBA-Player.png'}
+                    rightTitle={this.state.t1Offers.includes(pick) ? "SELECTED" : null}
+
+                ></ListItem>
             )
         }
-        return(
+        return (
             <ListItem onPress={() => { this.addToTrade(player, selectedTeam) }}
-            title={player.positionString + ' #' + player.number + ' ' + player.name}
-            leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating + ' Age: ' + player.age}
-            bottomDivider={true}
-            rightSubtitle={'$' + displaySalary(player.salary)}
-            rightTitle={this.state.t1Offers.includes(player) ? "SELECTED" : null}
-            onLongPress={() => this.setModalVisible(true, player)}
+                title={player.positionString + ' #' + player.number + ' ' + player.name}
+                leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating + ' Age: ' + player.age}
+                bottomDivider={true}
+                rightSubtitle={'$' + displaySalary(player.salary)}
+                rightTitle={this.state.t1Offers.includes(player) ? "SELECTED" : null}
+                onLongPress={() => this.setModalVisible(true, player)}
 
-        ></ListItem>
+            ></ListItem>
         );
 
     }
 
 
-    rowRendererT2 = (type,data) => {
+    rowRendererT2 = (type, data) => {
         let player = data.item;
-        if(player.isPick){
+        if (player.isPick) {
             let pick = player;
-            return(
+            return (
                 <ListItem onPress={() => { this.addToTrade(pick, selectedTeam2) }}
-                title={pick.originalTeam + ' Draft Pick'}
-                subtitle={'Round: ' + pick.round + ' Projected Pick: ' + getDraftPickProjectedPick(pick)}
-                bottomDivider={true}
-                leftAvatar={'https://www.2kratings.com/wp-content/uploads/NBA-Player.png'}
-                rightTitle={this.state.t2Offers.includes(pick) ? "SELECTED" : null}
-    
-            ></ListItem>
+                    title={pick.originalTeam + ' Draft Pick'}
+                    subtitle={'Round: ' + pick.round + ' Projected Pick: ' + getDraftPickProjectedPick(pick)}
+                    bottomDivider={true}
+                    leftAvatar={'https://www.2kratings.com/wp-content/uploads/NBA-Player.png'}
+                    rightTitle={this.state.t2Offers.includes(pick) ? "SELECTED" : null}
+
+                ></ListItem>
             )
         }
-        return(
+        return (
             <ListItem onPress={() => { this.addToTrade(player, selectedTeam2) }}
-            title={player.positionString + ' #' + player.number + ' ' + player.name}
-            leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating + ' Age: ' + player.age}
-            bottomDivider={true}
-            rightSubtitle={'$' + displaySalary(player.salary)}
-            rightTitle={this.state.t2Offers.includes(player) ? "SELECTED" : null}
-            onLongPress={() => this.setModalVisible(true, player)}
+                title={player.positionString + ' #' + player.number + ' ' + player.name}
+                leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating + ' Age: ' + player.age}
+                bottomDivider={true}
+                rightSubtitle={'$' + displaySalary(player.salary)}
+                rightTitle={this.state.t2Offers.includes(player) ? "SELECTED" : null}
+                onLongPress={() => this.setModalVisible(true, player)}
 
-        ></ListItem>
+            ></ListItem>
         );
 
     }
@@ -214,22 +227,22 @@ export default class TradeMenu extends React.Component {
 
         const data = [];
 
-        if(selectedTeam === team){
-            if(this.state.filteredList!=null){
-                for(let i=0; i<this.state.filteredList.length; i++){
+        if (selectedTeam === team) {
+            if (this.state.filteredList != null) {
+                for (let i = 0; i < this.state.filteredList.length; i++) {
                     data.push({
-                      type:'NORMAL',
-                      item: this.state.filteredList[i]
+                        type: 'NORMAL',
+                        item: this.state.filteredList[i]
                     })
                 }
-            }else{
-                for(let i=0; i<team.roster.length; i++){
+            } else {
+                for (let i = 0; i < team.roster.length; i++) {
                     data.push({
-                      type:'NORMAL',
-                      item: sortedRoster(team,'rating')[i]
+                        type: 'NORMAL',
+                        item: sortedRoster(team, 'rating')[i]
                     })
                 }
-        
+
                 // for(let i=0; i<team.draftPicks.length; i++){
                 //     data.push({
                 //       type:'NORMAL',
@@ -237,27 +250,27 @@ export default class TradeMenu extends React.Component {
                 //     })
                 // }
             }
-    
-                this.setState({
-                  list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
-                });
 
-        }else{
-            if(this.state.filteredListT2!=null){
-                for(let i=0; i<this.state.filteredListT2.length; i++){
+            this.setState({
+                list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
+            });
+
+        } else {
+            if (this.state.filteredListT2 != null) {
+                for (let i = 0; i < this.state.filteredListT2.length; i++) {
                     data.push({
-                      type:'NORMAL',
-                      item: this.state.filteredListT2[i]
+                        type: 'NORMAL',
+                        item: this.state.filteredListT2[i]
                     })
                 }
-            }else{
-                for(let i=0; i<team.roster.length; i++){
+            } else {
+                for (let i = 0; i < team.roster.length; i++) {
                     data.push({
-                      type:'NORMAL',
-                      item: sortedRoster(team,'rating')[i]
+                        type: 'NORMAL',
+                        item: sortedRoster(team, 'rating')[i]
                     })
                 }
-        
+
                 // for(let i=0; i<team.draftPicks.length; i++){
                 //     data.push({
                 //       type:'NORMAL',
@@ -268,7 +281,7 @@ export default class TradeMenu extends React.Component {
 
             this.setState({
                 listT2: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(data),
-              });
+            });
         }
     }
 
@@ -310,126 +323,126 @@ export default class TradeMenu extends React.Component {
 
         let t1CanTrade = false;
         let t2CanTrade = false;
-  
-        for(let i=0; i<this.state.t1Offers.length; i++){
+
+        for (let i = 0; i < this.state.t1Offers.length; i++) {
             let ply = this.state.t1Offers[i];
-            if(ply.isPick){
+            if (ply.isPick) {
                 //draft pick
             }
-            else if(ply.position === 0){
+            else if (ply.position === 0) {
                 //forward
                 t1Qbs--;
                 t2Qbs++;
-            }else if(ply.position === 1){
+            } else if (ply.position === 1) {
                 t1Rbs--;
                 t2Rbs++;
-            }else if(ply.position === 3){
+            } else if (ply.position === 3) {
                 t1Wrs--;
                 t2Wrs++;
             }
-            else if(ply.position === 4){
+            else if (ply.position === 4) {
                 t1Tes--;
                 t2Tes++;
             }
-            else if(ply.position >= 5 && ply.position <=9){
+            else if (ply.position >= 5 && ply.position <= 9) {
                 t1Ol--;
                 t2Ol++;
             }
-            else if(ply.position >= 10 && ply.position <=12){
+            else if (ply.position >= 10 && ply.position <= 12) {
                 t1Dl--;
                 t2Dl++;
             }
-            else if(ply.position >= 13 && ply.position <=15){
+            else if (ply.position >= 13 && ply.position <= 15) {
                 t1Lb--;
                 t2Lb++;
             }
-            else if(ply.position >= 16 && ply.position <=18){
+            else if (ply.position >= 16 && ply.position <= 18) {
                 t1Db--;
                 t2Db++;
             }
-            else if(ply.position === 19){
+            else if (ply.position === 19) {
                 t1K--;
                 t2K++;
             }
-            else if(ply.position === 20){
+            else if (ply.position === 20) {
                 t1P--;
                 t2P++;
             }
         }
 
-        for(let i=0; i<this.state.t2Offers.length; i++){
+        for (let i = 0; i < this.state.t2Offers.length; i++) {
             let ply = this.state.t2Offers[i];
-            if(ply.isPick){
+            if (ply.isPick) {
                 //draft pick
             }
-            else if(ply.position === 0){
+            else if (ply.position === 0) {
                 //forward
                 t2Qbs--;
                 t1Qbs++;
-            }else if(ply.position === 1){
+            } else if (ply.position === 1) {
                 t2Rbs--;
                 t1Rbs++;
-            }else if(ply.position === 3){
+            } else if (ply.position === 3) {
                 t2Wrs--;
                 t1Wrs++;
             }
-            else if(ply.position === 4){
+            else if (ply.position === 4) {
                 t2Tes--;
                 t1Tes++;
             }
-            else if(ply.position >= 5 && ply.position <=9){
+            else if (ply.position >= 5 && ply.position <= 9) {
                 t2Ol--;
                 t1Ol++;
             }
-            else if(ply.position >= 10 && ply.position <=12){
+            else if (ply.position >= 10 && ply.position <= 12) {
                 t2Dl--;
                 t1Dl++;
             }
-            else if(ply.position >= 13 && ply.position <=15){
+            else if (ply.position >= 13 && ply.position <= 15) {
                 t2Lb--;
                 t1Lb++;
             }
-            else if(ply.position >= 16 && ply.position <=18){
+            else if (ply.position >= 16 && ply.position <= 18) {
                 t2Db--;
                 t1Db++;
             }
-            else if(ply.position === 19){
+            else if (ply.position === 19) {
                 t2K--;
                 t1K++;
             }
-            else if(ply.position === 20){
+            else if (ply.position === 20) {
                 t2P--;
                 t1P++;
             }
         }
 
 
-        if(t1Qbs >= POS_QB_REQUIREMENTS && 
-            t1Rbs>=POS_HB_REQUIREMENTS && 
-            t1Wrs>= POS_WR_REQUIREMENTS &&
-            t1Tes>= POS_TE_REQUIREMENTS &&
-            t1Ol>= POS_OL_REQUIREMENTS &&
-            t1Dl>= POS_DL_REQUIREMENTS&&
-            t1Lb>= POS_LB_REQUIREMENTS &&
-            t1Db>= POS_DB_REQUIREMENTS &&
-            t1K>= POS_K_REQUIREMENTS &&
-            t1P>= POS_P_REQUIREMENTS
-            ){
+        if (t1Qbs >= POS_QB_REQUIREMENTS &&
+            t1Rbs >= POS_HB_REQUIREMENTS &&
+            t1Wrs >= POS_WR_REQUIREMENTS &&
+            t1Tes >= POS_TE_REQUIREMENTS &&
+            t1Ol >= POS_OL_REQUIREMENTS &&
+            t1Dl >= POS_DL_REQUIREMENTS &&
+            t1Lb >= POS_LB_REQUIREMENTS &&
+            t1Db >= POS_DB_REQUIREMENTS &&
+            t1K >= POS_K_REQUIREMENTS &&
+            t1P >= POS_P_REQUIREMENTS
+        ) {
             t1CanTrade = true;
         }
 
 
-        if(t2Qbs >= POS_QB_REQUIREMENTS && 
-            t2Rbs>=POS_HB_REQUIREMENTS && 
-            t2Wrs>= POS_WR_REQUIREMENTS &&
-            t2Tes>= POS_TE_REQUIREMENTS &&
-            t2Ol>= POS_OL_REQUIREMENTS &&
-            t2Dl>= POS_DL_REQUIREMENTS&&
-            t2Lb>= POS_LB_REQUIREMENTS &&
-            t2Db>= POS_DB_REQUIREMENTS &&
-            t2K>= POS_K_REQUIREMENTS &&
-            t2P>= POS_P_REQUIREMENTS
-            ){
+        if (t2Qbs >= POS_QB_REQUIREMENTS &&
+            t2Rbs >= POS_HB_REQUIREMENTS &&
+            t2Wrs >= POS_WR_REQUIREMENTS &&
+            t2Tes >= POS_TE_REQUIREMENTS &&
+            t2Ol >= POS_OL_REQUIREMENTS &&
+            t2Dl >= POS_DL_REQUIREMENTS &&
+            t2Lb >= POS_LB_REQUIREMENTS &&
+            t2Db >= POS_DB_REQUIREMENTS &&
+            t2K >= POS_K_REQUIREMENTS &&
+            t2P >= POS_P_REQUIREMENTS
+        ) {
             t2CanTrade = true;
         }
 
@@ -457,7 +470,11 @@ export default class TradeMenu extends React.Component {
                 this.props.updateScene();
             }
 
-            Actions.pop();
+            if (this.props.popTo != null) {
+                Actions.popTo(this.props.popTo);
+            } else {
+                Actions.pop();
+            }
         }
     }
 
@@ -482,7 +499,7 @@ export default class TradeMenu extends React.Component {
                             }}>
                                 <View style={{
                                     width: '95%',
-                                    height: '75%', backgroundColor: 'rgba(255,255,255,1)', alignSelf: 'center', 
+                                    height: '75%', backgroundColor: 'rgba(255,255,255,1)', alignSelf: 'center',
                                 }}>
                                     <TouchableOpacity
                                         onPress={() => {
@@ -491,8 +508,8 @@ export default class TradeMenu extends React.Component {
                                         style={{ alignSelf: 'flex-end', padding: 15 }}>
                                         <Icon name="close" ></Icon>
                                     </TouchableOpacity>
-                                    <PlayerCardModal modalPlayer = {this.state.modalPlayer}></PlayerCardModal>
-                                   </View>
+                                    <PlayerCardModal modalPlayer={this.state.modalPlayer}></PlayerCardModal>
+                                </View>
                             </View>
                         </Modal>
                     ) : null
@@ -523,7 +540,7 @@ export default class TradeMenu extends React.Component {
                 }
                 <PositionFilter roster={this.state.arrayForFilter} setPositionFilter={this.setPositionFilter} draftPicks={selectedTeam.draftPicks} team={selectedTeam}></PositionFilter>
 
-                <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false}/>
+                <RecyclerListView style={{ flex: 1, padding: 0, margin: 0 }} rowRenderer={this.rowRenderer} dataProvider={this.state.list} layoutProvider={this.layoutProvider} forceNonDeterministicRendering={false} />
 
 
                 {       //JUST CHECKING WHAT MENU TO GO BACK TO SEASON OR ROSTER
@@ -535,7 +552,7 @@ export default class TradeMenu extends React.Component {
                 }
                 {/* <ScrollView contentContainerStyle={{paddingBottom: 20}}> */}
 
-                    {/* {sortedRoster(selectedTeam, 'rating').map((player, i) => (
+                {/* {sortedRoster(selectedTeam, 'rating').map((player, i) => (
                         <ListItem onPress={() => { this.addToTrade(player, selectedTeam) }}
                             title={player.positionString + ' #' + player.number + ' ' + player.name}
                             key={i} leftAvatar={player.faceSrc} subtitle={'Rating: ' + player.rating}
@@ -548,7 +565,7 @@ export default class TradeMenu extends React.Component {
                     ))
                     } */}
 
-                    {/* {
+                {/* {
                         selectedTeam.draftPicks.map((pick, i) => (
                         <ListItem onPress={() => { this.addToTrade(pick, selectedTeam) }}
                             title={pick.originalTeam + ' Draft Pick'}
@@ -570,7 +587,7 @@ export default class TradeMenu extends React.Component {
                 </View>
                 <PositionFilter roster={this.state.arrayForFilterT2} setPositionFilter={this.setPositionFilter} draftPicks={selectedTeam2.draftPicks} team={selectedTeam2}></PositionFilter>
 
-                <RecyclerListView style={{flex:1, padding: 0, margin: 0}} rowRenderer={this.rowRendererT2} dataProvider={this.state.listT2} layoutProvider={this.layoutProvider2} forceNonDeterministicRendering={false}/>
+                <RecyclerListView style={{ flex: 1, padding: 0, margin: 0 }} rowRenderer={this.rowRendererT2} dataProvider={this.state.listT2} layoutProvider={this.layoutProvider2} forceNonDeterministicRendering={false} />
 
             </Background>
         )
