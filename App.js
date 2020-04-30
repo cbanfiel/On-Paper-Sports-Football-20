@@ -57,6 +57,7 @@ import EditCoach from './scenes/EditCoach';
 import SecondChanceMenu from './scenes/SecondChanceMenu';
 import TradeFinder from './scenes/TradeFinder';
 import TradeFinderResults from './scenes/TradeFinderResults';
+import OtherGames from './scenes/OtherGames';
 
 export default class App extends React.Component {
 
@@ -124,6 +125,7 @@ export default class App extends React.Component {
           <Scene key="secondchancemenu" component={SecondChanceMenu} title="" hideNavBar />
           <Scene key="tradefinder" component={TradeFinder} title="" hideNavBar />
           <Scene key="tradefinderresults" component={TradeFinderResults} title="" hideNavBar />
+          <Scene key="othergames" component={OtherGames} title="" hideNavBar />
 
           {/* <Scene key="recoverymenu" component={RecoveryMenu} title="FreeAgency" hideNavBar /> */}
 

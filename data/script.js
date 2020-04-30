@@ -2973,6 +2973,7 @@ export class Season {
         }
         this.day++;
     }
+
     simToEnd() {
         while (this.day < this.games) {
             if (this.games <= this.day) {
@@ -5827,7 +5828,7 @@ saveToFileSystem = async(data, saveName, type) => {
         });
 };
 
-export const loadFromFileSystem = async(fileName, _callback) => {
+export const loadFromFileSystem = async(fileName, _callback, _throwError) => {
     const file = fileName;
     if (file.includes(".draftclass")) {
         const load = FileSystem.readAsStringAsync(
@@ -5841,6 +5842,7 @@ export const loadFromFileSystem = async(fileName, _callback) => {
             })
             .catch(err => {
                 console.log(err);
+                _throwError('There was an error loading this file')
             });
     } else if (file.includes(".franchise")) {
         const load = FileSystem.readAsStringAsync(
@@ -5852,6 +5854,7 @@ export const loadFromFileSystem = async(fileName, _callback) => {
             })
             .catch(err => {
                 console.log(err);
+                _throwError('There was an error loading this file')
             });
 
     } else {
@@ -5864,6 +5867,7 @@ export const loadFromFileSystem = async(fileName, _callback) => {
             })
             .catch(err => {
                 console.log(err);
+                _throwError('There was an error loading this file')
             });
     }
 };

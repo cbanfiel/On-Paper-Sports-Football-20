@@ -77,9 +77,13 @@ export default class SavesMenu extends React.Component {
     this.setState({saved: true, saveName:''});
   }
 
+  throwError = (msg) => {
+    Alert.alert('Error' , msg);
+  }
+
   
   loadFromFileSystem = async (fileName) =>{
-      loadFromFileSystem(fileName, this.leaveScene)
+      loadFromFileSystem(fileName, this.leaveScene, this.throwError)
   };
 
   leaveScene = () => {

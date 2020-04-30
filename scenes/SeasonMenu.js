@@ -170,6 +170,23 @@ export default class SeasonMenu extends React.Component {
 
             }
 
+{
+              <TouchableOpacity style={{ width: '100%' }} onPress={() => { Actions.othergames({day: franchise.season.day})}}>
+
+                <Card
+                  containerStyle={{
+                    width: '95%', backgroundColor: 'rgba(0,0,0,0)',
+                    borderColor: 'black',
+                    alignSelf: 'center'
+                  }}
+                >
+                  <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>Recent Games</Text>
+                </Card>
+              </TouchableOpacity>
+
+
+            }
+
 
 
 
