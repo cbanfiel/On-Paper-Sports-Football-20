@@ -20,16 +20,16 @@ const OtherGames = ({ day }) => {
         let games = [];
         let teamsDone = []
 
-        teams.map((team, i) => {
-            if(!teamsDone.includes(team)){
-                games.push({
-                    team: team,
-                    opp: team.schedule[day-1]
-                })
-                teamsDone.push(team);
-                teamsDone.push(team.schedule[day-1]);
-            }
-        })
+        for( let i=0; i<teams.length; i++){
+          let team = teams[i]
+          if(!teamsDone.includes(team)){
+            games.push({
+              team
+            })
+            teamsDone.push(team);
+            teamsDone.push(team.schedule[day-1])
+          }
+        }
 
         return games;
     }
@@ -41,10 +41,9 @@ const OtherGames = ({ day }) => {
         {getGames().map((game, i) => (
             <Matchup
               key={i}
-              leftImage={game.team.logoSrc}
-              rightImage={game.team.schedule[day-1].logoSrc}
-              leftText={game.team.played[day-1].userScore}
-              rightText={game.team.played[day-1].oppScore}
+              leftTeam={game.team}
+              rightTeam={game.team.schedule[day-1]}
+              day={day-1}
             />
         )
         )}
