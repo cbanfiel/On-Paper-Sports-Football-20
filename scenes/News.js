@@ -1,34 +1,71 @@
-import React from 'react'
-import { View, Text, ScrollView } from 'react-native'
-import Background from '../components/background'
+import React, { Component } from "react";
+import { Text, View, StyleSheet } from "react-native";
+import Background from "../components/background";
+import { generateNewsStories } from "../data/NewsStories";
+import CachedImage from "../components/CachedImage";
 
-const News = ({stories}) => {
+export default class News extends Component {
+  generateNewsStories = () => {
+
+    //game of the week
+
+    let gameOfTheWeek = "";
+
+    //free agency where will (expiring contract) land
+
+    //rumor
+    //made up crap
+  };
+  
+  render() {
+    let newsStory = generateNewsStories()
     return (
         <Background>
-            <ScrollView>
-                    <View>
-                        <Text>Player Of The Week</Text>
-                        <Text>Eli Manning #10 QB NYG</Text>
-                    </View>
 
-                    <View>
-                        <Text>MVP Race</Text>
-                        <Text>Tom Brady leads the charge</Text>
-                    </View>
+            <Text>On Paper Sports News</Text>
+      <View style={styles.article}>
+          <View style={{flexDirection: 'row', justifyContent:'space-around', flex:1}}>
+      <CachedImage style={styles.img} uri={newsStory.image1} />
+      <CachedImage style={styles.img} uri={newsStory.image2} />
 
-                    <View>
-                        <Text>Player Of The Week</Text>
-                        <Text>Eli Manning #10 QB NYG</Text>
-                    </View>
+          </View>
+      <View style={{flex: 1}}>
+        <Text style={styles.title}>{newsStory.title}</Text>
+        <Text style={styles.story}>
+          {newsStory.story}
+        </Text>
 
-                    <View>
-                        <Text>Player Of The Week</Text>
-                        <Text>Eli Manning #10 QB NYG</Text>
-                    </View>
+      </View>
 
-            </ScrollView>
+      </View>
         </Background>
-    )
+    );
+  }
 }
 
-export default News
+const styles = StyleSheet.create({
+    article:{
+        flexDirection: 'column',
+        justifyContent: 'center',
+        borderBottomWidth: 0.5
+    },
+  title: {
+    textAlign: "center",
+    fontSize: 20,
+    color: "black",
+    fontFamily: "advent-pro",
+  },
+  story: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "black",
+    fontFamily: "advent-pro",
+  },img: {
+      flex:1, 
+    overflow: "hidden",
+    resizeMode: "contain",
+    height: 75,
+    width: 75,
+    margin: 5,
+  }
+});
