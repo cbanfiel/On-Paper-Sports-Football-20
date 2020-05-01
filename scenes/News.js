@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, ScrollView } from "react-native";
 import Background from "../components/background";
 import { generateNewsStories } from "../data/NewsStories";
 import CachedImage from "../components/CachedImage";
+import NewsStory from "../components/NewsStory";
 
 export default class News extends Component {
   generateNewsStories = () => {
@@ -18,26 +19,22 @@ export default class News extends Component {
   };
   
   render() {
-    let newsStory = generateNewsStories()
+    let newsStories = generateNewsStories()
     return (
         <Background>
+            <View>
+                <Text style={styles.header}>OPS Around The League</Text>
+            </View>
+            <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
 
-            <Text>On Paper Sports News</Text>
-      <View style={styles.article}>
-          <View style={{flexDirection: 'row', justifyContent:'space-around', flex:1}}>
-      <CachedImage style={styles.img} uri={newsStory.image1} />
-      <CachedImage style={styles.img} uri={newsStory.image2} />
+        {
+            newsStories.map((story, i) => (
+                <NewsStory newsStory={story} key={i}/>
+            ))
+        }
 
-          </View>
-      <View style={{flex: 1}}>
-        <Text style={styles.title}>{newsStory.title}</Text>
-        <Text style={styles.story}>
-          {newsStory.story}
-        </Text>
 
-      </View>
-
-      </View>
+      </ScrollView>
         </Background>
     );
   }
@@ -49,15 +46,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderBottomWidth: 0.5
     },
+    header:{
+        textAlign: "center",
+        fontSize: 22,
+        color: "black",
+        fontFamily: "advent-pro",
+    },
   title: {
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 22,
     color: "black",
     fontFamily: "advent-pro",
   },
   story: {
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 18,
     color: "black",
     fontFamily: "advent-pro",
   },img: {

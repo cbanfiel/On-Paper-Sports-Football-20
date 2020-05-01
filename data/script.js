@@ -5295,7 +5295,7 @@ export function displaySalary(salary, player) {
     return sal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function tradeValueCalculation(ply, print) {
+export function tradeValueCalculation(ply, print) {
     let isPick = false;
     if (ply.isPick === true) {
         isPick = true;
