@@ -13,9 +13,10 @@ export const portraits = require('./Portraits.json');
 
 import { Sliders } from './Sliders.js';
 import { Coach, generateFreeAgentCoaches, coachOffseasonSetup, coachSetup, coachSigning, availableCoaches, loadAvailableCoaches } from './Coach.js';
-
+import { News } from './NewsStories.js';
 
 import * as FileSystem from "expo-file-system";
+
 
 //for draft trades
 export let inDraft = false;
@@ -2879,6 +2880,15 @@ export class Season {
         sortStandings();
         //set power rankings
         setPowerRankings();
+
+        //generate news stories
+        this.news = new News();
+                //preseason stories
+                this.news.addPreseasonTopTeamStory(chooseATopTeam());
+                this.news.addTopFreeAgentStory(chooseATopUpcomingFreeAgent());
+                this.news.addPreseasonTopPlayerStory(chooseATopPlayer());
+                this.news.addPreseasonRandomPlayerStory(chooseARandomPlayer());
+                this.news.addGameOfTheWeekStory(pickGameOfTheWeek());
     }
 
     manualDay() {
@@ -2899,6 +2909,7 @@ export class Season {
             this.endOfSeason = true;
             return;
         }
+
 
         for (let i = 0; i < teams.length; i++) {
             home = teams[i];
@@ -2946,17 +2957,6 @@ export class Season {
                         home.losses++;
                         away.wins++;
                     }
-
-                    //WHY WAS THIS IN HERE????? UHH WHAT
-
-                    // availableFreeAgents.roster[i].statsHistory.push({
-                    //     points: 0,
-                    //     twoPointersAtt: 0,
-                    //     twoPointersMade: 0,
-                    //     rebounds: 0,
-                    //     threePointersAtt: 0,
-                    //     threePointersMade: 0
-                    // });
                 }
             }
         }
@@ -2972,6 +2972,8 @@ export class Season {
             });
         }
         this.day++;
+
+
     }
 
     simToEnd() {
@@ -5219,6 +5221,11 @@ export function trade(team1, team2, t1Offers, t2Offers, isForced) {
             }
         });
 
+        
+        let bestT1 = getBestPlayer(t1Offers);
+        let bestT2 = getBestPlayer(t2Offers);
+        let best = getBestPlayer([bestT1, bestT2])
+        franchise.season.news.addTradeStory(bestT1, bestT2, team1, team2 , best);
         return true;
     } else {
         return false;
@@ -5226,6 +5233,9 @@ export function trade(team1, team2, t1Offers, t2Offers, isForced) {
 }
 
 export function signPlayer(team, player, years, salary, playerpool) {
+
+
+
     let index = playerpool.roster.indexOf(player);
 
     team.roster.push(player);
@@ -5241,6 +5251,11 @@ export function signPlayer(team, player, years, salary, playerpool) {
         console.log(
             "Error Reordering Lineup, Most likely during offseason when teams are not at full rosters"
         );
+    }
+
+
+    if(playerpool == availableFreeAgents){
+        franchise.season.news.addSignPlayerStory(team, player)
     }
 }
 
@@ -7876,15 +7891,105 @@ export function played(roster) {
     return plyed;
 }
 
-// function exportPlayersToCSV(team){
-//   let csvString = 'team,name,position,age,height,years,salary,number,faceSrc,pass,awareness,rush,speed,catch,block,breakBlock,tackle,kick\n';
-//       for(let j=0; j<team.roster.length; j++){
-//         let ply = team.roster[j];
-//         csvString += `${team.name},${ply.name},${ply.position},${ply.age},${ply.height},${ply.years},${ply.salary},${ply.number},${ply.faceSrc === GENERIC_PLAYER_LOGO? '' : ply.faceSrc},${ply.pass},${ply.awareness},${ply.rush},${ply.speed},${ply.catch},${ply.block},${ply.breakBlock},${ply.tackle},${ply.kick}\n`;
-//       }
-// }
 
-// function importPlayersFromCSV(team, string){
-//   let data = csv.toObjects(string);
-//   console.log(data[0]);
-// }
+
+/* NEW STORY STUFF */
+function getAllPlayers() {
+    let allPlayers = [];
+    for(let i=0; i<teams.length; i++){
+        for(let j=0; j<teams[i].roster.length; j++){
+            let player = teams[i].roster[j];
+            allPlayers.push(player);
+        }
+    }
+
+    allPlayers.sort(function(a,b){
+        if(tradeValueCalculation(a) < tradeValueCalculation(b)){
+            return 1;
+        }
+        if(tradeValueCalculation(a) > tradeValueCalculation(b)){
+            return -1;
+        }
+
+        return 0;
+    })
+    return allPlayers;
+}
+
+function chooseATopPlayer() {
+    let allPlayers = getAllPlayers();
+    let rand = Math.floor(Math.random()*4);
+    return allPlayers[rand]
+}
+
+function chooseATopTeam() {
+    teams.sort(function(a,b){
+        if(a.rating < b.rating){
+            return 1;
+        }
+        if(a.rating > b.rating){
+            return -1;
+        }
+        return 0;
+    })
+    let rand = Math.floor(Math.random()*4)
+    return teams[rand];
+}
+
+function chooseATopUpcomingFreeAgent() {
+            let allPlayers = getAllPlayers(teams, tradeValueCalculation);
+            let expiring = allPlayers.filter(player => player.years < 2);
+            return expiring[Math.floor(Math.random()*4)];
+}
+
+function chooseARandomPlayer() {
+    let allPlayers = getAllPlayers(teams, tradeValueCalculation);
+    return allPlayers[Math.floor(Math.random()*allPlayers.length)]
+}
+
+function pickGameOfTheWeek() {
+    let games = [];
+    let teamsIn = []
+    teams.forEach(team => {
+        if(!teamsIn.includes(team)){
+            teamsIn.push(team);
+            teamsIn.push(team.schedule[0])
+            let hype = (team.rating + team.schedule[0].rating) / 2
+    
+            let game = {
+                team1: team,
+                team2: team.schedule[0],
+                hype
+            }
+    
+            games.push(game)
+        }
+    })
+    games.sort(function(a,b){
+        if(a.hype < b.hype){
+            return 1;
+        }
+        if(a.hype > b.hype){
+            return -1;
+        }
+
+        return 0;
+    })
+    return games[0]
+}
+
+
+function getBestPlayer(players) {
+    players.sort(function(a,b){
+        if(tradeValueCalculation(a) < tradeValueCalculation(b)){
+            return 1;
+        }
+        if(tradeValueCalculation(a) > tradeValueCalculation(b)){
+            return -1;
+        }
+
+        return 0;
+    })
+
+    return players[0];
+}

@@ -7,6 +7,7 @@ import Background from '../components/background';
 import Picache from 'picache';
 import CachedImage from '../components/CachedImage';
 import CardButton from '../components/CardButton';
+import DualButton from '../components/DualButton';
 
 
 
@@ -156,7 +157,6 @@ export default class SeasonMenu extends React.Component {
 
             <CardButton variation={1} onPress={() => { Actions.savesmenu({ filtered: 'franchise', saveType: 'Franchise' })}} title={"Save Franchise"} />
 
-            <CardButton variation={1} onPress={() => { Actions.news()}} title={"News"} />
 
 
             {
@@ -215,28 +215,28 @@ export default class SeasonMenu extends React.Component {
               ) : null
             }
 
-
             {
+              
               franchise.season.day > 0 ? (
-                <CardButton variation={0} title={'Recent Games'} uri1={selectedTeam.logoSrc} onPress={()=> {Actions.othergames({day: franchise.season.day})}} />
+                <DualButton  
+                leftTitle={'League News'}
+                leftImage={selectedTeam.logoSrc} 
+                leftOnPress={()=> {Actions.news()}}
+                rightTitle={'League Scores'}
+                rightImage={selectedTeam.logoSrc} 
+                rightOnPress={()=> {Actions.othergames({day: franchise.season.day})}}
+                />
               ):
-              <TouchableOpacity style={{ width: '100%' }} onPress={() => Actions.editschedule({franchise: franchise, update: this.update})}>
 
-              <Card
-                containerStyle={{
-                  width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                  borderColor: 'black',
-                  alignSelf: 'center'
-                }}
-              >
-                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                  <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
-                </View>
-                <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
-            <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Edit Schedule'}</Text>
-              </Card>
-            </TouchableOpacity>
-
+              <DualButton  
+              leftTitle={'League News'}
+              leftImage={selectedTeam.logoSrc} 
+              leftOnPress={()=> {Actions.news()}}
+              rightTitle={'Edit Schedule'}
+              rightImage={selectedTeam.logoSrc} 
+              rightOnPress={()=> Actions.editschedule({franchise: franchise, update: this.update})}
+              />
+              
             }
 
 

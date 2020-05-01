@@ -1,210 +1,139 @@
-import { teams, tradeValueCalculation } from "./script"
+export class News {
+  constructor() {
+    this.newsStories = [];
+  }
 
-
-export const generateNewsStories = () => {
-    let stories = [];
-
-    stories.push(generatePreseasonTopTeamStory());
-    stories.push(generateTopFreeAgentNewsStory());
-    stories.push(generatePreseasonTopPlayerStory());
-    stories.push(generatePreseasonRandomPlayerStory());
-    stories.push(generatePreseasonBigGameStory())
-
-    return stories;
-}
-
-
-export const getAllPlayers = () => {
-    let allPlayers = [];
-    for(let i=0; i<teams.length; i++){
-        for(let j=0; j<teams[i].roster.length; j++){
-            let player = teams[i].roster[j];
-            allPlayers.push(player);
-        }
-    }
-
-    allPlayers.sort(function(a,b){
-        if(tradeValueCalculation(a) < tradeValueCalculation(b)){
-            return 1;
-        }
-        if(tradeValueCalculation(a) > tradeValueCalculation(b)){
-            return -1;
-        }
-
-        return 0;
-    })
-    return allPlayers;
-}
-
-
-export const generateTopFreeAgentNewsStory = () => {
-    //FREE AGENCY 
-
-    let allPlayers = getAllPlayers();
-
-    let expiring = allPlayers.filter(player => player.years < 2);
-
-    let selectedPlayer = expiring[Math.floor(Math.random()*5)];
+  addPreseasonTopPlayerStory(player) {
     let titles = [
-        `Where will ${selectedPlayer.name} land?`,
-        `The hunt to sign ${selectedPlayer.name}`,
-        `Who will sign ${selectedPlayer.name}?`,
-        `The chase for ${selectedPlayer.name}`,
-    ]
+      `Can ${player.name} lead the ${player.teamName} to greatness?`,
+      `Looking at ${player.name}'s upcoming season`,
+    ];
+    let stories = [
+      `Fans around the league are expecting a lot from ${player.name} this upcoming season`,
+    ];
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: player.faceSrc,
+      image2: player.teamLogoSrc,
+    };
+    this.newsStories.unshift(story);
+  }
+
+  addPreseasonTopTeamStory(team) {
+    let titles = [
+      `The ${team.name} are favored to come out on top this year`,
+      `Why the ${team.name} are leading the pack out of the gates`,
+      `What to expect from the ${team.name} this year`,
+      `The ${team.name} are championship favorites`,
+      `Why the ${team.name} are championship favorites`,
+    ];
+    let stories = [
+      `Why our expert makers our picking the ${team.name} to come out on top this year`,
+    ];
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: team.logoSrc,
+    };
+    this.newsStories.unshift(story);
+  }
+
+  addPreseasonRandomPlayerStory(player) {
+    let titles = [
+      `After his arrest in the offseason ${player.positionString} ${player.name} is looking to make a change`,
+      `Struggling through the loss of his mother ${player.positionString} ${player.name} is looking to honor her this upcoming season`,
+    ];
+    let stories = [
+      `${player.name} has spoken with reporters on what fans should expect from him this season`,
+    ];
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: player.faceSrc,
+      image2: player.teamLogoSrc,
+    };
+
+    this.newsStories.unshift(story);
+  }
+
+  addTopFreeAgentStory(player) {
+    let titles = [
+      `Where will ${player.name} land?`,
+      `The hunt to sign ${player.name}`,
+      `Who will sign ${player.name}?`,
+      `The chase for ${player.name}`,
+    ];
+    let stories = [
+      [
+        `The ${player.teamName} star ${player.positionString} is expected to land a big salary this offseason.`,
+      ],
+    ];
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: player.faceSrc,
+      image2: player.teamLogoSrc,
+    };
+    this.newsStories.unshift(story);
+  }
+
+  addGameOfTheWeekStory(game) {
+    let titles = [`OPS Game of the week`];
 
     let stories = [
-        [`The ${selectedPlayer.teamName} star ${selectedPlayer.positionString} is expected to land a big salary this offseason.`]
-    ]
+      `The ${game.team1.name} face off against the ${game.team2.name}`,
+    ];
 
     let story = {
-        title: titles[Math.floor(Math.random()*titles.length)],
-        story: stories[Math.floor(Math.random()*stories.length)],
-        image1: selectedPlayer.faceSrc,
-        image2: selectedPlayer.teamLogoSrc
-    }
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: game.team1.logoSrc,
+      image2: game.team2.logoSrc,
+    };
 
-    return story;
-}
+    this.newsStories.unshift(story);
+  }
 
-
-let generatePreseasonTopTeamStory = () => {
-    teams.sort(function(a,b){
-        if(a.rating < b.rating){
-            return 1;
-        }
-        if(a.rating > b.rating){
-            return -1;
-        }
-
-        return 0;
-    })
-    let rand = Math.floor(Math.random()*3)
-    let team = teams[rand];
-
-    let titles = [
-        `The ${team.name} are favored to come out on top this year`,
-        `Why the ${team.name} are leading the pack out of the gates`,
-        `What to expect from the ${team.name} this year`,
-        `The ${team.name} are championship favorites`,
-        `Why the ${team.name} are championship favorites`,
-    ]
+  addSignPlayerStory(team, player) {
+    let titles = [`${player.name} signs with ${team.name}`];
 
     let stories = [
-        `Why our expert makers our picking the ${team.name} to come out on top this year`
-    ]
+      `The ${team.name} feel confident in there signing of ${player.positionString} ${player.name}`,
+    ];
 
-    
     let story = {
-        title: titles[Math.floor(Math.random()*titles.length)],
-        story: stories[Math.floor(Math.random()*stories.length)],
-        image1: team.logoSrc
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: team.logoSrc,
+      image2: player.faceSrc,
+    };
+
+    this.newsStories.unshift(story);
+  }
+
+  addTradeStory(p1, p2, t1, t2, best) {
+
+    let p1str = `${p1.positionString} ${p1.name}`
+    let p2str = `${p2.positionString} ${p2.name}`
+
+    if(p1.isPick){
+        
     }
 
-    return story;
-}
-
-let generatePreseasonTopPlayerStory = () => {
-    let allPlayers = getAllPlayers();
-
-
-    let player = allPlayers[0]
-
-    let titles = [
-        `Can ${player.name} lead the ${player.teamName} to greatness?`,
-        `Looking at ${player.name}'s upcoming season`,
-    ]
+    let titles = [`Trade Alert: The ${t1.name} and the ${t2.name} make deal`];
 
     let stories = [
-        `Fans around the league are expecting a lot from ${player.name} this upcoming season`
-    ]
+      `This trade sends ${p1.positionString} ${p1.name} to the ${t2.name} and ${p2.positionString} ${p2.name} to the ${t1.name}`,
+    ];
 
     let story = {
-        title: titles[Math.floor(Math.random()*titles.length)],
-        story: stories[Math.floor(Math.random()*stories.length)],
-        image1: player.faceSrc,
-        image2: player.teamLogoSrc
-    }
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: best.faceSrc,
+      image2: best.teamLogoSrc
+    };
 
-    return story;
+    this.newsStories.unshift(story);
+  }
 }
-
-let generatePreseasonRandomPlayerStory = () => {
-    let allPlayers = getAllPlayers();
-
-
-    let player = allPlayers[Math.floor(Math.random()*allPlayers.length)]
-
-    let titles = [
-        `After his arrest in the offseason ${player.positionString} ${player.name} is looking to make a change`,
-        `Struggling through the loss of his mother ${player.positionString} ${player.name} is looking to honor her this upcoming season`,
-    ]
-
-    let stories = [
-        `${player.name} has spoken with reporters on what fans should expect from him this season`
-    ]
-
-    let story = {
-        title: titles[Math.floor(Math.random()*titles.length)],
-        story: stories[Math.floor(Math.random()*stories.length)],
-        image1: player.faceSrc,
-        image2: player.teamLogoSrc
-    }
-
-    return story;
-}
-
-let generatePreseasonBigGameStory = () => {
-    let games = [];
-    let teamsIn = []
-
-    teams.forEach(team => {
-        if(!teamsIn.includes(team)){
-            teamsIn.push(team);
-            teamsIn.push(team.schedule[0])
-            let hype = (team.rating + team.schedule[0].rating) / 2
-    
-            let game = {
-                team1: team,
-                team2: team.schedule[0],
-                hype
-            }
-    
-            games.push(game)
-        }
-    })
-
-
-    games.sort(function(a,b){
-        if(a.hype < b.hype){
-            return 1;
-        }
-        if(a.hype > b.hype){
-            return -1;
-        }
-
-        return 0;
-    })
-
-    let game = games[0];
-
-
-
-    let titles = [
-        `Looking forward to this weeks matchup`
-    ]
-
-    let stories = [
-        `The ${game.team1.name} face off against the ${game.team2.name}`
-    ]
-
-    let story = {
-        title: titles[Math.floor(Math.random()*titles.length)],
-        story: stories[Math.floor(Math.random()*stories.length)],
-        image1: game.team1.logoSrc,
-        image2: game.team2.logoSrc
-    }
-
-    return story;
-
-}
-

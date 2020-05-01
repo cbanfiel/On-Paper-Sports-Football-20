@@ -17,7 +17,19 @@ const NewsStory = ({ newsStory }) => {
             newsStory.image2 ? (
                 <CachedImage style={styles.img} uri={newsStory.image2} />
             ) : null
-        }
+}
+{
+
+            newsStory.image3 ? (
+              <CachedImage style={styles.img} uri={newsStory.image3} />
+          ) : null
+}
+{
+
+          newsStory.image4 ? (
+            <CachedImage style={styles.img} uri={newsStory.image4} />
+        ) : null
+}
 
       </View>
       <View style={{ flex: 1 }}>

@@ -15,13 +15,15 @@ const CardButton = ({
   uri2,
   subtitle,
   title,
-  variation
+  variation,
+  left,
+  right
 }) => {
   switch (variation) {
     case 0:
       return (
-        <TouchableOpacity style={{ width: "100%" }} onPress={onPress}>
-          <Card containerStyle={styles.normalCardContainer}>
+        <TouchableOpacity style={left? styles.leftCardContainer : right? styles.rightCardContainer : { width: "100%" }} onPress={onPress}>
+          <Card containerStyle={left? styles.dualContainer : right? styles.dualContainer : styles.normalCardContainer}>
             <View style={styles.row}>
               <CachedImage style={styles.img} uri={uri1} />
             </View>
@@ -56,6 +58,17 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0)",
     alignSelf: "center",
     borderColor: "rgba(0,0,0,0.9)",
+  },
+  leftOpacity:{
+    width: '97%', flex: 1, marginRight: '1.25%' 
+  },
+  rightOpacity: {
+    width: '97%', flex: 1, marginLeft: '1.25%' 
+  },
+  dualContainer:{
+    width: '100%', backgroundColor: 'rgba(0,0,0,0)',
+    borderColor: 'black',
+    alignSelf: 'center'
   },
   smallCardContainer: {
     width: '95%', backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black',

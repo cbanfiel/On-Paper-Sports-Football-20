@@ -1,34 +1,21 @@
 import React, { Component } from "react";
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import Background from "../components/background";
-import { generateNewsStories } from "../data/NewsStories";
-import CachedImage from "../components/CachedImage";
 import NewsStory from "../components/NewsStory";
+import { franchise } from '../data/script';
 
 export default class News extends Component {
-  generateNewsStories = () => {
-
-    //game of the week
-
-    let gameOfTheWeek = "";
-
-    //free agency where will (expiring contract) land
-
-    //rumor
-    //made up crap
-  };
-  
   render() {
-    let newsStories = generateNewsStories()
+    console.log(franchise.season.news)
     return (
         <Background>
             <View>
-                <Text style={styles.header}>OPS Around The League</Text>
+                <Text style={styles.header}>{'On Paper Sports News'}</Text>
             </View>
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
 
         {
-            newsStories.map((story, i) => (
+            franchise.season.news.newsStories.map((story, i) => (
                 <NewsStory newsStory={story} key={i}/>
             ))
         }
