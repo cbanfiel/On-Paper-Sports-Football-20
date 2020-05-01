@@ -58,6 +58,7 @@ import SecondChanceMenu from './scenes/SecondChanceMenu';
 import TradeFinder from './scenes/TradeFinder';
 import TradeFinderResults from './scenes/TradeFinderResults';
 import OtherGames from './scenes/OtherGames';
+import News from './scenes/News';
 
 export default class App extends React.Component {
 
@@ -126,6 +127,8 @@ export default class App extends React.Component {
           <Scene key="tradefinder" component={TradeFinder} title="" hideNavBar />
           <Scene key="tradefinderresults" component={TradeFinderResults} title="" hideNavBar />
           <Scene key="othergames" component={OtherGames} title="" hideNavBar />
+          <Scene key="news" component={News} title="" hideNavBar />
+
 
           {/* <Scene key="recoverymenu" component={RecoveryMenu} title="FreeAgency" hideNavBar /> */}
 

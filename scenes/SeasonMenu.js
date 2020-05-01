@@ -6,6 +6,7 @@ import { selectedTeam, leaugeLeaders, setSelectedTeam2, franchise, sortedRoster,
 import Background from '../components/background';
 import Picache from 'picache';
 import CachedImage from '../components/CachedImage';
+import CardButton from '../components/CardButton';
 
 
 
@@ -153,60 +154,15 @@ export default class SeasonMenu extends React.Component {
             }
 
 
-            {
-              <TouchableOpacity style={{ width: '100%' }} onPress={() => { Actions.savesmenu({ filtered: 'franchise', saveType: 'Franchise' }) }}>
+            <CardButton variation={1} onPress={() => { Actions.savesmenu({ filtered: 'franchise', saveType: 'Franchise' })}} title={"Save Franchise"} />
 
-                <Card
-                  containerStyle={{
-                    width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                    borderColor: 'black',
-                    alignSelf: 'center'
-                  }}
-                >
-                  <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>Save Franchise</Text>
-                </Card>
-              </TouchableOpacity>
-
-
-            }
-
-{
-              <TouchableOpacity style={{ width: '100%' }} onPress={() => { Actions.othergames({day: franchise.season.day})}}>
-
-                <Card
-                  containerStyle={{
-                    width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                    borderColor: 'black',
-                    alignSelf: 'center'
-                  }}
-                >
-                  <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>Recent Games</Text>
-                </Card>
-              </TouchableOpacity>
-
-
-            }
-
-
-
+            <CardButton variation={1} onPress={() => { Actions.news()}} title={"News"} />
 
 
             {
               franchise.season.day < franchise.season.games ? (
                 <View>
-
-                  <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.state.timer == null ? this.slowSim() : this.stopSim() }}>
-                    <Card containerStyle={{
-                      width: '95%', backgroundColor: 'rgba(0,0,0,0)', borderColor: 'black',
-                      alignSelf: 'center'
-                    }} >
-                      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      </View>
-                      <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.timer == null ? ('Start Simulation') : 'Stop Simulation'}</Text>
-                    </Card>
-                  </TouchableOpacity>
-
-
+                  <CardButton variation={1} onPress={() => { this.state.timer == null ? this.slowSim() : this.stopSim() }} title={this.state.timer == null ? ('Start Simulation') : 'Stop Simulation'} />
                   {
                     this.state.team === this.state.team.schedule[franchise.season.day] ? (
                       <TouchableOpacity style={{ width: '100%' }} onPress={() => { }}>
@@ -261,7 +217,9 @@ export default class SeasonMenu extends React.Component {
 
 
             {
-              franchise.season.day > 0 ? (null):
+              franchise.season.day > 0 ? (
+                <CardButton variation={0} title={'Recent Games'} uri1={selectedTeam.logoSrc} onPress={()=> {Actions.othergames({day: franchise.season.day})}} />
+              ):
               <TouchableOpacity style={{ width: '100%' }} onPress={() => Actions.editschedule({franchise: franchise, update: this.update})}>
 
               <Card
