@@ -6,7 +6,6 @@ import { franchise } from '../data/script';
 
 export default class News extends Component {
   render() {
-    console.log(franchise.season.news)
     return (
         <Background>
             <View>

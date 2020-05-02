@@ -151,6 +151,10 @@ export class News {
         p2str = `a ${ordinal_suffix_of(p2.round)} round pick`
     }
 
+    let titles = [`Trade Alert: The ${t1.name} and the ${t2.name} make deal`];
+
+    let stories = [`This trade sends ${p1str} to the ${t2.name} and ${p2str} to the ${t1.name}`];
+
 
     if(best.isPick){
         image1 = t1.logoSrc;

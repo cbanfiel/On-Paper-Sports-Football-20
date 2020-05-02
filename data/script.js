@@ -920,46 +920,17 @@ class Team {
                 }
 
             }
+    }
+}
 
-            //   for (let i = 0; i < this.offered.length; i++) {
-            //     let player = this.offered[i];
-            //     if (player.position === 0) {
-            //       this.qbs.push(player);
-            //     } else if (player.position === 1) {
-            //       this.rbs.push(player);
-            //     } else if (player.position === 2) {
-            //       this.fbs.push(player);
-            //     } else if (player.position === 3) {
-            //       this.wrs.push(player);
-            //     } else if (player.position === 4) {
-            //       this.tes.push(player);
-            //     }
-            //     else if (player.position > 4 && player.position < 10) {
-            //       this.ol.push(player);
-            //     }
-            //     else if (player.position >=POS_LE && player.position <= POS_DT) {
-            //       this.dl.push(player);
-            //     }
-            //     else if (player.position >= 13 && player.position <= 15) {
-            //       this.lbs.push(player);
-            //     }
-            //     else if (player.position > 15 && player.position < 19) {
-            //       this.dbs.push(player);
-            //     }
-            //     else if (player.position === 19) {
-            //       this.ks.push(player);
-            //     }
-            //     else if (player.position === 20) {
-            //       this.ps.push(player);
-            //     }
-            // }
-        }
-
-        // let missingRequirements = this.checkRequirements()
-        // for(let i=0; i<missingRequirements.length; i++){
-        //   console.log(missingRequirements[i].position + ' ' + missingRequirements[i].amount + ' ' + this.name);
-        // }
-
+    signMissingRequirements(){
+        let missingRequirements = this.checkRequirements();
+        missingRequirements.map(requirement => {
+            for(let i=0; i<requirement.amount; i++){
+                let available = availableFreeAgents.roster.filter(player => player.position == requirement.position);
+                signPlayer(this, available[0], 1, VETERANSMINIMUM, availableFreeAgents);
+            }
+        })
     }
 
     reorderLineup() {
@@ -2997,29 +2968,27 @@ export class Season {
         }
 
         //check for trade
-        if(Math.random()*100 <= 100){
-            // let offer = [];
-            // let player = chooseARandomPlayer();
-            // offer.push(player);
-            // let offers = getTradeFinderOffers(offer);
-            // console.log(offer);
-            // console.log(offers);
-
-            // let selected = offers[Math.floor(Math.random()*offers.length)];
-
-
-            // teams.forEach(team=> {
-            //     if(team.name == offer.teamName){
-            //         let team1 = team;
-            //     }
-            //     if(team.name == selected[0].teamName){
-            //         let team2 = team;
-            //     }
-            // })
-
-
-            // trade(offer, selected, team1, team2, false);
+        if(Math.random()*100 <= 40 && ((this.day/this.games)*100 < 38)){
+            let offer = [];
+            let player = chooseARandomPlayer();
+            let team = teams.filter(team => team.name == player.teamName)[0]
+            offer.push(player);
+            let offers = getTradeFinderOffers(offer, team);
+            let selected = offers[Math.floor(Math.random()*offers.length)];
+            trade(team, selected.team,offer, selected.players,  true);
+            team.signMissingRequirements();
+            selected.team.signMissingRequirements();
         }
+
+        //check for signing
+        if(Math.random()*100 <= 25){
+            let team = teams[Math.floor(Math.random()*teams.length)];
+            let rand = Math.floor(Math.random()*4);
+            availableFreeAgents.reorderLineup();
+            let player = availableFreeAgents.roster[rand];
+            signPlayer(team, player, 1, VETERANSMINIMUM, availableFreeAgents);
+        }
+        
 
     }
 
@@ -5280,9 +5249,6 @@ export function trade(team1, team2, t1Offers, t2Offers, isForced) {
 }
 
 export function signPlayer(team, player, years, salary, playerpool) {
-
-
-
     let index = playerpool.roster.indexOf(player);
 
     team.roster.push(player);
@@ -5483,7 +5449,7 @@ function interest(t1Offers, t2Offers, forced) {
     // }
 }
 
-export function getTradeFinderOffers(offer) {
+export function getTradeFinderOffers(offer, selectedTeam) {
 
     let offerValue = 0;
     let offers = [];
