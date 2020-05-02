@@ -57,6 +57,30 @@ export class News {
     this.newsStories.unshift(story);
   }
 
+  addRandomPlayerStory(player) {
+      let ply = `${player.positionString} ${player.name}`;
+    let titles = [
+        `${ply} frustrated with coaching staff`,
+        `video of ${ply} playing with barbie dolls surfaces`,
+        `${ply} opens up about his weight gain`,
+        `${ply} jokes with reporters`,
+        `${ply} apoligizes for offensive joke`,
+        `${ply} talks about what motivates him`,
+
+    ];
+    let stories = [
+      `${player.name} speaks with various reporters`,
+    ];
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: player.faceSrc,
+      image2: player.teamLogoSrc,
+    };
+
+    this.newsStories.unshift(story);
+  }
+
   addTopFreeAgentStory(player) {
     let titles = [
       `Where will ${player.name} land?`,
@@ -116,24 +140,78 @@ export class News {
 
     let p1str = `${p1.positionString} ${p1.name}`
     let p2str = `${p2.positionString} ${p2.name}`
+    let image1 = best.faceSrc;
+    let image2 = best.teamLogoSrc;
 
     if(p1.isPick){
-        
+        p1str = `a ${ordinal_suffix_of(p1.round)} round pick`
     }
 
-    let titles = [`Trade Alert: The ${t1.name} and the ${t2.name} make deal`];
+    if(p2.isPick){
+        p2str = `a ${ordinal_suffix_of(p2.round)} round pick`
+    }
 
-    let stories = [
-      `This trade sends ${p1.positionString} ${p1.name} to the ${t2.name} and ${p2.positionString} ${p2.name} to the ${t1.name}`,
-    ];
+
+    if(best.isPick){
+        image1 = t1.logoSrc;
+        image2 = t2.logoSrc;
+    }
 
     let story = {
       title: titles[Math.floor(Math.random() * titles.length)],
       story: stories[Math.floor(Math.random() * stories.length)],
-      image1: best.faceSrc,
-      image2: best.teamLogoSrc
+      image1,
+      image2
     };
 
     this.newsStories.unshift(story);
   }
+
+  addOvertimeNewsStory(t1, t2, t1Score, t2Score) {
+
+    let winner = t1Score > t2Score ? t1.name : t2.name;
+    let loser = t1Score > t2Score ? t2.name : t1.name;
+    let winScore = t1Score > t2Score ? t1Score : t2Score;
+    let loseScore = t1Score > t2Score ? t2Score : t1Score;
+
+    let titles = [
+        `Overtime Thriller!`,
+        `Game Heads Into Overtime`,
+        `What A Game`,
+        `Overtime Classic`,
+        `Close One!`
+
+];
+
+    let stories = [
+      `The ${winner} beats ${loser} in overtime ${winScore}-${loseScore}`,
+    ];
+
+    let story = {
+        title: titles[Math.floor(Math.random() * titles.length)],
+        story: stories[Math.floor(Math.random() * stories.length)],
+        image1: t1.logoSrc,
+        image2: t2.logoSrc
+      };
+  
+      this.newsStories.unshift(story);
+  }
+
+
+}
+
+
+function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
 }

@@ -2593,11 +2593,18 @@ export class Game {
         //jumpball
         if (this.jumpBall()) {
             while (this.time > 0) {
+
                 while (this.inPossesion === home) {
                     this.footballPlay(home, away);
+                    if (this.homescore != this.awayscore && this.overtime == true) {
+                        this.time = 0;
+                    }
                 }
                 while (this.inPossesion === away) {
                     this.footballPlay(away, home);
+                    if (this.homescore != this.awayscore && this.overtime == true) {
+                        this.time = 0;
+                    }
                 }
                 if (this.time <= 0) {
                     if (this.homescore === this.awayscore) {
@@ -2610,9 +2617,15 @@ export class Game {
             while (this.time > 0) {
                 while (this.inPossesion === away) {
                     this.footballPlay(away, home);
+                    if (this.homescore != this.awayscore && this.overtime == true) {
+                        this.time = 0;
+                    }
                 }
                 while (this.inPossesion === home) {
                     this.footballPlay(home, away);
+                    if (this.homescore != this.awayscore && this.overtime == true) {
+                        this.time = 0;
+                    }
                 }
                 if (this.time <= 0) {
                     if (this.homescore === this.awayscore) {
@@ -2938,6 +2951,8 @@ export class Season {
                     });
                 }
             } else {
+
+
                 if (home.played[this.day] == null) {
                     let game = new Game();
                     game.playGame();
@@ -2947,11 +2962,14 @@ export class Season {
                     if (game.homescore > game.awayscore) {
                         home.wins++;
                         if (game.overtime) {
+                            Math.random()*100 > 60 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
+                            
                             away.otLosses++;
                         }
                         away.losses++;
                     } else {
                         if (game.overtime) {
+                            Math.random()*100 > 60 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
                             home.otLosses++;
                         }
                         home.losses++;
@@ -2973,6 +2991,35 @@ export class Season {
         }
         this.day++;
 
+        //check for random storyline
+        if(Math.random()*100 <= 10){
+            this.news.addRandomPlayerStory(chooseARandomPlayer())
+        }
+
+        //check for trade
+        if(Math.random()*100 <= 100){
+            // let offer = [];
+            // let player = chooseARandomPlayer();
+            // offer.push(player);
+            // let offers = getTradeFinderOffers(offer);
+            // console.log(offer);
+            // console.log(offers);
+
+            // let selected = offers[Math.floor(Math.random()*offers.length)];
+
+
+            // teams.forEach(team=> {
+            //     if(team.name == offer.teamName){
+            //         let team1 = team;
+            //     }
+            //     if(team.name == selected[0].teamName){
+            //         let team2 = team;
+            //     }
+            // })
+
+
+            // trade(offer, selected, team1, team2, false);
+        }
 
     }
 
