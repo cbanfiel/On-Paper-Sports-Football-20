@@ -120,7 +120,7 @@ export class News {
   }
 
   addSignPlayerStory(team, player) {
-    let titles = [`${player.name} signs with ${team.name}`];
+    let titles = [`${player.name} signs with the ${team.name}`];
 
     let stories = [
       `The ${team.name} feel confident in there signing of ${player.positionString} ${player.name}`,
@@ -153,7 +153,7 @@ export class News {
 
     let titles = [`Trade Alert: The ${t1.name} and the ${t2.name} make deal`];
 
-    let stories = [`This trade sends ${p1str} to the ${t2.name} and ${p2str} to the ${t1.name}`];
+    let stories = [`${t1.name} sends ${p1str} to the ${t2.name} for ${p2str}`];
 
 
     if(best.isPick){
@@ -188,7 +188,7 @@ export class News {
 ];
 
     let stories = [
-      `The ${winner} beats ${loser} in overtime ${winScore}-${loseScore}`,
+      `The ${winner} beat the ${loser} in overtime ${winScore}-${loseScore}`,
     ];
 
     let story = {
@@ -199,6 +199,61 @@ export class News {
       };
   
       this.newsStories.unshift(story);
+  }
+
+  addEndOfSeasonPlayoffStory(team, player){
+    let titles =[
+      `${player.name} hopes to lead the ${team.name} to a title`
+    ];
+
+    let stories = [
+      `the ${team.name} have a huge chance to win it all this year`
+    ]
+
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: team.logoSrc,
+      image2: player.faceSrc
+    };
+    this.newsStories.unshift(story);
+  }
+
+  addTopTeamLossStory(team, opp, teamScore, oppScore){
+    //college
+    let titles =[
+      `The #${team.seed} ${team.name} fall to the ${opp.seed > 25 ? '' : '#' + opp.seed + ' '}${opp.name}`
+    ];
+
+    let stories = [
+      `The ${team.name} lose ${oppScore}-${teamScore} to the ${opp.name}`
+    ]
+
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: team.logoSrc,
+      image2: opp.logoSrc
+    };
+    this.newsStories.unshift(story);
+  }
+
+  addPlayerOfTheYearStory(player){
+    let titles = [
+      `${player.positionString} ${player.name} wins player of the year!`
+    ]
+
+    let stories =[
+      `after an astounding year ${player.name} will bring home the player of the year trophy`
+    ]
+
+    let story = {
+      title: titles[Math.floor(Math.random() * titles.length)],
+      story: stories[Math.floor(Math.random() * stories.length)],
+      image1: player.faceSrc,
+    };
+    this.newsStories.unshift(story);
+
   }
 
 

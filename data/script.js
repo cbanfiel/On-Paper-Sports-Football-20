@@ -52,6 +52,8 @@ export const POS_SS = 18;
 export const POS_K = 19;
 export const POS_P = 20;
 
+const offensiveSkillPositions = [POS_QB, POS_HB, POS_WR]
+
 //OFFENSE TYPES
 export const OFF_PRO = 0;
 //3 wrs 1TE 1RB
@@ -2869,7 +2871,6 @@ export class Season {
         this.news = new News();
                 //preseason stories
                 this.news.addPreseasonTopTeamStory(chooseATopTeam());
-                this.news.addTopFreeAgentStory(chooseATopUpcomingFreeAgent());
                 this.news.addPreseasonTopPlayerStory(chooseATopPlayer());
                 this.news.addPreseasonRandomPlayerStory(chooseARandomPlayer());
                 this.news.addGameOfTheWeekStory(pickGameOfTheWeek());
@@ -2893,7 +2894,6 @@ export class Season {
             this.endOfSeason = true;
             return;
         }
-
 
         for (let i = 0; i < teams.length; i++) {
             home = teams[i];
@@ -2933,14 +2933,14 @@ export class Season {
                     if (game.homescore > game.awayscore) {
                         home.wins++;
                         if (game.overtime) {
-                            Math.random()*100 > 60 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
+                            Math.random()*100 > 80 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
                             
                             away.otLosses++;
                         }
                         away.losses++;
                     } else {
                         if (game.overtime) {
-                            Math.random()*100 > 60 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
+                            Math.random()*100 > 80 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
                             home.otLosses++;
                         }
                         home.losses++;
@@ -2967,27 +2967,90 @@ export class Season {
             this.news.addRandomPlayerStory(chooseARandomPlayer())
         }
 
+        if(!collegeMode){
         //check for trade
         if(Math.random()*100 <= 40 && ((this.day/this.games)*100 < 38)){
             let offer = [];
             let player = chooseARandomPlayer();
-            let team = teams.filter(team => team.name == player.teamName)[0]
-            offer.push(player);
-            let offers = getTradeFinderOffers(offer, team);
-            let selected = offers[Math.floor(Math.random()*offers.length)];
-            trade(team, selected.team,offer, selected.players,  true);
-            team.signMissingRequirements();
-            selected.team.signMissingRequirements();
+            if(player.teamName != selectedTeam.name){
+                let team = teams.filter(team => team.name == player.teamName)[0]
+                offer.push(player);
+                let offers = getTradeFinderOffers(offer, team);
+                let selected = offers[Math.floor(Math.random()*offers.length)];
+                trade(team, selected.team,offer, selected.players,  true);
+                team.signMissingRequirements();
+                selected.team.signMissingRequirements();
+            }
         }
 
         //check for signing
         if(Math.random()*100 <= 25){
             let team = teams[Math.floor(Math.random()*teams.length)];
-            let rand = Math.floor(Math.random()*4);
-            availableFreeAgents.reorderLineup();
-            let player = availableFreeAgents.roster[rand];
-            signPlayer(team, player, 1, VETERANSMINIMUM, availableFreeAgents);
+            if(team != selectedTeam){
+                let rand = Math.floor(Math.random()*4);
+                availableFreeAgents.reorderLineup();
+                let player = availableFreeAgents.roster[rand];
+                signPlayer(team, player, 1, VETERANSMINIMUM, availableFreeAgents);
+            }
         }
+    }else{
+        //college mode stories
+
+        //upset 
+
+
+        //top 5 team loss
+
+        let loss = teams.filter(team => team.seed <= 5 && !team.played[this.day-1].won)
+
+        if(loss){
+            loss.forEach(l => this.news.addTopTeamLossStory(l, l.schedule[this.day-1], l.played[this.day-1].userScore, l.played[this.day-1].oppScore))
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+        if(this.day >= this.games){
+            //end of season stories
+            if(!collegeMode){
+                this.news.addTopFreeAgentStory(chooseATopUpcomingFreeAgent());
+            }
+
+            //poy
+            let LL = leaugeLeaders()
+            let ply = LL.roster[Math.floor(Math.random()*3)];
+            this.news.addPlayerOfTheYearStory(ply);
+
+
+            let team = getTopSeed();
+            let skillPlayers = team.roster.filter(ply => offensiveSkillPositions.includes(ply.position));
+            skillPlayers.sort(function(a, b) {
+                if (a.rating > b.rating) return -1;
+                if (a.rating < b.rating) return 1;
+                return 0;
+            });
+
+            let player = skillPlayers[0]
+
+            this.news.addEndOfSeasonPlayoffStory(team, player);
+            }
         
 
     }
@@ -2996,7 +3059,7 @@ export class Season {
         while (this.day < this.games) {
             if (this.games <= this.day) {
                 this.endOfSeason = true;
-                return;
+
             }
 
             for (let i = 0; i < teams.length; i++) {
@@ -5449,7 +5512,7 @@ function interest(t1Offers, t2Offers, forced) {
     // }
 }
 
-export function getTradeFinderOffers(offer, selectedTeam) {
+export function getTradeFinderOffers(offer, offerTeam) {
 
     let offerValue = 0;
     let offers = [];
@@ -5472,7 +5535,7 @@ export function getTradeFinderOffers(offer, selectedTeam) {
 
 
     for (let i = 0; i < teams.length; i++) {
-        if (teams[i] != selectedTeam) {
+        if (teams[i] != offerTeam  && teams[i] != selectedTeam) {
             let offer = { team: teams[i], players: [] }
             let otherTeamOfferValue = 0;
 
@@ -7989,6 +8052,11 @@ function pickGameOfTheWeek() {
         return 0;
     })
     return games[0]
+}
+
+function getTopSeed(){
+    let tms = teams.filter(team => team.seed == 1)
+    return tms[Math.floor(Math.random()*tms.length)]
 }
 
 
