@@ -6,6 +6,7 @@ import { selectedTeam, leaugeLeaders, setSelectedTeam2, franchise, sortedRoster,
 import Background from '../components/background';
 import Picache from 'picache';
 import CachedImage from '../components/CachedImage';
+import DualButton from '../components/DualButton';
 
 export default class TrainingStage extends React.Component{
 
@@ -14,6 +15,8 @@ export default class TrainingStage extends React.Component{
 
 return (
     <Background>
+
+
       <ScrollView contentContainerStyle={{paddingBottom: 20}}>
 
 

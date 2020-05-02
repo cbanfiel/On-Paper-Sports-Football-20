@@ -5387,6 +5387,8 @@ export function displaySalary(salary, player) {
 }
 
 export function tradeValueCalculation(ply, print) {
+    try{
+
     let isPick = false;
     if (ply.isPick === true) {
         isPick = true;
@@ -5461,8 +5463,12 @@ export function tradeValueCalculation(ply, print) {
             totalVal
         );
     }
-
     return totalVal;
+}catch(e){
+    console.log(ply + " Trade value error");
+    return 0;
+}
+
 }
 
 function interest(t1Offers, t2Offers, forced) {
