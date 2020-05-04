@@ -61,7 +61,7 @@ export class News {
       let ply = `${player.positionString} ${player.name}`;
     let titles = [
         `${ply} frustrated with coaching staff`,
-        `video of ${ply} playing with barbie dolls surfaces`,
+        `video of ${ply} playing with dolls surfaces`,
         `${ply} opens up about his weight gain`,
         `${ply} jokes with reporters`,
         `${ply} apoligizes for offensive joke`,

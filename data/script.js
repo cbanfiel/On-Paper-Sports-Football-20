@@ -7084,6 +7084,13 @@ export const loadFranchise = data => {
 
         draftClass.reorderLineup();
 
+        //generate news stories
+        franchise.season.news = new News();
+                //preseason stories
+        franchise.season.news.addPreseasonTopTeamStory(chooseATopTeam());
+        franchise.season.news.addPreseasonTopPlayerStory(chooseATopPlayer());
+        franchise.season.news.addGameOfTheWeekStory(pickGameOfTheWeek());
+
         // if(loadData.draftClass.roster.length > 0){
         //     draftClass.roster = [];
         //     for (let i = 0; i < loadedData.draftClass.roster.length; i++) {
@@ -7094,6 +7101,7 @@ export const loadFranchise = data => {
 
         //     }
         // }
+
     } catch (err) {
         console.log(err);
     }

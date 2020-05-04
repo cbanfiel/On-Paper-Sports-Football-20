@@ -28,7 +28,7 @@ export default class News extends Component {
           if(trimmedNews.length > 30){
             trimmedNews.pop();
           }
-          this.setState({news: [this.state.shuffledNews[i], ...trimmedNews]})
+          this.setState({news: [this.state.shuffledNews[i], ...trimmedNews], index: i+1})
           i++;
       }.bind(this), this.state.simSpeed);
     this.setState({ interval });

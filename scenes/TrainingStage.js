@@ -22,7 +22,7 @@ return (
                 leftTitle={'League News'}
                 leftImage={selectedTeam.logoSrc} 
                 leftOnPress={()=> {Actions.news()}}
-                rightTitle={'View All Signings'}
+                rightTitle={collegeMode ? 'View Top Signings' : 'View All Signings'}
                 rightImage={selectedTeam.logoSrc} 
                 rightOnPress={()=> {Actions.offseasonsignings()}}
                 />
