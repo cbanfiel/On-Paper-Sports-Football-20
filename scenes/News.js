@@ -83,7 +83,7 @@ export default class News extends Component {
          <Button titleStyle={{ fontFamily: 'advent-pro', color:'black' }} buttonStyle={{ padding: 30 , borderRadius:0, borderBottomWidth:1, backgroundColor: 'rgba(255,255,255,0)', borderColor: 'rgba(255,255,255,0)'}} title="Skip" onPress={() => {
            let interval = this.state.interval;
           clearInterval(interval);
-          this.setState({interval: null, simSpeed: 50}, () => {
+          this.setState({interval: null, simSpeed: 10}, () => {
             this.startInterval();
           })
           }}></Button>

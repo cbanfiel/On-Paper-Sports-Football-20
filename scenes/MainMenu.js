@@ -15,6 +15,14 @@ export default class MainMenu extends React.Component {
   //   "-In college mode players can now graduate early \n-In college mode you can now save graduates as draft classes for use in other \n");
   // }
 
+  // componentDidMount(){
+  //   let interval = setInterval(
+  //     ()=>{
+  //       this.update();
+  //     }, 5000
+  //   )
+  // }
+
   static async onEnter(){
     try {
       const update = await Updates.checkForUpdateAsync();

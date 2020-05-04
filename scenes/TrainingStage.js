@@ -22,9 +22,9 @@ return (
                 leftTitle={'League News'}
                 leftImage={selectedTeam.logoSrc} 
                 leftOnPress={()=> {Actions.news()}}
-                rightTitle={'League Scores'}
+                rightTitle={'View All Signings'}
                 rightImage={selectedTeam.logoSrc} 
-                rightOnPress={()=> {Actions.othergames({day: franchise.season.day})}}
+                rightOnPress={()=> {Actions.offseasonsignings()}}
                 />
 
         <TouchableOpacity style={{ width: '100%' }} onPress={() => { Actions.rosterlist({view: 'training', selectedTeam: selectedTeam})}}>

@@ -6,14 +6,9 @@ import { teams, draftClass, selectedTeam, franchise, setInDraft } from '../data/
 import Background from '../components/background';
 import Picache from 'picache';
 import CachedImage from '../components/CachedImage';
-
-
-const simSpeed = 10;
+import CardButton from '../components/CardButton';
 
 export default class DraftMenu extends React.Component {
-
-
-
     static onEnter() {
         setInDraft();
     }
@@ -21,6 +16,9 @@ export default class DraftMenu extends React.Component {
     displayRound = () => {
         let round = Math.floor((this.state.pick)/teams.length);
         let pick = Math.floor((this.state.pick) - (round* teams.length));
+        if(this.state.advance){
+            return 'Draft Complete'
+        }
         return `Round: ${round+1} Pick: ${pick+1}`
     }
 
@@ -31,11 +29,11 @@ export default class DraftMenu extends React.Component {
     killInterval = () => {
         if(this.state.interval){
             clearInterval(this.state.interval);
-            this.setState({interval: null})
+            this.setState({interval: null, simSpeed: 450})
         }
     }
 
-    simulate = (toEnd = false) => {
+    simulate = () => {
         if(this.state.interval){
             let interval = this.state.interval;
             clearInterval(interval);
@@ -44,15 +42,15 @@ export default class DraftMenu extends React.Component {
         }
         let interval = setInterval(
             function () {
-                if((!toEnd && this.state.onTheClock == selectedTeam) || this.state.advance){
+                if((!this.state.simToEnd && this.state.onTheClock == selectedTeam) || this.state.advance){
                     clearInterval(interval);
-                    this.setState({interval: null})
+                    this.setState({interval: null, simSpeed: 450})
                     return;
                 }
 
                 franchise.currentDraft.simPick();
                 this.update();
-            }.bind(this), simSpeed);
+            }.bind(this), this.state.simSpeed);
           this.setState({ interval });
     }
 
@@ -63,7 +61,9 @@ export default class DraftMenu extends React.Component {
         advance: franchise.currentDraft.completed,
         pick: franchise.currentDraft.pick,
         round: franchise.currentDraft.round,
-        interval: null
+        interval: null,
+        simToEnd: false,
+        simSpeed: 450
     }
 
 
@@ -86,6 +86,32 @@ export default class DraftMenu extends React.Component {
                 round: franchise.currentDraft.round
             })
         }
+    }
+
+
+    //btn methods
+    simPick = () => {
+        franchise.currentDraft.simPick();
+        this.update();
+    }
+
+    simToEnd = () => {
+        this.setState({simToEnd: true}, () => {
+            this.simulate();
+        })
+    }
+
+    simToNextUserPick = () => {
+        this.setState({simToEnd: false}, () => {
+            this.simulate();
+        })
+    }
+
+    skip = () => {
+        this.killInterval();
+        this.setState({simSpeed: 10}, () => {
+            this.simulate();
+        })
     }
 
     render() {
@@ -211,62 +237,45 @@ export default class DraftMenu extends React.Component {
                                     </TouchableOpacity>
                                 </View>
 
-                                <TouchableOpacity style={{ width: '100%' }} onPress={() => { franchise.currentDraft.simPick(), this.update() }}>
-                                    <Card
-                                        containerStyle={{
-                                            width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                                            borderColor: 'black',
-                                            alignSelf: 'center'
-                                        }}
-                                    >
-                                        <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Sim Pick'}</Text>
-                                    </Card>
-                                </TouchableOpacity>
+
+
+                            {
+                                this.state.interval ? 
+                                <View>
+                                <CardButton 
+                                variation={1} 
+                                onPress={() => {this.killInterval()}}
+                                title={"Stop Sim"} />
+                                {
+                                    this.state.simSpeed < 450 ? null :
+                                    <CardButton 
+                                    variation={1} 
+                                    onPress={() => this.skip()}
+                                    title={"Skip"} />
+                                }
+                                </View>
+
+                                :
+                                <View>
+                                <CardButton 
+                                variation={1} 
+                                onPress={() => this.simPick()}
+                                title={"Sim Pick"} />
+                                <CardButton 
+                                variation={1} 
+                                onPress={() => this.simToEnd()}
+                                title={"Sim To End"} />
+                                <CardButton 
+                                variation={1} 
+                                onPress={() => this.simToNextUserPick()}
+                                title={"Sim To Next User Pick"} />
+                                </View>
+                            }
 
                             </View>
 
 
                     }
-                    {
-                        this.state.advance === false ? (
-                            <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.simulate(true)}}>
-                                <Card
-                                    containerStyle={{
-                                        width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                                        borderColor: 'black',
-                                        alignSelf: 'center'
-                                    }}
-                                >
-                                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{this.state.interval ? 'Stop Sim' : 'Sim To End'}</Text>
-                                </Card>
-                            </TouchableOpacity>
-
-
-                        ) : null
-                    }
-                    {this.state.advance === false ? (
-                        <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.simulate() }}>
-                            <Card
-                                containerStyle={{
-                                    width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                                    borderColor: 'black',
-                                    alignSelf: 'center'
-                                }}
-                            // image={{ uri: selectedTeam.logoSrc }}
-                            // 
-                            >
-                                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>
-                                    {this.state.interval ? 'Skip' :'Sim To Next User Pick'}
-                                    </Text>
-                            </Card>
-                        </TouchableOpacity>
-                    ) : null
-
-
-                    }
-
-
-
 
                 </ScrollView>
 

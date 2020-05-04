@@ -3095,6 +3095,7 @@ export class Franchise {
         this.bowlGames;
         this.pastChampions = [];
         this.classLength = 0;
+        this.offSeasonSignings = [];
 
         this.retirements = {
             name: "Retirements",
@@ -3273,6 +3274,25 @@ export class Franchise {
             if (collegeMode) {
                 this.collegeBustOrStar();
             }
+
+            //add stories / clear array
+            franchise.offSeasonSignings.sort((a,b) => {
+                if(a.player.rating > b.player.rating){ return -1}
+                if(a.player.rating < b.player.rating){ return 1}
+                return 0;
+            })
+
+            let size = franchise.offSeasonSignings.length;
+            if(size > 15){
+                size = 15;
+            }
+            for(let i=0; i<size; i++){
+                let team = franchise.offSeasonSignings[i].team;
+                let player = franchise.offSeasonSignings[i].player;
+                franchise.season.news.addSignPlayerStory(team, player)
+            }
+
+
         }
 
         if (this.stage === "advance") {
@@ -4517,6 +4537,8 @@ export class Franchise {
         availableFreeAgents.manageRequirements();
         teams.map(team => team.signMissingRequirements());
 
+        franchise.offSeasonSignings = [];
+
         //added specific autosave names
         let teamName = selectedTeam.name.split(' ').join('');
         saveFranchise(teamName + "_Autosave");
@@ -5225,9 +5247,10 @@ export function signPlayer(team, player, years, salary, playerpool) {
 
     if(playerpool == availableFreeAgents){
         if(franchise.offSeason){
-            if(player.rating >= 83){
-                franchise.season.news.addSignPlayerStory(team, player)
-            }
+            // if(player.rating >= 83){
+            //     franchise.season.news.addSignPlayerStory(team, player)
+            // }
+            franchise.offSeasonSignings.push({team, player})
         }else{
             franchise.season.news.addSignPlayerStory(team, player)
         }
