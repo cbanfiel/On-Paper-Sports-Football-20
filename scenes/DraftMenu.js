@@ -29,7 +29,7 @@ export default class DraftMenu extends React.Component {
     killInterval = () => {
         if(this.state.interval){
             clearInterval(this.state.interval);
-            this.setState({interval: null, simSpeed: 500})
+            this.setState({interval: null, simSpeed: 750})
         }
     }
 
@@ -44,7 +44,7 @@ export default class DraftMenu extends React.Component {
             function () {
                 if((!this.state.simToEnd && this.state.onTheClock == selectedTeam) || this.state.advance){
                     clearInterval(interval);
-                    this.setState({interval: null, simSpeed: 500})
+                    this.setState({interval: null, simSpeed: 750})
                     return;
                 }
 
@@ -63,7 +63,7 @@ export default class DraftMenu extends React.Component {
         round: franchise.currentDraft.round,
         interval: null,
         simToEnd: false,
-        simSpeed: 500
+        simSpeed: 750
     }
 
 
@@ -247,7 +247,7 @@ export default class DraftMenu extends React.Component {
                                 onPress={() => {this.killInterval()}}
                                 title={"Stop Sim"} />
                                 {
-                                    this.state.simSpeed < 500 ? null :
+                                    this.state.simSpeed < 750 ? null :
                                     <CardButton 
                                     variation={1} 
                                     onPress={() => this.skip()}

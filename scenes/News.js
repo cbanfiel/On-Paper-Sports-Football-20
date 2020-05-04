@@ -49,7 +49,7 @@ export default class News extends Component {
   state = { 
     news: [],
     interval: null,
-    simSpeed: 500,
+    simSpeed: 750,
     continue: false,
     index: 0
   }
