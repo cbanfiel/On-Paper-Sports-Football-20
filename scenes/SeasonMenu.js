@@ -28,12 +28,12 @@ export default class SeasonMenu extends React.Component {
   }
 
 
-  slowSim = () => {
+  slowSim = (oneWeek = false) => {
     let timer = setTimeout(
       function () {
         franchise.simDay();
         this.simulateStateChanges();
-        if (franchise.season.day >= franchise.season.games) {
+        if (franchise.season.day >= franchise.season.games || oneWeek) {
           this.stopSim();
         } else {
           this.slowSim();
@@ -164,7 +164,20 @@ export default class SeasonMenu extends React.Component {
             {
               franchise.season.day < franchise.season.games ? (
                 <View>
-                  <CardButton variation={1} onPress={() => { this.state.timer == null ? this.slowSim() : this.stopSim() }} title={this.state.timer == null ? ('Start Simulation') : 'Stop Simulation'} />
+
+                  {
+                    this.state.timer == null ? (
+                      <DualButton  
+                    leftTitle={'Simulate Season'}
+                    leftOnPress={()=> {this.slowSim()}}
+                    rightTitle={'Simulate Week'}
+                    rightOnPress={()=> {this.slowSim(true)}}
+                    />
+                    ) :
+                    <CardButton variation={1} onPress={() => { this.stopSim() }} title={"Stop Simulation"} />
+                  }
+                  
+                  
                   {
                     this.state.team === this.state.team.schedule[franchise.season.day] ? (
                       <TouchableOpacity style={{ width: '100%' }} onPress={() => { }}>
@@ -214,7 +227,22 @@ export default class SeasonMenu extends React.Component {
 
 
 
-              ) : null
+              ) : 
+
+              <CardButton variation={1} onPress={() => { 
+                this.props.teamListStage('playoffs'), 
+                franchise.advance = true, 
+                franchise.stage = 'playoffs', 
+                franchise.simStage(), 
+                collegeMode? 
+                Actions.replace('bowlgames', 
+                { teamListStage: this.props.teamListStage }) 
+                :  
+                Actions.replace('playoffmenu', 
+                { teamListStage: this.props.teamListStage })  }} 
+                title={collegeMode ? 'Advance To Bowl Games' : 'Advance To Playoffs'} />
+
+
             }
             {
               franchise.season.day > 0 ? (
@@ -384,48 +412,6 @@ export default class SeasonMenu extends React.Component {
                 </View>
               </Card>
             </TouchableOpacity>
-
-
-
-
-            {
-              franchise.season.day < franchise.season.games ? (
-                <TouchableOpacity style={{ width: '100%' }} onPress={this.simToEnd}>
-                  <Card
-                    containerStyle={{
-                      width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                      borderColor: 'black',
-                      alignSelf: 'center'
-                    }}
-                  >
-
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
-                    </View>
-                    <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
-                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{'Sim To End Of Season'}</Text>
-                  </Card>
-                </TouchableOpacity>
-              ) :
-                <TouchableOpacity style={{ width: '100%' }} onPress={() => { this.props.teamListStage('playoffs'), franchise.advance = true, franchise.stage = 'playoffs', franchise.simStage(), collegeMode? Actions.replace('bowlgames', { teamListStage: this.props.teamListStage }) :  Actions.replace('playoffmenu', { teamListStage: this.props.teamListStage })  }}>
-                  <Card
-                    containerStyle={{
-                      width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                      borderColor: 'black',
-                      alignSelf: 'center'
-                    }}
-                  >
-
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
-                    </View>
-                    <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
-                    <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{collegeMode ? 'Advance To Bowl Games' : 'Advance To Playoffs'}</Text>
-                  </Card>
-                </TouchableOpacity>
-            }
-
-
           </ScrollView>
         </Background>
       )

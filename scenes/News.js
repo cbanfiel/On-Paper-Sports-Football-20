@@ -74,13 +74,13 @@ export default class News extends Component {
       {
         this.state.continue ?
         (
-          <Button titleStyle={{ fontFamily: 'advent-pro', color:'black' }} buttonStyle={{ padding: 30 , borderRadius:0, borderBottomWidth:1, backgroundColor: 'rgba(255,255,255,0)', borderColor: 'rgba(255,255,255,0)'}} title="Continue" onPress={() => {this.props.next()}}></Button>
+          <Button titleStyle={{ fontFamily: 'advent-pro', color:'black' }} buttonStyle={{ padding: 15 , paddingBottom: 50, borderTopWidth: 1, borderBottomWidth:1, backgroundColor: 'rgba(255,255,255,0)', borderColor: '#333333'}} title="Continue" onPress={() => {this.props.next()}}></Button>
         ):null
       }
      
      {
        this.state.interval ? (
-         <Button titleStyle={{ fontFamily: 'advent-pro', color:'black' }} buttonStyle={{ padding: 30 , borderRadius:0, borderBottomWidth:1, backgroundColor: 'rgba(255,255,255,0)', borderColor: 'rgba(255,255,255,0)'}} title="Skip" onPress={() => {
+         <Button titleStyle={{ fontFamily: 'advent-pro', color:'black' }} buttonStyle={{ padding: 15 , paddingBottom: 50, borderTopWidth: 1, borderBottomWidth:1, backgroundColor: 'rgba(255,255,255,0)', borderColor: '#333333'}} title="Skip" onPress={() => {
            let interval = this.state.interval;
           clearInterval(interval);
           this.setState({interval: null, simSpeed: 10}, () => {

@@ -39,23 +39,23 @@ export class News {
     this.newsStories.unshift(story);
   }
 
-  addPreseasonRandomPlayerStory(player) {
-    let titles = [
-      `After his arrest in the offseason ${player.positionString} ${player.name} is looking to make a change`,
-      `Struggling through the loss of his mother ${player.positionString} ${player.name} is looking to honor her this upcoming season`,
-    ];
-    let stories = [
-      `${player.name} has spoken with reporters on what fans should expect from him this season`,
-    ];
-    let story = {
-      title: titles[Math.floor(Math.random() * titles.length)],
-      story: stories[Math.floor(Math.random() * stories.length)],
-      image1: player.faceSrc,
-      image2: player.teamLogoSrc,
-    };
+  // addPreseasonRandomPlayerStory(player) {
+  //   let titles = [
+  //     `After his arrest in the offseason ${player.positionString} ${player.name} is looking to make a change`,
+  //     `Struggling through the loss of his mother ${player.positionString} ${player.name} is looking to honor her this upcoming season`,
+  //   ];
+  //   let stories = [
+  //     `${player.name} has spoken with reporters on what fans should expect from him this season`,
+  //   ];
+  //   let story = {
+  //     title: titles[Math.floor(Math.random() * titles.length)],
+  //     story: stories[Math.floor(Math.random() * stories.length)],
+  //     image1: player.faceSrc,
+  //     image2: player.teamLogoSrc,
+  //   };
 
-    this.newsStories.unshift(story);
-  }
+  //   this.newsStories.unshift(story);
+  // }
 
   addRandomPlayerStory(player) {
       let ply = `${player.positionString} ${player.name}`;
@@ -124,6 +124,7 @@ export class News {
 
     let stories = [
       `The ${team.name} feel confident in there signing of ${player.positionString} ${player.name}`,
+      `The ${team.name} are happy with there signing of ${player.positionString} ${player.name}`
     ];
 
     let story = {

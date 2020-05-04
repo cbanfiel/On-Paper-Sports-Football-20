@@ -1817,6 +1817,10 @@ export class Game {
         for (let i = 0; i < tacklers.length; i++) {
             selection += ((tacklers[i].tackle + tacklers[i].awareness) / tot) * 100;
             if (rand <= selection) {
+                if(tacklers[i] == null){
+                    console.log(`ERROR: NULL PLAYER ALERT ${def.name} rand: ${rand} i:${i}`)
+                    return tacklers[0];
+                }
                 return tacklers[i];
             }
         }
@@ -1847,6 +1851,10 @@ export class Game {
         for (let i = 0; i < tacklers.length; i++) {
             selection += ((tacklers[i].tackle + tacklers[i].awareness) / tot) * 100;
             if (rand <= selection) {
+                if(tacklers[i] == null){
+                    console.log(`ERROR: NULL PLAYER ALERT ${def.name} rand: ${rand} i:${i}`)
+                    return tacklers[0];
+                }
                 return tacklers[i];
             }
         }
@@ -1877,6 +1885,10 @@ export class Game {
         for (let i = 0; i < tacklers.length; i++) {
             selection += ((tacklers[i].tackle + tacklers[i].awareness) / tot) * 100;
             if (rand <= selection) {
+                if(tacklers[i] == null){
+                    console.log(`ERROR: NULL PLAYER ALERT ${def.name} rand: ${rand} i:${i}`)
+                    return tacklers[0];
+                }
                 return tacklers[i];
             }
         }
@@ -2889,7 +2901,6 @@ export class Season {
                 //preseason stories
                 this.news.addPreseasonTopTeamStory(chooseATopTeam());
                 this.news.addPreseasonTopPlayerStory(chooseATopPlayer());
-                this.news.addPreseasonRandomPlayerStory(chooseARandomPlayer());
                 this.news.addGameOfTheWeekStory(pickGameOfTheWeek());
     }
 
@@ -3276,11 +3287,20 @@ export class Franchise {
             }
 
             //add stories / clear array
+            franchise.offSeasonSignings = shuffle(franchise.offSeasonSignings);
             franchise.offSeasonSignings.sort((a,b) => {
                 if(a.player.rating > b.player.rating){ return -1}
                 if(a.player.rating < b.player.rating){ return 1}
                 return 0;
             })
+
+            
+            if(collegeMode){
+                //only top 150 players
+                while(franchise.offSeasonSignings.length > 150){
+                    franchise.offSeasonSignings.pop();
+                }
+            }
 
             let size = franchise.offSeasonSignings.length;
             if(size > 15){
@@ -3981,6 +4001,7 @@ export class Franchise {
                         teams[i].interestedProspects.roster[j].years = 4
                         teams[i].roster.push(teams[i].interestedProspects.roster[j]);
                         // teams[i].interestedProspects.roster.splice(j, 1);
+
                         teams[i].scholarshipsAvailable--;
                         spliced.push(teams[i].interestedProspects.roster[j]);
 
@@ -4009,7 +4030,7 @@ export class Franchise {
                         teams[i].interestedProspects.roster[j].teamLogoSrc = teams[i].logoSrc;
                         teams[i].interestedProspects.roster[j].years = 4
                         teams[i].roster.push(teams[i].interestedProspects.roster[j]);
-
+                        //MKR
                         // teams[i].interestedProspects.roster.splice(j, 1);
                         teams[i].scholarshipsAvailable--;
                         spliced.push(teams[i].interestedProspects.roster[j]);
@@ -4021,6 +4042,8 @@ export class Franchise {
                 for (let j = 0; j < spliced.length; j++) {
                     let index = teams[i].interestedProspects.roster.indexOf(spliced[j]);
                     teams[i].interestedProspects.roster.splice(index, 1);
+                    franchise.offSeasonSignings.push({team: teams[i], player: spliced[j]})
+
                 }
 
 
@@ -4039,6 +4062,8 @@ export class Franchise {
                             signing.teamLogoSrc = teams[i].logoSrc;
                             signing.years = 1;
                             teams[i].roster.push(signing);
+                    franchise.offSeasonSignings.push({team: teams[i], player: signing})
+
                             teams[i].interestedProspects.roster.splice(index, 1);
                         } else {
                             teams[i].interestedProspects.roster.splice(index, 1);
@@ -4061,6 +4086,8 @@ export class Franchise {
                             signing.teamLogoSrc = teams[i].logoSrc;
                             signing.years = 1;
                             teams[i].roster.push(signing);
+                            franchise.offSeasonSignings.push({team: teams[i], player: signing})
+
                             teams[i].interestedProspects.roster.splice(index, 1);
                         } else {
                             teams[i].interestedProspects.roster.splice(index, 1);
