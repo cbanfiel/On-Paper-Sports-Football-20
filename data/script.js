@@ -51,7 +51,11 @@ export const POS_FS = 17;
 export const POS_SS = 18;
 export const POS_K = 19;
 export const POS_P = 20;
-
+const OL_POS_ARR = [POS_LT, POS_LG, POS_C, POS_RG, POS_RT];
+const DL_POS_ARR = [POS_LE,POS_RE,POS_DT];
+const LB_POS_ARR = [POS_LOLB, POS_MLB, POS_ROLB]
+const DB_POS_ARR = [POS_CB,POS_FS,POS_SS];
+const requiredPositions = [POS_QB, POS_HB,POS_WR,POS_TE, ...OL_POS_ARR, ...DL_POS_ARR, ...LB_POS_ARR, ...DB_POS_ARR, POS_K, POS_P];
 const offensiveSkillPositions = [POS_QB, POS_HB, POS_WR]
 
 //OFFENSE TYPES
@@ -931,6 +935,7 @@ class Team {
             for(let i=0; i<requirement.amount; i++){
                 let available = availableFreeAgents.roster.filter(player => player.position == requirement.position);
                 signPlayer(this, available[0], 1, VETERANSMINIMUM, availableFreeAgents);
+                availableFreeAgents.manageRequirements();
             }
         })
     }
@@ -1178,6 +1183,18 @@ export let availableFreeAgents = {
             if (a.rating < b.rating) return 1;
             return 0;
         });
+    },
+    manageRequirements: function(){
+
+        requiredPositions.forEach(pos => {
+            let current = availableFreeAgents.roster.filter(ply => ply.position == pos)
+            let needed = 6 - current.length;
+            if(needed > 0){
+                for(let i=0; i<needed; i++){
+                    availableFreeAgents.roster.push(generatePlayer(pos, Math.floor(Math.random()*10)+50));
+                }
+            }
+        })
     }
 };
 
@@ -2976,10 +2993,12 @@ export class Season {
                 let team = teams.filter(team => team.name == player.teamName)[0]
                 offer.push(player);
                 let offers = getTradeFinderOffers(offer, team);
-                let selected = offers[Math.floor(Math.random()*offers.length)];
-                trade(team, selected.team,offer, selected.players,  true);
-                team.signMissingRequirements();
-                selected.team.signMissingRequirements();
+                if(offers.length > 0){
+                    let selected = offers[Math.floor(Math.random()*offers.length)];
+                    trade(team, selected.team,offer, selected.players,  true);
+                    team.signMissingRequirements();
+                    selected.team.signMissingRequirements();
+                }
             }
         }
 
@@ -3056,63 +3075,12 @@ export class Season {
     }
 
     simToEnd() {
-        while (this.day < this.games) {
+        while (!this.endOfSeason) {
             if (this.games <= this.day) {
                 this.endOfSeason = true;
-
             }
-
-            for (let i = 0; i < teams.length; i++) {
-                home = teams[i];
-                away = home.schedule[this.day];
-                if (home === away) {
-                    //bye week
-                    home.played[this.day] = new Results(1, 0);
-                    home.wins++;
-                    for (let i = 0; i < home.roster.length; i++) {
-                        home.roster[i].statsHistory.push({
-                            completions: 0,
-                            attempts: 0,
-                            touchdowns: 0,
-                            yards: 0,
-                            rushYards: 0,
-                            rushAttempts: 0,
-                            rushTouchdowns: 0,
-                            kicksAttempted: 0,
-                            kicksMade: 0,
-                            receptions: 0,
-                            tackles: 0,
-                            interceptions: 0,
-                            fumbles: 0,
-                            fumblesRecovered: 0,
-                            sacks: 0
-                        });
-                    }
-                } else {
-                    if (home.played[this.day] == null) {
-                        let game = new Game();
-                        game.playGame();
-                        home.played[this.day] = new Results(game.homescore, game.awayscore);
-                        away.played[this.day] = new Results(game.awayscore, game.homescore);
-                        if (game.homescore > game.awayscore) {
-                            home.wins++;
-                            if (game.overtime) {
-                                away.otLosses++;
-                            }
-                            away.losses++;
-                        } else {
-                            if (game.overtime) {
-                                home.otLosses++;
-                            }
-                            home.losses++;
-                            away.wins++;
-                        }
-                    }
-                }
-            }
-            this.day++;
+            this.simDay();
         }
-        this.endOfSeason = true;
     }
 }
 
@@ -3291,7 +3259,7 @@ export class Franchise {
             } else {
                 this.freeAgency();
             }
-
+            franchise.season.news.newsStories = [];
             setSalaryExpectations(availableFreeAgents);
         }
 
@@ -3444,7 +3412,7 @@ export class Franchise {
 
 
                 let coachTraining = scaleBetween(teams[i].coach.training, 0, 2, 40, 99);
-                let development = scaleBetween(ply.age, -4, 3.5 + coachTraining, 43, 20);
+                let development = scaleBetween(ply.age, -4, 2.5 + coachTraining, 43, 20);
                 ply.awareness += Math.round(Math.random() * development);
                 if (ply.position === POS_QB) {
                     ply.pass += Math.round(Math.random() * development);
@@ -3611,13 +3579,8 @@ export class Franchise {
             this.recruiting()
 
         } else {
-
-
-
-
             for (let i = 0; i < teams.length; i++) {
                 teams[i].reorderLineup();
-
                 teams[i].salary = 0;
             }
 
@@ -3661,16 +3624,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position === POS_QB
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
-
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                             }
                         }
 
@@ -3679,16 +3634,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position === POS_HB
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
-
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                             }
                         }
 
@@ -3697,16 +3644,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position === POS_FB
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
-
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                             }
                         }
 
@@ -3715,16 +3654,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position === POS_WR
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
-
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                             }
                         }
 
@@ -3733,14 +3664,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position === POS_TE
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
 
                             }
                         }
@@ -3750,14 +3675,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position >= POS_LT && availableFreeAgents.roster[j].position <= POS_RT
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
 
                             }
                         }
@@ -3767,14 +3686,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position >= POS_LE && availableFreeAgents.roster[j].position <= POS_DT
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
 
                             }
                         }
@@ -3784,14 +3697,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position >= POS_LOLB && availableFreeAgents.roster[j].position <= POS_ROLB
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
 
                             }
                         }
@@ -3801,15 +3708,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position >= POS_CB && availableFreeAgents.roster[j].position <= POS_SS
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
-
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                             }
                         }
 
@@ -3818,14 +3718,8 @@ export class Franchise {
                             availableFreeAgents.roster[j].position === POS_K
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                             }
                         }
 
@@ -3834,15 +3728,19 @@ export class Franchise {
                             availableFreeAgents.roster[j].position === POS_P
                         ) {
                             if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
-                                availableFreeAgents.roster[j].teamName = teams[i].name;
-                                availableFreeAgents.roster[j].teamLogoSrc = teams[i].logoSrc;
-                                availableFreeAgents.roster[j].years =
-                                    Math.floor(Math.random() * 4) + 1;
-                                teams[i].roster.push(availableFreeAgents.roster[j]);
-                                teams[i].salary += availableFreeAgents.roster[j].salary;
-                                availableFreeAgents.roster.splice(j, 1);
-                                teams[i].manageFootballLineup();
+                                let ply = availableFreeAgents.roster[j];
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
 
+                            }
+                        }
+
+                        if(Math.random()*100 >= 90){
+                            if(playerWouldStart(availableFreeAgents.roster[j], teams[i])){
+                                let ply = availableFreeAgents.roster[j];
+                                if (canSign(teams[i], availableFreeAgents.roster[j].salary)) {
+                                    console.log(ply.name);
+                                    signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
+                                }
                             }
                         }
                     }
@@ -3883,12 +3781,8 @@ export class Franchise {
 
                                 signing.salary = VETERANSMINIMUM;
                                 if (canSign(teams[i], signing.salary)) {
-                                    signing.teamName = teams[i].name;
-                                    signing.teamLogoSrc = teams[i].logoSrc;
-                                    signing.years = 1;
-                                    teams[i].roster.push(signing);
-                                    teams[i].salary += signing.salary;
-                                    availableFreeAgents.roster.splice(index, 1);
+                                    let ply = signing;
+                                    signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                                 }
                             }
 
@@ -3898,12 +3792,8 @@ export class Franchise {
                             );
                             let signing = availableFreeAgents.roster[index];
                             if (canSign(teams[i], signing.salary)) {
-                                signing.teamName = teams[i].name;
-                                signing.teamLogoSrc = teams[i].logoSrc;
-                                signing.years = 1;
-                                teams[i].roster.push(signing);
-                                teams[i].salary += signing.salary;
-                                availableFreeAgents.roster.splice(index, 1);
+                                let ply = signing;
+                                signPlayer(teams[i], ply, Math.floor(Math.random()*4)+1, ply.salary, availableFreeAgents);
                             }
                         }
                     }
@@ -4623,6 +4513,9 @@ export class Franchise {
 
         console.log(`H: ${high} L: ${low} AVG: ${total / teams.length}`);
 
+        //make sure teams meet requirements
+        availableFreeAgents.manageRequirements();
+        teams.map(team => team.signMissingRequirements());
 
         //added specific autosave names
         let teamName = selectedTeam.name.split(' ').join('');
@@ -4965,7 +4858,7 @@ export class Franchise {
     }
 }
 
-var shuffle = function(array) {
+export var shuffle = function(array) {
     var currentIndex = array.length;
     var temporaryValue, randomIndex;
 
@@ -5331,7 +5224,13 @@ export function signPlayer(team, player, years, salary, playerpool) {
 
 
     if(playerpool == availableFreeAgents){
-        franchise.season.news.addSignPlayerStory(team, player)
+        if(franchise.offSeason){
+            if(player.rating >= 83){
+                franchise.season.news.addSignPlayerStory(team, player)
+            }
+        }else{
+            franchise.season.news.addSignPlayerStory(team, player)
+        }
     }
 }
 
@@ -5948,6 +5847,7 @@ export const loadFromFileSystem = async(fileName, _callback, _throwError) => {
             .then(value => {
                 loadFranchise(value);
                 _callback();
+                availableFreeAgents.manageRequirements();
             })
             .catch(err => {
                 console.log(err);
@@ -7692,37 +7592,62 @@ function playerWillStart(ply, team) {
 
 function playerWouldStart(ply, team) {
     if (ply.position === POS_QB) {
-        return ply.rating > team.qbs[0];
+        if(!team.qbs[0]){
+            return true;
+        }
+        return ply.rating > team.qbs[0].rating;
     }
     if (ply.position === POS_HB) {
-        return ply.rating > team.rbs[1];
+        if(!team.rbs[1]){
+            return true;
+        }
+        return ply.rating > team.rbs[1].rating;
     }
     if (ply.position === POS_WR) {
-        return ply.rating > team.wrs[3];
+        if(!team.wrs[3]){
+            return true;
+        }
+        return ply.rating > team.wrs[3].rating;
     }
     if (ply.position === POS_TE) {
-        return ply.rating > team.tes[1];
+        if(!team.tes[1]){
+            return true;
+        }
+        return ply.rating > team.tes[1].rating;
     }
     if (ply.position >= POS_LT && ply.position <= POS_RT) {
-        return ply.rating > team.ol[4];
+        if(!team.ol[4]){
+            return true;
+        }
+        return ply.rating > team.ol[4].rating;
     }
     if (ply.position >= POS_LE && ply.position <= POS_DT) {
-        return ply.rating > team.dl[2];
+        if(!team.dl[2]){
+            return true;
+        }
+        return ply.rating > team.dl[2].rating;
     }
     if (ply.position >= POS_LOLB && ply.position <= POS_ROLB) {
-        return ply.rating > team.lbs[2];
+        if(!team.lbs[2]){
+            return true;
+        }
+        return ply.rating > team.lbs[2].rating;
 
     }
     if (ply.position >= POS_CB && ply.position <= POS_SS) {
-        return ply.rating > team.dbs[3];
+        if(!team.dbs[3]){
+            return true;
+        }
+        return ply.rating > team.dbs[3].rating;
 
     }
     if (ply.position === POS_K) {
-        return ply.rating > team.ks[0];
+        // return ply.rating > team.ks[0].rating;
     }
     if (ply.position === POS_P) {
-        return ply.rating > team.ps[0];
+        // return ply.rating > team.ps[0].rating;
     }
+    return false;
 }
 
 function bowlGameSetup() {
@@ -8080,3 +8005,4 @@ function getBestPlayer(players) {
 
     return players[0];
 }
+

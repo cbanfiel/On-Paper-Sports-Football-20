@@ -10,8 +10,10 @@ import CardButton from '../components/CardButton';
 import DualButton from '../components/DualButton';
 
 
+const simSpeed = 675;
 
 export default class SeasonMenu extends React.Component {
+
 
   componentWillUnmount = () => {
     this.stopSim();
@@ -36,7 +38,7 @@ export default class SeasonMenu extends React.Component {
         } else {
           this.slowSim();
         }
-      }.bind(this), 500);
+      }.bind(this), simSpeed);
     this.setState({ timer: timer });
 
   }
@@ -140,7 +142,7 @@ export default class SeasonMenu extends React.Component {
 
             {
               // <TouchableOpacity style={{ width: '100%' }} onPress={() => { franchise.sim20(), Actions.refresh() }}>
-
+              
               //   <Card
               //     containerStyle={{
               //       width: '95%', backgroundColor: 'rgba(0,0,0,0)',

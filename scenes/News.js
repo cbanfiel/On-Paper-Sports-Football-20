@@ -2,9 +2,59 @@ import React, { Component } from "react";
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import Background from "../components/background";
 import NewsStory from "../components/NewsStory";
-import { franchise } from '../data/script';
+import { franchise, shuffle } from '../data/script';
+import { Button } from 'react-native-elements';
 
 export default class News extends Component {
+
+  componentWillUnmount = () => {
+    if(this.state.interval){
+        clearInterval(this.state.interval);
+        this.setState({interval: null})
+    }
+}
+
+  startInterval = () => {
+    let i = this.state.index;
+    let interval = setInterval(
+      function () {
+          if(i >= this.state.shuffledNews.length){
+              clearInterval(interval);
+              this.setState({interval: null, continue: true})
+              // this.props.next();
+              return;
+          }
+          let trimmedNews = this.state.news;
+          if(trimmedNews.length > 30){
+            trimmedNews.pop();
+          }
+          this.setState({news: [this.state.shuffledNews[i], ...trimmedNews]})
+          i++;
+      }.bind(this), this.state.simSpeed);
+    this.setState({ interval });
+  }
+
+  componentDidMount(){
+    if(this.props.animate){
+      let shuffledNews = [...franchise.season.news.newsStories];
+      shuffledNews = shuffle(shuffledNews);
+      this.setState({shuffledNews})
+      this.startInterval()
+
+    }else{
+      this.setState({news: franchise.season.news.newsStories})
+    }
+  }
+
+  state = { 
+    news: [],
+    interval: null,
+    simSpeed: 500,
+    continue: false,
+    index: 0
+  }
+
+
   render() {
     return (
         <Background>
@@ -14,13 +64,31 @@ export default class News extends Component {
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
 
         {
-            franchise.season.news.newsStories.map((story, i) => (
+            this.state.news.map((story, i) => (
                 <NewsStory newsStory={story} key={i}/>
             ))
         }
 
 
       </ScrollView>
+      {
+        this.state.continue ?
+        (
+          <Button titleStyle={{ fontFamily: 'advent-pro', color:'black' }} buttonStyle={{ padding: 30 , borderRadius:0, borderBottomWidth:1, backgroundColor: 'rgba(255,255,255,0)', borderColor: 'rgba(255,255,255,0)'}} title="Continue" onPress={() => {this.props.next()}}></Button>
+        ):null
+      }
+     
+     {
+       this.state.interval ? (
+         <Button titleStyle={{ fontFamily: 'advent-pro', color:'black' }} buttonStyle={{ padding: 30 , borderRadius:0, borderBottomWidth:1, backgroundColor: 'rgba(255,255,255,0)', borderColor: 'rgba(255,255,255,0)'}} title="Skip" onPress={() => {
+           let interval = this.state.interval;
+          clearInterval(interval);
+          this.setState({interval: null, simSpeed: 50}, () => {
+            this.startInterval();
+          })
+          }}></Button>
+       ):null
+     }
         </Background>
     );
   }

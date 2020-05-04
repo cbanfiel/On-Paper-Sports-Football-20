@@ -18,7 +18,14 @@ return (
 
 
       <ScrollView contentContainerStyle={{paddingBottom: 20}}>
-
+      <DualButton  
+                leftTitle={'League News'}
+                leftImage={selectedTeam.logoSrc} 
+                leftOnPress={()=> {Actions.news()}}
+                rightTitle={'League Scores'}
+                rightImage={selectedTeam.logoSrc} 
+                rightOnPress={()=> {Actions.othergames({day: franchise.season.day})}}
+                />
 
         <TouchableOpacity style={{ width: '100%' }} onPress={() => { Actions.rosterlist({view: 'training', selectedTeam: selectedTeam})}}>
          <Card
