@@ -216,57 +216,6 @@ export default class SeasonMenu extends React.Component {
 
               ) : null
             }
-
-            {
-              
-              franchise.season.day > 0 ? (
-                <DualButton  
-                leftTitle={'League News'}
-                leftImage={selectedTeam.logoSrc} 
-                leftOnPress={()=> {Actions.news()}}
-                rightTitle={'League Scores'}
-                rightImage={selectedTeam.logoSrc} 
-                rightOnPress={()=> {Actions.othergames({day: franchise.season.day})}}
-                />
-              ):
-
-              <DualButton  
-              leftTitle={'League News'}
-              leftImage={selectedTeam.logoSrc} 
-              leftOnPress={()=> {Actions.news()}}
-              rightTitle={'Edit Schedule'}
-              rightImage={selectedTeam.logoSrc} 
-              rightOnPress={()=> Actions.editschedule({franchise: franchise, update: this.update})}
-              />
-              
-            }
-
-
-            <TouchableOpacity style={{ width: '100%' }} onPress={() => Actions.scheduleview({ franchise: franchise, refresh: this.refreshSeasonMenu, linkTimer: this.linkTimer })}>
-
-              <Card
-                containerStyle={{
-                  width: '95%', backgroundColor: 'rgba(0,0,0,0)',
-                  borderColor: 'black',
-                  alignSelf: 'center'
-                }}
-              >
-                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ flex: 1, textAlign: "center", fontSize: 30, color: 'black', fontFamily: 'advent-pro' }}>{'OVR: ' + selectedTeam.rating}</Text>
-                  <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
-                </View>
-                <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
-                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.name + ' ' + 'Record: ' + selectedTeam.wins + "-" + (selectedTeam.losses)}</Text>
-              </Card>
-            </TouchableOpacity>
-
-
-
-
-
-
-
-
             {
               franchise.season.day > 0 ? (
 
@@ -321,6 +270,58 @@ export default class SeasonMenu extends React.Component {
               ) : null
             }
 
+
+            {
+              
+              franchise.season.day > 0 ? (
+                <DualButton  
+                leftTitle={'League News'}
+                leftImage={selectedTeam.logoSrc} 
+                leftOnPress={()=> {Actions.news()}}
+                rightTitle={'League Scores'}
+                rightImage={selectedTeam.logoSrc} 
+                rightOnPress={()=> {Actions.othergames({day: franchise.season.day})}}
+                />
+              ):
+
+              <DualButton  
+              leftTitle={'League News'}
+              leftImage={selectedTeam.logoSrc} 
+              leftOnPress={()=> {Actions.news()}}
+              rightTitle={'Edit Schedule'}
+              rightImage={selectedTeam.logoSrc} 
+              rightOnPress={()=> Actions.editschedule({franchise: franchise, update: this.update})}
+              />
+              
+            }
+
+
+            <TouchableOpacity style={{ width: '100%' }} onPress={() => Actions.scheduleview({ franchise: franchise, refresh: this.refreshSeasonMenu, linkTimer: this.linkTimer })}>
+
+              <Card
+                containerStyle={{
+                  width: '95%', backgroundColor: 'rgba(0,0,0,0)',
+                  borderColor: 'black',
+                  alignSelf: 'center'
+                }}
+              >
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ flex: 1, textAlign: "center", fontSize: 30, color: 'black', fontFamily: 'advent-pro' }}>{'OVR: ' + selectedTeam.rating}</Text>
+                  <Picache style={{ flex: 1, overflow: 'hidden', resizeMode: 'contain', height: 75, width: 75, margin: 5 }} source={{ uri: selectedTeam.logoSrc }} />
+                </View>
+                <Divider style={{ backgroundColor: 'black', height: 1, margin: 5 }} ></Divider>
+                <Text style={{ textAlign: "center", fontSize: 20, color: 'black', fontFamily: 'advent-pro' }}>{selectedTeam.name + ' ' + 'Record: ' + selectedTeam.wins + "-" + (selectedTeam.losses)}</Text>
+              </Card>
+            </TouchableOpacity>
+
+
+
+
+
+
+
+
+            
             <TouchableOpacity style={{ width: '100%' }} onPress={() => Actions.seasonstatsmenu({ linkTimer: this.linkTimer })}>
               <Card
                 containerStyle={{
