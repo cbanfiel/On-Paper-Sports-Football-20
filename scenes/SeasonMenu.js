@@ -23,8 +23,13 @@ export default class SeasonMenu extends React.Component {
     this.setState({ linked: func });
   }
 
-  saveFranchise = () => {
+  updateUnreadNews = () => {
+    this.setState({unreadNews: franchise.season.news.newsStories.length - this.state.readNews})
+  }
 
+  clearUnreadNewsNotification = () => {
+    let readNews = this.state.unreadNews + this.state.readNews;
+    this.setState({unreadNews: 0, readNews })
   }
 
 
@@ -33,6 +38,7 @@ export default class SeasonMenu extends React.Component {
       function () {
         franchise.simDay();
         this.simulateStateChanges();
+        this.updateUnreadNews();
         if (franchise.season.day >= franchise.season.games || oneWeek) {
           this.stopSim();
         } else {
@@ -59,8 +65,9 @@ export default class SeasonMenu extends React.Component {
     team: selectedTeam,
     nextGame: '',
     previousGame: '',
-    saveName: ''
-
+    saveName: '',
+    unreadNews: franchise.season.news.newsStories.length,
+    readNews: 0
   }
 
   //passed to roster
@@ -299,13 +306,16 @@ export default class SeasonMenu extends React.Component {
             }
 
 
-            {
+{
               
               franchise.season.day > 0 ? (
                 <DualButton  
                 leftTitle={'League News'}
                 leftImage={selectedTeam.logoSrc} 
-                leftOnPress={()=> {Actions.news()}}
+                leftNotification={this.state.unreadNews}
+                leftOnPress={()=> {
+                  this.clearUnreadNewsNotification()
+                  Actions.news()}}
                 rightTitle={'League Scores'}
                 rightImage={selectedTeam.logoSrc} 
                 rightOnPress={()=> {Actions.othergames({day: franchise.season.day})}}
@@ -315,7 +325,10 @@ export default class SeasonMenu extends React.Component {
               <DualButton  
               leftTitle={'League News'}
               leftImage={selectedTeam.logoSrc} 
-              leftOnPress={()=> {Actions.news()}}
+              leftNotification={this.state.unreadNews}
+              leftOnPress={()=> {
+                this.clearUnreadNewsNotification()
+                Actions.news()}}
               rightTitle={'Edit Schedule'}
               rightImage={selectedTeam.logoSrc} 
               rightOnPress={()=> Actions.editschedule({franchise: franchise, update: this.update})}

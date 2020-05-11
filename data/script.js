@@ -2960,19 +2960,18 @@ export class Season {
 
                     if (game.homescore > game.awayscore) {
                         home.wins++;
+                        away.losses++;
                         if (game.overtime) {
                             Math.random()*100 > 80 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
-                            
                             away.otLosses++;
                         }
-                        away.losses++;
                     } else {
+                        home.losses++;
+                        away.wins++;
                         if (game.overtime) {
                             Math.random()*100 > 80 ? this.news.addOvertimeNewsStory(home, away, game.homescore, game.awayscore): null;
                             home.otLosses++;
                         }
-                        home.losses++;
-                        away.wins++;
                     }
                 }
             }
@@ -3036,24 +3035,6 @@ export class Season {
         if(loss){
             loss.forEach(l => this.news.addTopTeamLossStory(l, l.schedule[this.day-1], l.played[this.day-1].userScore, l.played[this.day-1].oppScore))
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 
@@ -3879,6 +3860,8 @@ export class Franchise {
                 for (let j = 0; j < spliced.length; j++) {
                     let index = teams[i].interestedProspects.roster.indexOf(spliced[j]);
                     teams[i].interestedProspects.roster.splice(index, 1);
+                    franchise.offSeasonSignings.push({team: teams[i], player: spliced[j]})
+
                 }
 
                 spliced = [];
@@ -5897,7 +5880,6 @@ export const loadFromFileSystem = async(fileName, _callback, _throwError) => {
             .then(value => {
                 loadFranchise(value);
                 _callback();
-                availableFreeAgents.manageRequirements();
             })
             .catch(err => {
                 console.log(err);
@@ -7090,17 +7072,6 @@ export const loadFranchise = data => {
         franchise.season.news.addPreseasonTopTeamStory(chooseATopTeam());
         franchise.season.news.addPreseasonTopPlayerStory(chooseATopPlayer());
         franchise.season.news.addGameOfTheWeekStory(pickGameOfTheWeek());
-
-        // if(loadData.draftClass.roster.length > 0){
-        //     draftClass.roster = [];
-        //     for (let i = 0; i < loadedData.draftClass.roster.length; i++) {
-        //         availableFreeAgents.roster.push(new Player(draftClassData[i]));
-        //         availableFreeAgents.roster[i].calculateRating();
-        //         availableFreeAgents.roster[i].teamLogoSrc = availableFreeAgents.logoSrc;
-        //         availableFreeAgents.roster[i].teamName = availableFreeAgents.name;
-
-        //     }
-        // }
 
     } catch (err) {
         console.log(err);
