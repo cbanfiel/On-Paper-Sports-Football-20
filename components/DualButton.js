@@ -19,6 +19,7 @@ const DualButton = ({
   rightTitle,
   leftOnPress,
   rightOnPress,
+  leftNotification
 }) => {
   return (
     <View
@@ -77,6 +78,22 @@ const DualButton = ({
           >
             {leftTitle}
           </Text>
+
+          {leftNotification ? (
+              <View style={{width: 25, height: 25, borderRadius:25/2, backgroundColor:'#e53935', justifyContent:'center', alignItems:'center',
+              position:'absolute', top:0, right:0
+              }}>
+                <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 16,
+                      color: "white",
+                      fontFamily: "advent-pro",
+                      textAlign:'center'
+                    }}>{leftNotification}</Text>
+              </View>
+            ) : null}
+
         </Card>
       </TouchableOpacity>
 

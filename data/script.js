@@ -235,7 +235,7 @@ export function setRefreshOff(ans) {
     refreshOff = ans;
 }
 
-class Player {
+export class Player {
     constructor(player) {
         this.name = player.name;
         this.position = player.position;
@@ -589,7 +589,7 @@ class Player {
         }
     }
 }
-class Team {
+export class Team {
     constructor(team) {
         this.conferenceId = team.conferenceId;
         this.id = team.id;
@@ -6235,10 +6235,7 @@ export async function getDataFromLink(link, type, sliderType, _callback) {
 }
 
 export let communityRosters = [];
-communityRosters = getDataFromLink(
-    "https://on-paper-sports.s3.us-east-2.amazonaws.com/football/CommunityFiles.json",
-    "communityroster"
-);
+
 
 
 //checked
@@ -8011,6 +8008,9 @@ function pickGameOfTheWeek() {
 
         return 0;
     })
+    if(games[0].team1 == games[0].team2){
+        return games[1];
+    }
     return games[0]
 }
 
@@ -8035,3 +8035,200 @@ function getBestPlayer(players) {
     return players[0];
 }
 
+export function getRosterJSON(roster = null) {
+    let data = {
+        teams: [],
+        freeAgents: '',
+    }
+    if(roster){
+        for (let i = 0; i < roster.teams.length; i++) {
+            let teamDat = {
+                name: roster.teams[i].name,
+                id: roster.teams[i].id,
+                conferenceId: roster.teams[i].conferenceId,
+                logoSrc: roster.teams[i].logoSrc,
+                roster: []
+            };
+
+            roster.teams[i].roster.forEach(ply => {
+                let {
+                    name,
+                    position,
+                    faceSrc,
+                    number,
+                    height,
+                    pass,
+                    awareness,
+                    rush,
+                    speed,
+                    block,
+                    breakBlock,
+                    tackle,
+                    kick,
+                    years,
+                    salary,
+                    age
+                } = ply;
+                teamDat.roster.push({
+                    name,
+                    position,
+                    faceSrc,
+                    number,
+                    height,
+                    pass,
+                    awareness,
+                    rush,
+                    speed,
+                    catch: ply.catch,
+                    block,
+                    breakBlock,
+                    tackle,
+                    kick,
+                    years,
+                    salary,
+                    age
+                })
+            })
+
+            data.teams.push(teamDat);
+        }
+        let freeAgents = {name: availableFreeAgents.name, logoSrc: availableFreeAgents.logoSrc, roster:[] };
+        roster.freeAgents.roster.forEach(ply => {
+            let {
+                name,
+                position,
+                faceSrc,
+                number,
+                height,
+                pass,
+                awareness,
+                rush,
+                speed,
+                block,
+                breakBlock,
+                tackle,
+                kick,
+                years,
+                salary,
+                age
+            } = ply;
+            freeAgents.roster.push({
+                name,
+                position,
+                faceSrc,
+                number,
+                height,
+                pass,
+                awareness,
+                rush,
+                speed,
+                catch: ply.catch,
+                block,
+                breakBlock,
+                tackle,
+                kick,
+                years,
+                salary,
+                age
+            })
+    
+        });
+
+        data.freeAgents = freeAgents;
+
+    }else{
+    for (let i = 0; i < teams.length; i++) {
+        let teamDat = {
+            name: teams[i].name,
+            id: teams[i].id,
+            conferenceId: teams[i].conferenceId,
+            logoSrc: teams[i].logoSrc,
+            roster: [],
+        };
+        teams[i].roster.forEach(ply => {
+            let {
+                name,
+                position,
+                faceSrc,
+                number,
+                height,
+                pass,
+                awareness,
+                rush,
+                speed,
+                block,
+                breakBlock,
+                tackle,
+                kick,
+                years,
+                salary,
+                age
+            } = ply;
+            teamDat.roster.push({
+                name,
+                position,
+                faceSrc,
+                number,
+                height,
+                pass,
+                awareness,
+                rush,
+                speed,
+                catch: ply.catch,
+                block,
+                breakBlock,
+                tackle,
+                kick,
+                years,
+                salary,
+                age
+            })
+        })
+        data.teams.push(teamDat);
+    }
+    let freeAgents = {name: availableFreeAgents.name, logoSrc: availableFreeAgents.logoSrc, roster:[] };
+    availableFreeAgents.roster.forEach(ply => {
+        let {
+            name,
+            position,
+            faceSrc,
+            number,
+            height,
+            pass,
+            awareness,
+            rush,
+            speed,
+            block,
+            breakBlock,
+            tackle,
+            kick,
+            years,
+            salary,
+            age
+        } = ply;
+        freeAgents.roster.push({
+            name,
+            position,
+            faceSrc,
+            number,
+            height,
+            pass,
+            awareness,
+            rush,
+            speed,
+            catch: ply.catch,
+            block,
+            breakBlock,
+            tackle,
+            kick,
+            years,
+            salary,
+            age
+        })
+
+    });
+
+    data.freeAgents = freeAgents;
+}
+    return data;
+}
