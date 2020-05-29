@@ -25,7 +25,8 @@
     "ios": {
       "bundleIdentifier": "com.chadbanfield.onpapersportsfootball20",
       "supportsTablet": true,
-      "buildNumber": "1.0.3"
+      "buildNumber": "1.0.3",
+      "appStoreUrl": "https://apps.apple.com/us/app/on-paper-sports-football-20/id1481776402"
     },
     "android": {
       "package": "com.chadbanfield.onpapersportsfootball20",
