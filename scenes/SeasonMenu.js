@@ -1,14 +1,13 @@
-import React from 'react';
-import { TouchableOpacity, Text, View, ScrollView, Alert } from 'react-native';
-import { Card, Divider, Input } from 'react-native-elements';
-import { Actions } from 'react-native-router-flux';
-import { selectedTeam, leaugeLeaders, setSelectedTeam2, franchise, sortedRoster, conferencesOn, collegeMode, refreshOff, setRefreshOff, saveFranchiseCheaply, loadFranchise, saveFranchise } from '../data/script';
-import Background from '../components/background';
 import Picache from 'picache';
-import CachedImage from '../components/CachedImage';
+import React from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Card, Divider } from 'react-native-elements';
+import { Actions } from 'react-native-router-flux';
+import Background from '../components/background';
 import CardButton from '../components/CardButton';
 import DualButton from '../components/DualButton';
 import { requestReview } from '../data/RequestReview';
+import { collegeMode, conferencesOn, franchise, selectedTeam, setSelectedTeam2, sortedRoster } from '../data/script';
 
 const simSpeed = 675;
 
@@ -17,12 +16,11 @@ export default class SeasonMenu extends React.Component {
   componentDidMount = () => {
     if(selectedTeam.history.length === 2){
       let timer = setTimeout(() => {
-        requestReview();
+        requestReview('On Paper Sports Football');
         timer = null;
       }, 750);
     }
   }
-
 
   componentWillUnmount = () => {
     this.stopSim();

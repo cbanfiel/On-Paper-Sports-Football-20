@@ -7,9 +7,17 @@ import Background from '../components/background';
 import { home, away, selectedTeam, generated1, generated2, generated3, generated4, teams, menuDisplayTeams} from '../data/script';
 import CachedImage from '../components/CachedImage';
 import {Updates} from 'expo';
+import * as FileSystem from '../data/FileSystem';
 
 
 export default class MainMenu extends React.Component {
+
+  componentDidMount = async () => {
+      // FileSystem.deleteFile(FileSystem.FILES.SETTINGS);
+      // FileSystem.loadFromFileSystem(FileSystem.FILES.SETTINGS, obj => console.log(obj))
+  }
+
+
   static async onEnter(){
     try {
       const update = await Updates.checkForUpdateAsync();
