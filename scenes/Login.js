@@ -95,7 +95,7 @@ export default class Login extends Component {
       return;
     }
 
-    this.saveUserToFileSystem();
+    this.updateUser();
 
     if (isEmail(this.state.email)) {
       fetch("https://onpapersports.com/users/register", {

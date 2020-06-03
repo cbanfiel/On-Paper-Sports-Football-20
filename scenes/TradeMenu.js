@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, ScrollView, Alert, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import { Button, Card, Icon, Divider } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
-import { selectedTeam, selectedTeam2, trade, sortedRoster, displaySalary, CAPROOM, setPowerRankings, getDraftPickProjectedPick, inDraft, teams, returnStatsView, POS_QB_REQUIREMENTS, POS_HB_REQUIREMENTS, POS_WR_REQUIREMENTS, POS_TE_REQUIREMENTS, POS_OL_REQUIREMENTS, POS_DL_REQUIREMENTS, POS_LB_REQUIREMENTS, POS_DB_REQUIREMENTS, POS_K_REQUIREMENTS, POS_P_REQUIREMENTS } from '../data/script';
+import { selectedTeam, selectedTeam2, trade, sortedRoster, displaySalary, CAPROOM, setPowerRankings, getDraftPickProjectedPick, inDraft, teams, returnStatsView, POS_QB_REQUIREMENTS, POS_HB_REQUIREMENTS, POS_WR_REQUIREMENTS, POS_TE_REQUIREMENTS, POS_OL_REQUIREMENTS, POS_DL_REQUIREMENTS, POS_LB_REQUIREMENTS, POS_DB_REQUIREMENTS, POS_K_REQUIREMENTS, POS_P_REQUIREMENTS, GENERIC_PLAYER_PORTRAIT } from '../data/script';
 import Background from '../components/background';
 import CachedImage from '../components/CachedImage';
 import ListItem from '../components/ListItem';
@@ -134,7 +134,7 @@ export default class TradeMenu extends React.Component {
                     title={pick.originalTeam + ' Draft Pick'}
                     subtitle={'Round: ' + pick.round + ' Projected Pick: ' + getDraftPickProjectedPick(pick)}
                     bottomDivider={true}
-                    leftAvatar={'https://on-paper-sports.s3.us-east-2.amazonaws.com/player_portraits/NBA-Player.png'}
+                    leftAvatar={GENERIC_PLAYER_PORTRAIT}
                     rightTitle={this.state.t1Offers.includes(pick) ? "SELECTED" : null}
 
                 ></ListItem>
@@ -164,7 +164,7 @@ export default class TradeMenu extends React.Component {
                     title={pick.originalTeam + ' Draft Pick'}
                     subtitle={'Round: ' + pick.round + ' Projected Pick: ' + getDraftPickProjectedPick(pick)}
                     bottomDivider={true}
-                    leftAvatar={'https://on-paper-sports.s3.us-east-2.amazonaws.com/player_portraits/NBA-Player.png'}
+                    leftAvatar={GENERIC_PLAYER_PORTRAIT}
                     rightTitle={this.state.t2Offers.includes(pick) ? "SELECTED" : null}
 
                 ></ListItem>
